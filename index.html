@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学公式＆演習アプリ</title>
+    
+    <!-- MathJaxの読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body { font-family: sans-serif; margin: 20px; background: #f9f9f9; color: #333; line-height: 1.6; }
+        .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        select, button { padding: 10px; font-size: 16px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        
+        /* 枠からはみ出さないよう word-break と overflow-x を設定 */
+        .card { 
+            background: #f1f5f9; 
+            padding: 15px; 
+            border-radius: 6px; 
+            margin-top: 15px; 
+            word-break: break-word; 
+            overflow-x: auto; 
+        }
+        
+        .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto;}
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+        .hidden { display: none; }
+        .filter-group { background: #e0f2fe; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>数学公式アプリ</h1>
+    
+    <!-- トップ画面：問題演習ボタン -->
+    <button onclick="startExercise()" style="background-color: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer;">問題演習モードへ</button>
+    <hr style="margin: 20px 0;">
+
+    <!-- ① プルダウン選択エリア -->
+    <h3>公式・学習モード</h3>
+    <label>レベル：</label>
+    <select id="levelSelect" onchange="updateUnits()">
+        <option value="全て">全て</option>
+        <option value="基礎">基礎</option>
+        <option value="公立">公立</option>
+        <option value="難関私立">難関私立</option>
+    </select>
+
+    <label>カテゴリ：</label>
+    <select id="categorySelect" onchange="updateUnits()">
+        <option value="全て">全て</option>
+        <option value="数式">数式</option>
+        <option value="関数">関数</option>
+        <option value="平面図形">平面図形</option>
+        <option value="立体図形">立体図形</option>
+        <option value="その他">その他</option>
+    </select>
+
+    <label>単元：</label>
+    <select id="unitSelect" onchange="loadFormulaContent()">
+        <!-- JSで動的に書き換え -->
+    </select>
+
+    <!-- ② 公式・問題表示エリア（順番：問題 ➔ 答え ➔ 解説 ➔ 問題の更新） -->
+    <div id="learningArea">
+        <div class="card">
+            <h4 id="formulaTitle">【公式】</h4>
+            <div id="displayFormula">-</div>
+        </div>
+        
+        <!-- 1. 問題 -->
+        <div class="card">
+            <h4>【問題】</h4>
+            <div id="displayProblem">-</div>
+        </div>
+        
+        <!-- 2. 答えボタンとボックス -->
+        <button onclick="toggleAnswer()" style="background-color: #f59e0b; color: white; border: none; border-radius: 5px; cursor: pointer;">答えを見る</button>
+        <div id="answerBox" class="card hidden">
+            <h4>【答え】</h4>
+            <div id="displayAnswer">-</div>
+        </div>
+
+        <!-- 3. 解説ボタンとボックス -->
+        <button onclick="toggleExplanation()" style="background-color: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer;">解説を見る</button>
+        <div id="explanationBox" class="card hidden">
+            <h4>【解説】</h4>
+            <div id="displayExplanation">-</div>
+        </div>
+
+        <!-- 4. 問題の更新ボタン -->
+        <button onclick="refreshProblem()" style="background-color: #0284c7; color: white; border: none; border-radius: 5px; cursor: pointer;">問題の更新（別パターン生成）</button>
+    </div>
+</div>
+
+<!-- ③ 問題演習モード用ポップアップ（順番：問題 ➔ 答え ➔ 解説 ➔ 問題の更新） -->
+<div class="overlay" id="overlay" onclick="closeExercise()"></div>
+<div class="popup" id="exercisePopup">
+    <h2>ランダム問題演習</h2>
+    
+    <!-- レベル・カテゴリ選択フィルター -->
+    <div class="filter-group">
+        <label style="font-size: 14px; font-weight: bold;">【出題条件の絞り込み】</label>
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label style="font-size: 12px;">レベル：</label>
+                <select id="exLevelSelect" style="font-size: 14px; padding: 6px;">
+                    <option value="全て">全て</option>
+                    <option value="基礎">基礎</option>
+                    <option value="公立">公立</option>
+                    <option value="難関私立">難関私立</option>
+                </select>
+            </div>
+            <div style="flex: 1;">
+                <label style="font-size: 12px;">カテゴリ：</label>
+                <select id="exCategorySelect" style="font-size: 14px; padding: 6px;">
+                    <option value="全て">全て</option>
+                    <option value="数式">数式</option>
+                    <option value="関数">関数</option>
+                    <option value="平面図形">平面図形</option>
+                    <option value="立体図形">立体図形</option>
+                    <option value="その他">その他</option>
+                </select>
+            </div>
+        </div>
+        <button onclick="nextExercise()" style="background-color: #0ea5e9; color: white; border: none; border-radius: 4px; margin-top: 8px; cursor: pointer; padding: 6px;">この条件で問題を出題</button>
+    </div>
+
+    <p><strong>単元:</strong> <span id="exUnitName">-</span> (レベル: <span id="exLevelName">-</span>)</p>
+    
+    <!-- 1. 問題 -->
+    <div class="card">
+        <div id="exProblem">-</div>
+    </div>
+    
+    <!-- 公式確認ボタンと切り替え用領域 -->
+    <button onclick="togglePopupFormula()" style="background-color: #64748b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">公式を確認</button>
+    <div id="exFormulaResult" class="hidden card" style="font-weight: bold; color: #475569; margin-top: 5px;"></div>
+    
+    <!-- 2. 答えボタンと切り替え用領域 -->
+    <button onclick="togglePopupAnswer()" style="background-color: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">答えを見る</button>
+    <div id="exAnswerResult" class="hidden card" style="margin-top: 5px;"></div>
+    
+    <!-- 3. 解説ボタンと切り替え用領域 -->
+    <button onclick="togglePopupExplanation()" style="background-color: #10b981; color: white; border: none; border-radius: 4px; margin-top: 5px; cursor: pointer;">解説を見る</button>
+    <div id="exExplanationResult" class="hidden card" style="margin-top: 5px;"></div>
+
+    <!-- 4. 問題の更新ボタン -->
+    <button onclick="nextExercise()" style="background-color: #0284c7; color: white; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">問題の更新（新しい問題）</button>
+    <button onclick="closeExercise()" style="margin-top: 5px; cursor: pointer; background: #e2e8f0; border: none; border-radius: 4px; padding: 10px;">閉じる</button>
+</div>
+
+<!-- 外部データの読み込み -->
+<script src="formulas.js"></script>
+<script>
+    let currentData = null; 
+    let activeCategoryMap = {}; 
+    let unitIndexMap = {}; 
+
+    // MathJax 3 を安全に再描画するヘルパー関数
+    function renderMath(elementId) {
+        if (window.MathJax) {
+            if (elementId && MathJax.typesetClear) {
+                const el = document.getElementById(elementId);
+                if (el) MathJax.typesetClear([el]);
+            }
+            MathJax.typeset();
+        }
+    }
+
+    // 解説文から結論（答え部分）を抽出するヘルパー関数
+    function extractAnswer(explanation) {
+        if (!explanation) return "（答えなし）";
+        let clean = explanation.replace(/【解説】<br>/g, "");
+        let parts = clean.split("<br>");
+        return parts[parts.length - 1] || clean;
+    }
+
+    function updateUnits() {
+        const selectedLevel = document.getElementById('levelSelect').value;
+        const cat = document.getElementById('categorySelect').value;
+        const unitSelect = document.getElementById('unitSelect');
+        unitSelect.innerHTML = '';
+        activeCategoryMap = {};
+        unitIndexMap = {};
+        
+        let targetCategories = [];
+        if (cat === "全て") {
+            targetCategories = Object.keys(formulaData);
+        } else if (formulaData[cat]) {
+            targetCategories = [cat];
+        }
+
+        let count = 1;
+        targetCategories.forEach(category => {
+            Object.keys(formulaData[category]).forEach(unit => {
+                const levelStr = formulaData[category][unit].level;
+                
+                // 【修正1】選択されたレベルに厳密に一致するもの、または「全て」のときのみ抽出
+                const matchesLevel = (selectedLevel === "全て") || levelStr.includes(selectedLevel);
+                
+                if (matchesLevel) {
+                    let optVal = cat === "全て" ? `${category}___${unit}` : unit;
+                    let optText = cat === "全て" ? `${count}. [${category}] ${unit}` : `${count}. ${unit}`;
+                    
+                    let opt = document.createElement('option');
+                    opt.value = optVal;
+                    opt.textContent = optText;
+                    unitSelect.appendChild(opt);
+
+                    activeCategoryMap[optVal] = category;
+                    unitIndexMap[optVal] = count;
+                    count++;
+                }
+            });
+        });
+        loadFormulaContent();
+    }
+
+    function loadFormulaContent() {
+        const selectedLevel = document.getElementById('levelSelect').value;
+        const catSelect = document.getElementById('categorySelect').value;
+        const unitVal = document.getElementById('unitSelect').value;
+        
+        if (!unitVal) {
+            document.getElementById('formulaTitle').textContent = "【公式】";
+            document.getElementById('displayFormula').textContent = "（該当する単元がありません）";
+            document.getElementById('displayProblem').textContent = "（該当する単元がありません）";
+            document.getElementById('displayAnswer').textContent = "（該当する単元がありません）";
+            document.getElementById('displayExplanation').textContent = "（該当する単元がありません）";
+            return;
+        }
+
+        let cat = catSelect;
+        let unit = unitVal;
+
+        if (catSelect === "全て") {
+            cat = activeCategoryMap[unitVal];
+            unit = unitVal.split("___")[1];
+        }
+        
+        const currentNumber = unitIndexMap[unitVal] || 1;
+        
+        if (selectedLevel === "全て" && catSelect === "全て" && formulaData[cat] && formulaData[cat][unit]) {
+            const itemLevel = formulaData[cat][unit].level;
+            document.getElementById('formulaTitle').textContent = `【公式】 No.${currentNumber} ${itemLevel}`;
+        } else {
+            document.getElementById('formulaTitle').textContent = `【公式】 No.${currentNumber}`;
+        }
+        
+        if (formulaData[cat] && formulaData[cat][unit]) {
+            currentData = formulaData[cat][unit];
+            currentData.actualCategory = cat; 
+            currentData.actualUnit = unit;
+            
+            document.getElementById('displayFormula').innerHTML = currentData.formula;
+            
+            let prob = "";
+            let expl = "";
+            if (currentData.generateRandom) {
+                let generated = currentData.generateRandom();
+                prob = generated.problem;
+                expl = generated.explanation;
+            } else {
+                prob = currentData.problem;
+                expl = currentData.explanation;
+            }
+
+            document.getElementById('displayProblem').innerHTML = prob;
+            document.getElementById('displayAnswer').innerHTML = extractAnswer(expl);
+            document.getElementById('displayExplanation').innerHTML = expl;
+            
+            currentData.activeProblem = prob;
+            currentData.activeExplanation = expl;
+            
+            // 【修正2】数式エリアのクリア処理を挟んで安全に再描画
+            renderMath('learningArea');
+        } else {
+            document.getElementById('displayFormula').textContent = "（データ準備中）";
+            document.getElementById('displayProblem').textContent = "（データ準備中）";
+            document.getElementById('displayAnswer').textContent = "（データ準備中）";
+            document.getElementById('displayExplanation').textContent = "（データ準備中）";
+        }
+        document.getElementById('answerBox').classList.add('hidden');
+        document.getElementById('explanationBox').classList.add('hidden');
+    }
+
+    function refreshProblem() {
+        if (currentData && currentData.generateRandom) {
+            let generated = currentData.generateRandom();
+            currentData.activeProblem = generated.problem;
+            currentData.activeExplanation = generated.explanation;
+            
+            document.getElementById('displayProblem').innerHTML = generated.problem;
+            document.getElementById('displayAnswer').innerHTML = extractAnswer(generated.explanation);
+            document.getElementById('displayExplanation').innerHTML = generated.explanation;
+            
+            document.getElementById('answerBox').classList.add('hidden');
+            document.getElementById('explanationBox').classList.add('hidden');
+            
+            renderMath('learningArea');
+        } else {
+            alert("この単元のランダム生成はまだ準備されていません。");
+        }
+    }
+
+    function toggleAnswer() {
+        const box = document.getElementById('answerBox');
+        box.classList.toggle('hidden');
+        renderMath('answerBox');
+    }
+
+    function toggleExplanation() {
+        const box = document.getElementById('explanationBox');
+        box.classList.toggle('hidden');
+        renderMath('explanationBox');
+    }
+
+    let currentExData = {};
+
+    function startExercise() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('exercisePopup').style.display = 'block';
+        nextExercise();
+    }
+
+    function closeExercise() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('exercisePopup').style.display = 'none';
+    }
+
+    function nextExercise() {
+        const selectedLevel = document.getElementById('exLevelSelect').value;
+        let selectedCategory = document.getElementById('exCategorySelect').value;
+
+        let targetCategories = [];
+        if (!selectedCategory || selectedCategory === "全て") {
+            targetCategories = Object.keys(formulaData);
+        } else {
+            targetCategories = [selectedCategory];
+        }
+
+        let availableUnits = [];
+        targetCategories.forEach(cat => {
+            if (formulaData[cat]) {
+                Object.keys(formulaData[cat]).forEach(unit => {
+                    const levelStr = formulaData[cat][unit].level;
+                    
+                    // 【修正1】演習ポップアップ側も同様に厳密なレベル一致に修正
+                    const matchesLevel = (selectedLevel === "全て") || levelStr.includes(selectedLevel);
+                    
+                    if (matchesLevel) {
+                        availableUnits.push({ category: cat, unit: unit });
+                    }
+                });
+            }
+        });
+
+        if (availableUnits.length === 0) {
+            alert("条件に一致する問題がありません。条件を変更してください。");
+            return;
+        }
+
+        const selectedPair = availableUnits[Math.floor(Math.random() * availableUnits.length)];
+        const targetCategory = selectedPair.category;
+        const randomSubKey = selectedPair.unit;
+        const targetItem = formulaData[targetCategory][randomSubKey];
+
+        let prob = "";
+        let expl = "";
+
+        if (typeof targetItem.generateRandom === "function") {
+            let gen = targetItem.generateRandom();
+            prob = gen.problem;
+            expl = gen.explanation;
+        } else {
+            prob = targetItem.problem;
+            expl = targetItem.explanation;
+        }
+
+        currentExData = {
+            category: targetCategory,
+            unit: randomSubKey,
+            level: targetItem.level,
+            formula: targetItem.formula,
+            problem: prob,
+            explanation: expl
+        };
+        
+        document.getElementById('exUnitName').textContent = `${targetCategory} / ${randomSubKey}`;
+        document.getElementById('exLevelName').textContent = targetItem.level;
+        document.getElementById('exProblem').innerHTML = currentExData.problem;
+        
+        const formulaRes = document.getElementById('exFormulaResult');
+        formulaRes.innerHTML = "【公式】<br>" + currentExData.formula;
+        formulaRes.classList.add('hidden');
+
+        const ansRes = document.getElementById('exAnswerResult');
+        ansRes.innerHTML = "【答え】<br>" + extractAnswer(currentExData.explanation);
+        ansRes.classList.add('hidden');
+
+        const explRes = document.getElementById('exExplanationResult');
+        explRes.innerHTML = "【解説】<br>" + currentExData.explanation;
+        explRes.classList.add('hidden');
+
+        renderMath('exercisePopup');
+    }
+
+    function togglePopupFormula() {
+        const formulaRes = document.getElementById('exFormulaResult');
+        formulaRes.classList.toggle('hidden');
+        renderMath('exFormulaResult');
+    }
+
+    function togglePopupAnswer() {
+        const ansRes = document.getElementById('exAnswerResult');
+        ansRes.classList.toggle('hidden');
+        renderMath('exAnswerResult');
+    }
+
+    function togglePopupExplanation() {
+        const explRes = document.getElementById('exExplanationResult');
+        explRes.classList.toggle('hidden');
+        renderMath('exExplanationResult');
+    }
+
+    window.onload = function() {
+        updateUnits();
+    };
+</script>
+
+</body>
+</html>
