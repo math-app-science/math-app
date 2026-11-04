@@ -4720,182 +4720,1206 @@ const formulaData = {
                 };
             }
         },
-        "軸をまたぐ回転体": {
-            level: "難関私立",
-            formula: "<strong>【軸をまたぐ回転体（y軸回転）】</strong><br>" +
-                     "・軸をまたぐ図形の回転体は、<strong>片側（y軸の反対側）を対称移動して一方に寄せてから回転</strong>させましょう。<br>" +
-                     "・見取り図を書くと図がごちゃごちゃして複雑になるため、見取り図は書かずに平面上で整理するのがおすすめです。<br>" +
-                     "・体積は組み合わせで求めます。各領域の座標（交点・切片）を正確に求め、<strong>「全体の回転体の和」から「重なっている部分の回転体」を引く</strong>ことで計算できます。<br>" +
-                     `<svg viewBox="0 0 240 220" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; display: block; margin: 8px auto; width: 100%; max-width: 220px;">` +
-                     `  <!-- 座標軸 -->` +
-                     `  <line x1="20" y1="180" x2="220" y2="180" stroke="#333" stroke-width="1.2" />` +
-                     `  <line x1="100" y1="20" x2="100" y2="200" stroke="#333" stroke-width="1.2" />` +
-                     `  <text x="210" y="195" font-size="9">x</text>` +
-                     `  <text x="105" y="28" font-size="9">y</text>` +
-                     `  <text x="88" y="193" font-size="8">O</text>` +
-                     `  <!-- 放物線 y = (1/2)x^2 -->` +
-                     `  <path d="M 40,80 Q 100,180 160,80" fill="none" stroke="#e67e22" stroke-width="1.5"/>` +
-                     `  <!-- 平行四辺形 AOBC -->` +
-                     `  <!-- A(-2,2)->(60,140), O(0,0)->(100,180), B(4,8)->(180,20), C(2,10)->(140,60) -->` +
-                     `  <polygon points="60,140 100,180 180,20 140,60" fill="rgba(52, 152, 219, 0.15)" stroke="#3498db" stroke-width="1.5"/>` +
-                     `  <!-- 点Aのy軸対称点 A' (2,2)->(140,140) -->` +
-                     `  <polygon points="140,140 100,180 140,60" fill="rgba(231, 76, 60, 0.15)" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2"/>` +
-                     `  <!-- 点A, B, C, A' -->` +
-                     `  <circle cx="60" cy="140" r="3" fill="#e74c3c"/>` +
-                     `  <text x="42" y="142" font-size="8" fill="#e74c3c" font-weight="bold">A(-2,2)</text>` +
-                     `  <circle cx="180" cy="20" r="3" fill="#3498db"/>` +
-                     `  <text x="185" y="22" font-size="8" fill="#3498db" font-weight="bold">B(4,8)</text>` +
-                     `  <circle cx="140" cy="60" r="3" fill="#2ecc71"/>` +
-                     `  <text x="145" y="62" font-size="8" fill="#2ecc71" font-weight="bold">C(2,10)</text>` +
-                     `  <circle cx="140" cy="140" r="2.5" fill="#e74c3c"/>` +
-                     `  <text x="145" y="142" font-size="8" fill="#e74c3c">A'</text>` +
-                     `</svg>`,
-            generateRandom: function() {
-                const scenarios = [
-                    {
-                        eqDisplay: "y = \\frac{1}{2}x^2",
-                        xA: -2, yA: 2, xB: 4, yB: 8, aNum: 0.5,
-                        lineEq: "y = x + 4", cY: 4,
-                        volTeX: "\\frac{112}{3}\\pi",
-                        // 円柱/円錐の体積計算補助値
-                        bigConeR: 4, bigConeH: 8,
-                        smallConeR: 2, smallConeH: 4,
-                        cutoffR: 2, cutoffH: 2
-                    },
-                    {
-                        eqDisplay: "y = x^2",
-                        xA: -1, yA: 1, xB: 2, yB: 4, aNum: 1,
-                        lineEq: "y = x + 2", cY: 2,
-                        volTeX: "\\frac{28}{3}\\pi",
-                        bigConeR: 2, bigConeH: 4,
-                        smallConeR: 1, smallConeH: 2,
-                        cutoffR: 1, cutoffH: 1
-                    },
-                    {
-                        eqDisplay: "y = \\frac{1}{2}x^2",
-                        xA: -4, yA: 8, xB: 2, yB: 2, aNum: 0.5,
-                        lineEq: "y = -x + 4", cY: 4,
-                        volTeX: "\\frac{112}{3}\\pi",
-                        bigConeR: 4, bigConeH: 8,
-                        smallConeR: 2, smallConeH: 4,
-                        cutoffR: 2, cutoffH: 2
-                    },
-                    {
-                        eqDisplay: "y = \\frac{1}{3}x^2",
-                        xA: -3, yA: 3, xB: 6, yB: 12, aNum: 1/3,
-                        lineEq: "y = x + 6", cY: 6,
-                        volTeX: "126\\pi",
-                        bigConeR: 6, bigConeH: 12,
-                        smallConeR: 3, smallConeH: 6,
-                        cutoffR: 3, cutoffH: 3
-                    },
-                    {
-                        eqDisplay: "y = \\frac{1}{4}x^2",
-                        xA: -2, yA: 1, xB: 4, yB: 4, aNum: 0.25,
-                        lineEq: "y = \\frac{1}{2}x + 2", cY: 2,
-                        volTeX: "\\frac{56}{3}\\pi",
-                        bigConeR: 4, bigConeH: 4,
-                        smallConeR: 2, smallConeH: 2,
-                        cutoffR: 2, cutoffH: 1
-                    }
-                ];
-                const s = scenarios[Math.floor(Math.random() * scenarios.length)];
+"軸をまたぐ回転体": {
+    level: "難関私立",
+    formula: "<strong>【軸をまたぐ回転体（y軸回転）】</strong><br>" +
+             "・軸をまたぐ図形の回転体は、<strong>片側（y軸の反対側）を対称移動して一方に寄せてから回転</strong>させましょう。<br>" +
+             "・見取り図を書くと図がごちゃごちゃして複雑になるため、見取り図は書かずに平面上で整理するのがおすすめです。<br>" +
+             "・体積は組み合わせで求めます。各領域の座標（交点・切片）を正確に求め、計算します。<br>" +
+             "・求める体積の式：\\(V = V_{\\triangle OBC} + V_{\\triangle OA'C} - V_{\\triangle OCD}\\)<br>" +
+             `<svg viewBox="0 0 240 220" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; display: block; margin: 8px auto; width: 100%; max-width: 220px;">` +
+             `  <!-- 座標軸 -->` +
+             `  <line x1="20" y1="180" x2="220" y2="180" stroke="#333" stroke-width="1.2" />` +
+             `  <line x1="100" y1="20" x2="100" y2="200" stroke="#333" stroke-width="1.2" />` +
+             `  <text x="210" y="195" font-size="9">x</text>` +
+             `  <text x="105" y="28" font-size="9">y</text>` +
+             `  <text x="88" y="193" font-size="8">O</text>` +
+             `  <!-- 三角形 OAB -->` +
+             `  <polygon points="60,140 100,180 180,20" fill="rgba(52, 152, 219, 0.15)" stroke="#3498db" stroke-width="1.5"/>` +
+             `  <!-- 三角形 A'CO を薄く赤く塗る -->` +
+             `  <polygon points="140,140 100,100 100,180" fill="rgba(231, 76, 60, 0.2)" stroke="#e74c3c" stroke-width="1" stroke-dasharray="2,2"/>` +
+             `  <!-- 三角形 COD を薄く緑色で塗る -->` +
+             `  <polygon points="100,100 100,180 126.7,126.7" fill="rgba(46, 204, 113, 0.25)" stroke="#2ecc71" stroke-width="1"/>` +
+             `  <!-- 点A, B, C(y軸上の交点), A', D -->` +
+             `  <circle cx="60" cy="140" r="3" fill="#e74c3c"/>` +
+             `  <text x="22" y="143" font-size="8" fill="#e74c3c" font-weight="bold">A(-2,2)</text>` +
+             `  <circle cx="180" cy="20" r="3" fill="#3498db"/>` +
+             `  <text x="185" y="22" font-size="8" fill="#3498db" font-weight="bold">B(4,8)</text>` +
+             `  <circle cx="100" cy="100" r="3" fill="#2ecc71"/>` +
+             `  <text x="82" y="100" font-size="8" fill="#2ecc71" font-weight="bold">C(0,4)</text>` +
+             `  <circle cx="140" cy="140" r="2.5" fill="#e74c3c"/>` +
+             `  <text x="145" y="142" font-size="8" fill="#e74c3c">A'</text>` +
+             `  <circle cx="126.7" cy="126.7" r="2.5" fill="#27ae60"/>` +
+             `  <text x="132" y="125" font-size="8" fill="#27ae60" font-weight="bold">D(4/3, 8/3)</text>` +
+             `</svg>`,
+    generateRandom: function() {
+        const scenarios = [
+            {
+                xA: -2, yA: 2, xB: 4, yB: 8,
+                lineEq: "y = x + 4", cY: 4,
+                vol1TeX: "\\frac{128}{3}\\pi",
+                vol2TeX: "\\frac{16}{3}\\pi",
+                vol3TeX: "\\frac{64}{27}\\pi",
+                volSubCalcTeX: "\\frac{128}{3}\\pi + \\frac{16}{3}\\pi - \\frac{64}{27}\\pi",
+                volTeX: "\\frac{1232}{27}\\pi",
+                bigConeR: 4, bigConeH: 8,
+                smallConeR: 2, smallConeH: 4,
+                dCoordTeX: "\\left(\\frac{4}{3}, \\frac{8}{3}\\right)",
+                cutoffCalc: "\\frac{1}{3} \\pi \\times \\left(\\frac{4}{3}\\right)^2 \\times 4 = \\frac{64}{27}\\pi"
+            },
+            {
+                xA: -1, yA: 1, xB: 2, yB: 4,
+                lineEq: "y = x + 2", cY: 2,
+                vol1TeX: "\\frac{16}{3}\\pi",
+                vol2TeX: "\\frac{2}{3}\\pi",
+                vol3TeX: "\\frac{8}{27}\\pi",
+                volSubCalcTeX: "\\frac{16}{3}\\pi + \\frac{2}{3}\\pi - \\frac{8}{27}\\pi",
+                volTeX: "\\frac{154}{27}\\pi",
+                bigConeR: 2, bigConeH: 4,
+                smallConeR: 1, smallConeH: 2,
+                dCoordTeX: "\\left(\\frac{2}{3}, \\frac{4}{3}\\right)",
+                cutoffCalc: "\\frac{1}{3} \\pi \\times \\left(\\frac{2}{3}\\right)^2 \\times 2 = \\frac{8}{27}\\pi"
+            },
+            {
+                xA: -4, yA: 8, xB: 2, yB: 2,
+                lineEq: "y = -x + 4", cY: 4,
+                vol1TeX: "\\frac{128}{3}\\pi",
+                vol2TeX: "\\frac{16}{3}\\pi",
+                vol3TeX: "\\frac{64}{27}\\pi",
+                volSubCalcTeX: "\\frac{128}{3}\\pi + \\frac{16}{3}\\pi - \\frac{64}{27}\\pi",
+                volTeX: "\\frac{1232}{27}\\pi",
+                bigConeR: 4, bigConeH: 8,
+                smallConeR: 2, smallConeH: 4,
+                dCoordTeX: "\\left(\\frac{4}{3}, \\frac{8}{3}\\right)",
+                cutoffCalc: "\\frac{1}{3} \\pi \\times \\left(\\frac{4}{3}\\right)^2 \\times 4 = \\frac{64}{27}\\pi"
+            },
+            {
+                xA: -3, yA: 3, xB: 6, yB: 12,
+                lineEq: "y = x + 6", cY: 6,
+                vol1TeX: "144\\pi",
+                vol2TeX: "18\\pi",
+                vol3TeX: "8\\pi",
+                volSubCalcTeX: "144\\pi + 18\\pi - 8\\pi",
+                volTeX: "154\\pi",
+                bigConeR: 6, bigConeH: 12,
+                smallConeR: 3, smallConeH: 6,
+                dCoordTeX: "(2, 4)",
+                cutoffCalc: "\\frac{1}{3} \\pi \\times 2^2 \\times 6 = 8\\pi"
+            },
+            {
+                xA: -2, yA: 1, xB: 4, yB: 4,
+                lineEq: "y = \\frac{1}{2}x + 2", cY: 2,
+                vol1TeX: "\\frac{64}{3}\\pi",
+                vol2TeX: "\\frac{8}{3}\\pi",
+                vol3TeX: "\\frac{32}{27}\\pi",
+                volSubCalcTeX: "\\frac{64}{3}\\pi + \\frac{8}{3}\\pi - \\frac{32}{27}\\pi",
+                volTeX: "\\frac{616}{27}\\pi",
+                bigConeR: 4, bigConeH: 4,
+                smallConeR: 2, smallConeH: 2,
+                dCoordTeX: "\\left(\\frac{4}{3}, \\frac{4}{3}\\right)",
+                cutoffCalc: "\\frac{1}{3} \\pi \\times \\left(\\frac{4}{3}\\right)^2 \\times 2 = \\frac{32}{27}\\pi"
+            }
+        ];
+        const s = scenarios[Math.floor(Math.random() * scenarios.length)];
 
-                const svgW = 340, svgH = 340;
-                const ox = 170, oy = 260;
-                const scale = 22;
+        const svgW = 340, svgH = 340;
+        const ox = 170, oy = 260;
+        const scale = 22;
 
+        const tx = (x) => ox + x * scale;
+        const ty = (y) => oy - y * scale;
+
+        let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 340px;">` +
+                       `<style>` +
+                       `  .svg-text { font-family: sans-serif; font-size: 10px; fill: #000; }` +
+                       `  .svg-bold { font-weight: bold; }` +
+                       `</style>`;
+        
+        // 座標軸
+        svgGraph += `<line x1="20" y1="${oy}" x2="${svgW - 20}" y2="${oy}" stroke="#333" stroke-width="1.2" />`;
+        svgGraph += `<line x1="${ox}" y1="20" x2="${ox}" y2="${svgH - 20}" stroke="#333" stroke-width="1.2" />`;
+        svgGraph += `<text x="${svgW - 15}" y="${oy + 14}" font-size="10" fill="#000">x</text>`;
+        svgGraph += `<text x="${ox + 6}" y="25" font-size="10" fill="#000">y</text>`;
+        svgGraph += `<text x="${ox - 18}" y="${oy + 15}" font-size="9" fill="#000">O(0,0)</text>`;
+
+        // 三角形OAB
+        svgGraph += `<polygon points="${tx(0)},${ty(0)} ${tx(s.xA)},${ty(s.yA)} ${tx(s.xB)},${ty(s.yB)}" fill="rgba(52, 152, 219, 0.2)" stroke="#3498db" stroke-width="1.2"/>`;
+
+        // 点A, B
+        svgGraph += `<circle cx="${tx(s.xA)}" cy="${ty(s.yA)}" r="3.5" fill="#e74c3c"/>`;
+        svgGraph += `<text x="${tx(s.xA) - 30}" y="${ty(s.yA) + 4}" class="svg-text svg-bold" fill="#e74c3c">A(${s.xA}, ${s.yA})</text>`;
+
+        svgGraph += `<circle cx="${tx(s.xB)}" cy="${ty(s.yB)}" r="3.5" fill="#3498db"/>`;
+        svgGraph += `<text x="${tx(s.xB) + 8}" y="${ty(s.yB) - 6}" class="svg-text svg-bold" fill="#3498db">B(${s.xB}, ${s.yB})</text>`;
+
+        // y切片 C (座標値なし、点名Cのみ)
+        svgGraph += `<circle cx="${tx(0)}" cy="${ty(s.cY)}" r="3" fill="#2ecc71"/>`;
+        svgGraph += `<text x="${tx(0) + 6}" y="${ty(s.cY) + 4}" class="svg-text svg-bold" fill="#2ecc71">C</text>`;
+
+        svgGraph += `</svg>`;
+
+        let problemText = `直線と座標軸で囲まれた図形について考える。2点 \\(A(${s.xA}, ${s.yA})\\), \\(B(${s.xB}, ${s.yB})\\) を通る直線と \\(y\\) 軸との交点を \\(C\\) とする。三角形 \\(OAB\\) を \\(y\\) 軸を軸として1回転させてできる立体の体積を求めなさい。<br>` + svgGraph;
+
+        let explanationText = `【解説】<br>` +
+                              `1. <strong>y軸交点Cの導出</strong>：<br>` +
+                              `・直線 \\(AB\\) の式を求めると \\(${s.lineEq}\\) となり、\\(y\\) 軸との交点 \\(C\\) の座標は \\(C(0, ${s.cY})\\) （高さ \\(OC = ${s.cY}\\)）と求められます。<br><br>` +
+                              `2. <strong>軸をまたぐ図形の回転手法と点Dの導出</strong>：<br>` +
+                              `・\\(y\\) 軸の左側にある \\(\\triangle OAC\\) を \\(y\\) 軸に関して線対称に折り返し、\\(y\\) 軸の右側に寄せます（折り返した点を \\(A'(${Math.abs(s.xA)}, ${s.yA})\\) とします）。<br>` +
+                              `・直線 \\(A'B\\) と直線 \\(OC\\)（\\(y\\) 軸）の交点を \\(D\\) とすると、連立方程式を解いて点 \\(D\\) の座標は \\(${s.dCoordTeX}\\) と求められます。<br>` +
+                              `・これにより、求める体積は<strong>「\\(\\triangle OBC\\) の回転体」と「\\(\\triangle OA'C\\) の回転体の和」から「重なっている部分（\\(\\triangle OCD\\)）の回転体を引いたもの」</strong>になります。<br>` +
+                              `・式で表すと、\\(V = V_{\\triangle OBC} + V_{\\triangle OA'C} - V_{\\triangle OCD}\\) となります。<br><br>` +
+                              `3. <strong>それぞれの回転体の体積の計算</strong>：<br>` +
+                              `・\\(\\triangle OBC\\) の回転体：<br>` +
+                              `  \\(V_{\\triangle OBC} = \\frac{1}{3} \\pi \\times ${s.bigConeR}^2 \\times ${s.bigConeH} = ${s.vol1TeX}\\)<br>` +
+                              `・\\(\\triangle OA'C\\) の回転体：<br>` +
+                              `  \\(V_{\\triangle OA'C} = \\frac{1}{3} \\pi \\times ${s.smallConeR}^2 \\times ${s.smallConeH} = ${s.vol2TeX}\\)<br>` +
+                              `・\\(\\triangle OCD\\) の回転体（重なり部分）：<br>` +
+                              `  半径を点 \\(D\\) の \\(x\\) 座標、高さを \\(OC\\)（\\(${s.cY}\\)）として、<br>` +
+                              `  \\(V_{\\triangle OCD} = ${s.cutoffCalc}\\)<br><br>` +
+                              `4. <strong>全体の体積の計算</strong>：<br>` +
+                              `・\\(V = V_{\\triangle OBC} + V_{\\triangle OA'C} - V_{\\triangle OCD}\\)<br>` +
+                              `  \\(V = ${s.volSubCalcTeX} = \\mathbf{${s.volTeX}}\\)<br><br>` +
+                              `※ 見取り図を描くと直線が複雑に交差して混乱しやすいため、このように「y軸の一方に図形をまとめて和・差で求める」テクニックを押さえておきましょう！`;
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+},
+"線分の点を中心に平面回転": {
+    category: "関数",
+    level: "難関私立",
+    formula: "<strong>【線分の点を中心に平面回転】</strong><br>" +
+             "・原点 \\(O\\) を中心とし、線分 \\(AB\\) を回転させるとき、通過する領域は<strong>中心から「最短距離」と「最長距離」をそれぞれ半径とする同心円で挟まれたドーナツ型</strong>になります。<br>" +
+             "・<strong>最短距離 \\(OH\\)</strong>：原点 \\(O\\) から線分（または直線）に下ろした垂線の長さ。<br>" +
+             "・<strong>最長距離</strong>：原点 \\(O\\) から最も遠い端点までの距離。<br>" +
+             "・<strong>通過面積</strong>：\\(S = (\\text{最長距離の二乗} - \\text{最短距離の二乗}) \\times \\pi\\)<br>" +
+             `<svg viewBox="0 0 240 240" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; display: block; margin: 8px auto; width: 100%; max-width: 240px;">` +
+             `  <!-- 座標軸 -->` +
+             `  <line x1="20" y1="120" x2="220" y2="120" stroke="#333" stroke-width="1.2" />` +
+             `  <line x1="120" y1="20" x2="120" y2="220" stroke="#333" stroke-width="1.2" />` +
+             `  <text x="210" y="135" font-size="9">x</text>` +
+             `  <text x="125" y="28" font-size="9">y</text>` +
+             `  <text x="108" y="133" font-size="8">O</text>` +
+             `  <!-- ドーナツ型領域 -->` +
+             `  <path d="M 120 50 A 70 70 0 1 0 120 190 A 70 70 0 1 0 120 50 Z M 120 78 A 42 42 0 1 0 120 162 A 42 42 0 1 0 120 78 Z" fill="rgba(54, 162, 235, 0.25)" fill-rule="evenodd" />` +
+             `  <!-- 外側の円 (半径 OB) -->` +
+             `  <circle cx="120" cy="120" r="70" fill="none" stroke="#36a2eb" stroke-width="1.2" stroke-dasharray="3,3" />` +
+             `  <!-- 内側の円 (半径 OH) -->` +
+             `  <circle cx="120" cy="120" r="42" fill="none" stroke="#2ecc71" stroke-width="1.2" stroke-dasharray="3,3" />` +
+             `  <!-- 線分 AB -->` +
+             `  <line x1="106" y1="78" x2="176" y2="78" stroke="#333" stroke-width="2" />` +
+             `  <!-- 垂線 OH -->` +
+             `  <line x1="120" y1="120" x2="120" y2="78" stroke="#2ecc71" stroke-width="1.5" stroke-dasharray="2,2" />` +
+             `  <!-- 線分 OB -->` +
+             `  <line x1="120" y1="120" x2="176" y2="78" stroke="#36a2eb" stroke-width="1.5" stroke-dasharray="2,2" />` +
+             `  <!-- 垂直マーク -->` +
+             `  <path d="M 120 84 L 126 84 L 126 78" fill="none" stroke="#333" stroke-width="1" />` +
+             `  <!-- 各点プロット -->` +
+             `  <circle cx="106" cy="78" r="3" fill="#e74c3c" />` +
+             `  <text x="75" y="74" font-size="8" fill="#e74c3c" font-weight="bold">A(-1,3)</text>` +
+             `  <circle cx="176" cy="78" r="3" fill="#36a2eb" />` +
+             `  <text x="180" y="74" font-size="8" fill="#36a2eb" font-weight="bold">B(4,3)</text>` +
+             `  <circle cx="120" cy="78" r="3" fill="#2ecc71" />` +
+             `  <text x="123" y="72" font-size="8" fill="#2ecc71" font-weight="bold">H(0,3)</text>` +
+             `</svg>`,
+    generateRandom: function() {
+        // 平方根を最も簡単な形にするヘルパー関数
+        function simplifySqrt(n) {
+            if (n <= 0) return { tex: "0", coef: 0, inner: 0 };
+            let coef = 1, inner = n;
+            for (let i = 2; i * i <= inner; i++) {
+                while (inner % (i * i) === 0) {
+                    coef *= i;
+                    inner /= (i * i);
+                }
+            }
+            if (inner === 1) return { tex: `${coef}`, coef, inner: 1 };
+            if (coef === 1) return { tex: `\\sqrt{${inner}}`, coef: 1, inner };
+            return { tex: `${coef}\\sqrt{${inner}}`, coef, inner };
+        }
+
+        const isNegativeSlope = Math.random() < 0.5;
+        let a, b, xA, yA, xB, yB;
+
+        if (isNegativeSlope) {
+            const slopes = [1, 2, 3, 4];
+            a = slopes[Math.floor(Math.random() * slopes.length)];
+            const intercepts = [6, 8, 10, 12, 16, 20, 24];
+            b = intercepts[Math.floor(Math.random() * intercepts.length)];
+            xA = 0; yA = b; xB = b / a; yB = 0;
+        } else {
+            const slopes = [1, 2, 3, 4];
+            a = slopes[Math.floor(Math.random() * slopes.length)];
+            const negatives = [-6, -8, -10, -12, -16, -20];
+            b = negatives[Math.floor(Math.random() * negatives.length)];
+            xA = 0; yA = b; xB = -b / a; yB = 0;
+        }
+
+        const oa2 = yA * yA;
+        const ob2 = xB * xB;
+        
+        let maxR2, maxPointText;
+        if (oa2 >= ob2) {
+            maxR2 = oa2;
+            maxPointText = `A(0, ${yA})`;
+        } else {
+            maxR2 = ob2;
+            maxPointText = `B(${xB}, 0)`;
+        }
+
+        const abValSq = oa2 + ob2;
+        const abSimp = simplifySqrt(abValSq);
+
+        const prodOAOB = Math.abs(yA) * Math.abs(xB);
+        const numOh2 = oa2 * ob2;
+        const denOh2 = abValSq;
+
+        const gcd = (x, y) => (y === 0) ? x : gcd(y, x % y);
+
+        // OHの長さを計算（最も簡単な形に整形）
+        let ohLengthStr = "";
+        const numCoeff = prodOAOB;
+        const denCoeff = abSimp.coef * abSimp.inner;
+        const gOh = gcd(numCoeff, denCoeff);
+        const simpNumC = numCoeff / gOh;
+        const simpDenC = denCoeff / gOh;
+
+        if (abSimp.inner === 1) {
+            const gNorm = gcd(prodOAOB, abValSq);
+            ohLengthStr = (abValSq / gNorm === 1) ? `${prodOAOB / gNorm}` : `\\frac{${prodOAOB / gNorm}}{${abValSq / gNorm}}`;
+        } else {
+            let numPart = simpNumC === 1 ? "" : `${simpNumC}`;
+            let denPart = simpDenC === 1 ? "" : `${simpDenC}`;
+            if (denPart === "") {
+                ohLengthStr = `${numPart}\\sqrt{${abSimp.inner}}`.trim();
+                if (numPart === "") ohLengthStr = `\\sqrt{${abSimp.inner}}`;
+            } else {
+                ohLengthStr = `\\frac{${numPart}\\sqrt{${abSimp.inner}}}{${denPart}}`;
+            }
+        }
+
+        const gOh2 = gcd(numOh2, denOh2);
+        const simpOh2Num = numOh2 / gOh2;
+        const simpOh2Den = denOh2 / gOh2;
+        let oh2FracStr = simpOh2Den === 1 ? `${simpOh2Num}` : `\\frac{${simpOh2Num}}{${simpOh2Den}}`;
+
+        let lineEqStr = isNegativeSlope ? `y = ${a === 1 ? '-' : '-' + a}x + ${b}` : `y = ${a === 1 ? '' : a}x ${b}`;
+
+        // 面積計算
+        const topVal = maxR2 * denOh2 - numOh2;
+        const gArea = gcd(Math.abs(topVal), denOh2);
+        const simpTop = topVal / gArea;
+        const simpDen = denOh2 / gArea;
+        const areaTeX = simpDen === 1 ? `${simpTop}\\pi` : `\\frac{${simpTop}}{${simpDen}}\\pi`;
+
+        // 動的スケーリング計算（見切れ防止）
+        const minX = Math.min(0, xB) - 3;
+        const maxX = Math.max(0, xB) + 3;
+        const minY = Math.min(0, yA) - 3;
+        const maxY = Math.max(0, yA) + 3;
+
+        const svgW = 300, svgH = 300;
+        const padding = 45;
+        const drawW = svgW - padding * 2;
+        const drawH = svgH - padding * 2;
+
+        const scaleX = drawW / (maxX - minX);
+        const scaleY = drawH / (maxY - minY);
+        const scale = Math.min(scaleX, scaleY);
+
+        const ox = padding - minX * scale;
+        const oy = svgH - padding + minY * scale;
+
+        const tx = (x) => ox + x * scale;
+        const ty = (y) => oy - y * scale;
+
+        let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 300px;">` +
+                       `<style>` +
+                       `  .svg-text { font-family: sans-serif; font-size: 10px; fill: #000; }` +
+                       `  .svg-bold { font-weight: bold; }` +
+                       `</style>`;
+        
+        // 座標軸
+        svgGraph += `<line x1="20" y1="${oy}" x2="${svgW - 20}" y2="${oy}" stroke="#333" stroke-width="1.2" />`;
+        svgGraph += `<line x1="${ox}" y1="20" x2="${ox}" y2="${svgH - 20}" stroke="#333" stroke-width="1.2" />`;
+        svgGraph += `<text x="${svgW - 15}" y="${oy + 14}" class="svg-text">x</text>`;
+        svgGraph += `<text x="${ox + 6}" y="25" class="svg-text">y</text>`;
+        svgGraph += `<text x="${ox - 15}" y="${oy + 14}" class="svg-text">O</text>`;
+
+        // 直線 AB
+        svgGraph += `<line x1="${tx(xA)}" y1="${ty(yA)}" x2="${tx(xB)}" y2="${ty(yB)}" stroke="#3498db" stroke-width="2" />`;
+
+        // 点A, B
+        svgGraph += `<circle cx="${tx(xA)}" cy="${ty(yA)}" r="3.5" fill="#e74c3c"/>`;
+        svgGraph += `<text x="${tx(xA) + 6}" y="${ty(yA) + 4}" class="svg-text svg-bold" fill="#e74c3c">A(0, ${yA})</text>`;
+
+        svgGraph += `<circle cx="${tx(xB)}" cy="${ty(yB)}" r="3.5" fill="#36a2eb"/>`;
+        svgGraph += `<text x="${tx(xB) - 15}" y="${ty(yB) + 15}" class="svg-text svg-bold" fill="#36a2eb">B(${xB}, 0)</text>`;
+
+        svgGraph += `</svg>`;
+
+        let problemText = `直線 \\(${lineEqStr}\\) が \\(y\\) 軸、\\(x\\) 軸と交わる点をそれぞれ \\(A\\)、\\(B\\) とする。線分 \\(AB\\) を原点 \\(O\\) を中心として平面上で回転させたときに、線分 \\(AB\\) が通過してできる部分の面積を求めなさい。<br>` + svgGraph;
+
+        let explanationText = `【解説】<br>` +
+                              `1. <strong>交点A, Bの座標</strong>：<br>` +
+                              `・\\(y\\) 軸との交点：\\(x = 0\\) を代入して \\(A(0, ${yA})\\) （\\(OA = ${Math.abs(yA)}\\)）<br>` +
+                              `・\\(x\\) 軸との交点：\\(y = 0\\) を代入して \\(B(${xB}, 0)\\) （\\(OB = ${Math.abs(xB)}\\)）<br><br>` +
+                              `2. <strong>回転体の構造（ドーナツ型）の把握</strong>：<br>` +
+                              `・線分 \\(AB\\) を原点 \\(O\\) のまわりに1回転させると、原点からの<strong>「最長距離」を半径とする円</strong>の内側に、<strong>「最短距離」を半径とする円</strong>の穴があいた**ドーナツ型の図形**（円環）が形成されます。<br><br>` +
+                              `3. <strong>最長距離（外半径）の計算</strong>：<br>` +
+                              `・原点 \\(O(0,0)\\) から最も遠い線分 \\(AB\\) 上の点は端点 \\(${maxPointText}\\) です。<br>` +
+                              `・外半径の2乗：\\(R^2 = ${maxR2}\\)<br><br>` +
+                              `4. <strong>相似を用いた最短距離（内半径 \\(OH\\)）の求め方</strong>：<br>` +
+                              `・直角三角形 \\(OAB\\) において、三平方の定理より斜辺 \\(AB = \\sqrt{OA^2 + OB^2} = \\sqrt{${oa2} + ${ob2}} = \\mathbf{${abSimp.tex}}\\) です。<br>` +
+                              `・原点 \\(O\\) から直線 \\(AB\\) に下ろした垂線の足を \\(H\\) とすると、直角三角形の相似（または面積 \\(\\frac{1}{2} \\times OA \\times OB = \\frac{1}{2} \\times AB \\times OH\\) ）より、<br>` +
+                              `  \\(OH = \\frac{OA \\times OB}{AB} = \\frac{${Math.abs(yA)} \\times ${Math.abs(xB)}}{${abSimp.tex}}\\) が成り立ちます。<br>` +
+                              `・したがって、\\(OH = \\mathbf{${ohLengthStr}}\\) と求められます。<br>` +
+                              `・内半径の2乗：\\(r^2 = OH^2 = ${oh2FracStr}\\)<br><br>` +
+                              `5. <strong>通過面積の計算</strong>：<br>` +
+                              `・通過面積 \\(S = (R^2 - r^2) \\times \\pi\\)<br>` +
+                              `・\\(S = \\left(${maxR2} - ${oh2FracStr}\\right) \\pi = \\mathbf{${areaTeX}}\\<br><br>` +
+                              `※ ポイント：直線を回転させた領域の面積は「最も遠い端点までの円の面積」から「原点からの垂線の長さ \\(OH\\) の円の面積」を引くことで求められます！`;
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+},
+"直線の傾きと特別角": {
+    category: "関数",
+    level: "難関私立",
+    formula: "<strong>【直線の傾きと特別角】</strong><br>" +
+             "・\\(x\\) 軸と直線のつくる角度が<strong>特別角（30°、45°、60°）</strong>になる時、直線の傾き（変化の割合）は直角三角形の比から一瞬で求められます。<br>" +
+             "・<strong>30°のとき</strong>：比 \\(1 : 2 : \\sqrt{3}\\) より、傾きは \\(\\frac{1}{\\sqrt{3}} = \\frac{\\sqrt{3}}{3}\\)<br>" +
+             "・<strong>45°のとき</strong>：比 \\(1 : 1 : \\sqrt{2}\\) より、傾きは \\(1\\)<br>" +
+             "・<strong>60°のとき</strong>：比 \\(1 : 2 : \\sqrt{3}\\) より、傾きは \\(\\sqrt{3}\\)<br>" +
+             "・逆に、直線の傾きから \\(x\\) 軸とのなす角（特別角）を逆算するテクニックも難関校では必須です。",
+    generateRandom: function() {
+        const scenarios = [
+            {
+                parabolaEq: "y = \\sqrt{3}x^2",
+                parabolaCoef: 1.732,
+                angleOA: 60,
+                slopeOA: "\\sqrt{3}",
+                slopeOANum: 1.732,
+                xBTeX: "-\\frac{4}{3}",
+                xBVal: -4/3,
+                aCoord: "(1, \\sqrt{3})",
+                bCoord: "\\left(-\\frac{4}{3}, \\frac{16\\sqrt{3}}{9}\\right)",
+                lineABEq: "y = -\\frac{\\sqrt{3}}{3}x + \\frac{4\\sqrt{3}}{9}",
+                angleOAB: "90°",
+                abLengthCalc: "\\sqrt{\\left(1 - \\left(-\\frac{4}{3}\\right)\\right)^2 + \\left(\\sqrt{3} - \\frac{16\\sqrt{3}}{9}\\right)^2} = \\sqrt{\\left(\\frac{7}{3}\\right)^2 + \\left(-\\frac{7\\sqrt{3}}{9}\\right)^2} = \\sqrt{\\frac{49}{9} + \\frac{147}{81}} = \\sqrt{\\frac{588}{81}} = \\frac{14\\sqrt{3}}{9}",
+                abLength: "\\frac{14\\sqrt{3}}{9}"
+            },
+            {
+                parabolaEq: "y = \\frac{\\sqrt{3}}{3}x^2",
+                parabolaCoef: 0.577,
+                angleOA: 30,
+                slopeOA: "\\frac{\\sqrt{3}}{3}",
+                slopeOANum: 0.577,
+                xBTeX: "-3",
+                xBVal: -3,
+                aCoord: "\\left(1, \\frac{\\sqrt{3}}{3}\\right)",
+                bCoord: "(-3, \\sqrt{3})",
+                lineABEq: "y = \\frac{\\sqrt{3}}{6}x + \\frac{\\sqrt{3}}{2}",
+                angleOAB: "90°",
+                abLengthCalc: "\\sqrt{\\left(1 - (-3)\\right)^2 + \\left(\\frac{\\sqrt{3}}{3} - \\sqrt{3}\\right)^2} = \\sqrt{4^2 + \\left(-\\frac{2\\sqrt{3}}{3}\\right)^2} = \\sqrt{16 + \\frac{12}{9}} = \\sqrt{\\frac{156}{9}} = \\frac{2\\sqrt{39}}{3}",
+                abLength: "\\frac{2\\sqrt{39}}{3}"
+            },
+            {
+                parabolaEq: "y = x^2",
+                parabolaCoef: 1,
+                angleOA: 45,
+                slopeOA: "1",
+                slopeOANum: 1,
+                xBTeX: "-2",
+                xBVal: -2,
+                aCoord: "(1, 1)",
+                bCoord: "(-2, 4)",
+                lineABEq: "y = -x + 2",
+                angleOAB: "90°",
+                abLengthCalc: "\\sqrt{\\left(1 - (-2)\\right)^2 + (1 - 4)^2} = \\sqrt{3^2 + (-3)^2} = \\sqrt{9 + 9} = 3\\sqrt{2}",
+                abLength: "3\\sqrt{2}"
+            }
+        ];
+
+        const s = scenarios[Math.floor(Math.random() * scenarios.length)];
+
+        // --- 動的スケーリング計算（グラフの見切れ防止） ---
+        const svgW = 300, svgH = 300;
+        const padding = 40;
+        const drawW = svgW - padding * 2;
+        const drawH = svgH - padding * 2;
+
+        const minX = Math.min(s.xBVal, -2) - 1;
+        const maxX = 2;
+        const minY = -1;
+        const maxY = Math.max(Math.abs(s.xBVal * s.xBVal * s.parabolaCoef), 5) + 2;
+
+        const scaleX = drawW / (maxX - minX);
+        const scaleY = drawH / (maxY - minY);
+        const scale = Math.min(scaleX, scaleY);
+
+        const ox = padding - minX * scale;
+        const oy = svgH - padding + minY * scale;
+
+        const tx = (x) => ox + x * scale;
+        const ty = (y) => oy - y * scale;
+
+        let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 300px;">` +
+                       `<style>` +
+                       `  .svg-text { font-family: sans-serif; font-size: 10px; fill: #000; }` +
+                       `  .svg-bold { font-weight: bold; }` +
+                       `</style>`;
+        
+        // 座標軸
+        svgGraph += `<line x1="20" y1="${oy}" x2="${svgW - 20}" y2="${oy}" stroke="#333" stroke-width="1.2" />`;
+        svgGraph += `<line x1="${ox}" y1="20" x2="${ox}" y2="${svgH - 20}" stroke="#333" stroke-width="1.2" />`;
+        svgGraph += `<text x="${svgW - 15}" y="${oy + 14}" class="svg-text">x</text>`;
+        svgGraph += `<text x="${ox + 6}" y="25" class="svg-text">y</text>`;
+        svgGraph += `<text x="${ox - 15}" y="${oy + 14}" class="svg-text">O</text>`;
+
+        // 放物線の描画
+        let parabolaPath = "";
+        const numPoints = 40;
+        for (let i = 0; i <= numPoints; i++) {
+            let px = minX + (maxX - minX) * (i / numPoints);
+            let py = s.parabolaCoef * px * px;
+            let sx = tx(px);
+            let sy = ty(py);
+            if (i === 0) parabolaPath += `M ${sx} ${sy} `;
+            else parabolaPath += `L ${sx} ${sy} `;
+        }
+        svgGraph += `<path d="${parabolaPath}" fill="none" stroke="#2ecc71" stroke-width="1.5" />`;
+
+        // 直線 OA (実線)
+        svgGraph += `<line x1="${tx(minX)}" y1="${ty(minX * s.slopeOANum)}" x2="${tx(maxX)}" y2="${ty(maxX * s.slopeOANum)}" stroke="#3498db" stroke-width="1.5" />`;
+
+        // 角度の表示（原点の右下）
+        svgGraph += `<text x="${ox + 12}" y="${oy + 14}" class="svg-text svg-bold" fill="#3498db">${s.angleOA}°</text>`;
+
+        // 直線 AB の追加
+        let xA = 1;
+        let yA = s.slopeOANum * xA;
+        let xB = s.xBVal;
+        let yB = s.parabolaCoef * xB * xB;
+        let slopeAB = (yB - yA) / (xB - xA);
+        let interceptAB = yA - slopeAB * xA;
+        let abLineY1 = slopeAB * minX + interceptAB;
+        let abLineY2 = slopeAB * maxX + interceptAB;
+        svgGraph += `<line x1="${tx(minX)}" y1="${ty(abLineY1)}" x2="${tx(maxX)}" y2="${ty(abLineY2)}" stroke="#e74c3c" stroke-width="1.5" />`;
+
+        // 点A, Bのプロット
+        svgGraph += `<circle cx="${tx(1)}" cy="${ty(yA)}" r="3.5" fill="#e74c3c"/>`;
+        svgGraph += `<text x="${tx(1) + 6}" y="${ty(yA) - 4}" class="svg-text svg-bold" fill="#e74c3c">A</text>`;
+
+        svgGraph += `<circle cx="${tx(s.xBVal)}" cy="${ty(yB)}" r="3.5" fill="#e74c3c"/>`;
+        svgGraph += `<text x="${tx(s.xBVal) - 15}" y="${ty(yB) + 15}" class="svg-text svg-bold" fill="#e74c3c">B</text>`;
+
+        svgGraph += `</svg>`;
+
+        let problemText = `放物線 \\(${s.parabolaEq}\\) は直線と2点 \\(A\\)、\\(B\\) で交わっている。\\(B\\) の \\(x\\) 座標は \\(${s.xBTeX}\\) であり、原点 \\(O\\) と \\(A\\) を結ぶ直線 \\(OA\\) と \\(x\\) 軸が作る角度は \\(${s.angleOA}°\\) であった。<br>` +
+                          `(1) 点 \\(A\\) の座標を求めなさい。<br>` +
+                          `(2) \\(\\angle OAB\\) の大きさを求めなさい。<br>` +
+                          `(3) 線分 \\(AB\\) の長さを求めなさい。<br>` + svgGraph;
+
+        let explanationText = `【解説】<br>` +
+                              `1. <strong>(1) 点Aの座標の求め方</strong>：<br>` +
+                              `・直線 \\(OA\\) は原点を通る直線であり、\\(x\\) 軸とのなす角が \\(${s.angleOA}°\\) なので、特別角の比より、その傾きは \\(${s.slopeOA}\\) です。<br>` +
+                              `・したがって、直線 \\(OA\\) の式は \\(y = ${s.slopeOA}x\\) と求められます。<br>` +
+                              `・これを放物線 \\(y = ${s.parabolaEq}\\) と連立させると、交点 \\(A\\) の \\(x\\) 座標（ \\(x > 0\\) ）は \\(\\mathbf{1}\\) と求まります。<br>` +
+                              `・\\(y\\) 座標に代入して、点 \\(A\\) の座標は \\(\\mathbf{${s.aCoord}}\\) となります。<br><br>` +
+                              `2. <strong>(2) \\(\\angle OAB\\) の大きさと点Bの \\(x\\) 座標</strong>：<br>` +
+                              `・点 \\(B\\) の \\(x\\) 座標は \\(${s.xBTeX}\\) であり、これは放物線と直線の交点の \\(x\\) 座標（方程式の解）を求めることで得られます。<br>` +
+                              `・放物線の式に \\(x = ${s.xBTeX}\\) を代入して、点 \\(B\\) の座標は \\(\\mathbf{${s.bCoord}}\\) と求められます。<br>` +
+                              `・直線 \\(OA\\) と直線 \\(AB\\) の傾きの関係（垂直条件 \\(a_1 \\times a_2 = -1\\) など）を確認すると、2直線は垂直に交わっていることが分かります。<br>` +
+                              `・したがって、\\(\\angle OAB\\) の大きさは \\(\\mathbf{${s.angleOAB}}\\) となります。<br><br>` +
+                              `3. <strong>(3) 線分ABの長さの求め方</strong>：<br>` +
+                              `・点 \\(A\\) と点 \\(B\\) の座標の差を用いて、三平方の定理より距離を計算します。<br>` +
+                              `・\\(AB = ${s.abLengthCalc}\\)<br>` +
+                              `・したがって、線分 \\(AB\\) の長さは \\(\\mathbf{${s.abLength}}\\) となります。<br><br>` +
+                              `※ ポイント：特別角（30°、45°、60°）から傾きを瞬時に導き出すテクニックと、直線の垂直関係を見抜く力をセットで押さえておきましょう！`;
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+},
+"図形の最終手段": {
+    category: "関数",
+    level: "公立",
+    formula: "<strong>【図形の最終手段（座標・関数化テクニック）】</strong><br>" +
+             "・平面図形において、直角や基準となる点を<strong>原点 \\((0, 0)\\)</strong>としてとらえてグラフ化します。<br>" +
+             "・長さの情報からそれぞれの頂点の座標を正確に設定し、直線の式を求めて<strong>連立方程式で交点座標を算出</strong>したり、座標から<strong>三平方の定理で長さ</strong>を求めたりします。<br>" +
+             "・非常に強力でどんな図形問題でも確実に解ける万能な方法ですが、<strong>計算が複雑になりとんでもない数字や分数が出てくることがあるため、幾何的な解法が見つからないときの最終手段</strong>として取っておきましょう。",
+    generateRandom: function() {
+        // --- 4方向（右・上・左・下）の全シナリオプール ---
+        const scenarios = [
+            // 1. 右方向への延長
+            function() {
+                const s = 2, n = 3;
+                const ex = 4, fx = 1;
+                const gx = 2/5, gy = 6/5;
+                const gxText = "\\frac{2}{5}", gyText = "\\frac{6}{5}";
+                const lineAE = "y = -\\frac{1}{3}x + \\frac{4}{3}";
+                const lineDF = "y = -2x + 2";
+                const calcStep = "CG = \\sqrt{\\left(\\frac{2}{5}\\right)^2 + \\left(\\frac{6}{5}\\right)^2} = \\sqrt{\\frac{4}{25} + \\frac{36}{25}} = \\sqrt{\\frac{40}{25}} = \\frac{2\\sqrt{10}}{5}";
+
+                const cx = 0, cy = 0;
+                const bx = -s, by = 0;
+                const ax = -s, ay = s;
+                const dx = 0, dy = s;
+                const ey = 0, fy = 0;
+
+                const allX = [cx, bx, ax, dx, ex, fx, gx];
+                const allY = [cy, by, ay, dy, ey, fy, gy];
+                const minX = Math.min(...allX), maxX = Math.max(...allX);
+                const minY = Math.min(...allY), maxY = Math.max(...allY);
+
+                const svgW = 320, svgH = 240;
+                const scale = Math.min((svgW - 80) / (maxX - minX || 1), (svgH - 80) / (maxY - minY || 1));
+                const ox = svgW / 2 - ((minX + maxX) / 2) * scale;
+                const oy = svgH / 2 + ((minY + maxY) / 2) * scale;
                 const tx = (x) => ox + x * scale;
                 const ty = (y) => oy - y * scale;
 
-                let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 340px;">` +
-                               `<style>` +
-                               `  .svg-text { font-family: sans-serif; font-size: 10px; fill: #000; }` +
-                               `  .svg-bold { font-weight: bold; }` +
-                               `</style>`;
-                
-                // 座標軸
-                svgGraph += `<line x1="20" y1="${oy}" x2="${svgW - 20}" y2="${oy}" stroke="#333" stroke-width="1.2" />`;
-                svgGraph += `<line x1="${ox}" y1="20" x2="${ox}" y2="${svgH - 20}" stroke="#333" stroke-width="1.2" />`;
-                svgGraph += `<text x="${svgW - 15}" y="${oy + 14}" font-size="10" fill="#000">x</text>`;
-                svgGraph += `<text x="${ox + 6}" y="25" font-size="10" fill="#000">y</text>`;
-                svgGraph += `<text x="${ox - 18}" y="${oy + 15}" font-size="9" fill="#000">O(0,0)</text>`;
+                let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 320px;">` +
+                               `<style>.svg-text { font-family: sans-serif; font-size: 10px; fill: #000; } .svg-bold { font-weight: bold; }</style>`;
+                svgGraph += `<polygon points="${tx(ax)},${ty(ay)} ${tx(bx)},${ty(by)} ${tx(cx)},${ty(cy)} ${tx(dx)},${ty(dy)}" fill="#eef2f7" stroke="#333" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(bx)}" y1="${ty(by)}" x2="${tx(ex)}" y2="${ty(ey)}" stroke="#333" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(ax)}" y1="${ty(ay)}" x2="${tx(ex)}" y2="${ty(ey)}" stroke="#3498db" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(dx)}" y1="${ty(dy)}" x2="${tx(fx)}" y2="${ty(fy)}" stroke="#e74c3c" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(cx)}" y1="${ty(cy)}" x2="${tx(gx)}" y2="${ty(gy)}" stroke="#27ae60" stroke-width="2" />`;
 
-                // 放物線
-                let pathD = "";
-                for (let px = -6; px <= 6; px += 0.1) {
-                    let py = s.aNum * px * px;
-                    if (py <= 11) {
-                        pathD += (pathD === "" ? "M " : "L ") + `${tx(px)},${ty(py)} `;
-                    }
-                }
-                svgGraph += `<path d="${pathD}" fill="none" stroke="#e67e22" stroke-width="1.6"/>`;
-
-                // 三角形OAB
-                svgGraph += `<polygon points="${tx(0)},${ty(0)} ${tx(s.xA)},${ty(s.yA)} ${tx(s.xB)},${ty(s.yB)}" fill="rgba(52, 152, 219, 0.2)" stroke="#3498db" stroke-width="1.2"/>`;
-
-                // 点Aのy軸対称点 A'
-                svgGraph += `<polygon points="${tx(0)},${ty(0)} ${tx(-s.xA)},${ty(s.yA)} ${tx(s.xB)},${ty(s.yB)}" fill="rgba(231, 76, 60, 0.1)" stroke="#e74c3c" stroke-width="1" stroke-dasharray="3,3"/>`;
-
-                // 点A, B
-                svgGraph += `<circle cx="${tx(s.xA)}" cy="${ty(s.yA)}" r="3.5" fill="#e74c3c"/>`;
-                svgGraph += `<text x="${tx(s.xA) - 30}" y="${ty(s.yA) + 4}" class="svg-text svg-bold" fill="#e74c3c">A(${s.xA}, ${s.yA})</text>`;
-
-                svgGraph += `<circle cx="${tx(s.xB)}" cy="${ty(s.yB)}" r="3.5" fill="#3498db"/>`;
-                svgGraph += `<text x="${tx(s.xB) + 8}" y="${ty(s.yB) - 6}" class="svg-text svg-bold" fill="#3498db">B(${s.xB}, ${s.yB})</text>`;
-
-                // y切片 P
-                svgGraph += `<circle cx="${tx(0)}" cy="${ty(s.cY)}" r="3" fill="#2ecc71"/>`;
-                svgGraph += `<text x="${tx(0) + 6}" y="${ty(s.cY) + 4}" class="svg-text" fill="#2ecc71">P(0, ${s.cY})</text>`;
-
+                const pts = [
+                    { name: "C", x: cx, y: cy, dx: 6, dy: 14, color: "#333" },
+                    { name: "B", x: bx, y: by, dx: -16, dy: 14, color: "#333" },
+                    { name: "A", x: ax, y: ay, dx: -16, dy: -6, color: "#333" },
+                    { name: "D", x: dx, y: dy, dx: 6, dy: -6, color: "#333" },
+                    { name: "E", x: ex, y: ey, dx: 6, dy: 14, color: "#333" },
+                    { name: "F", x: fx, y: fy, dx: -4, dy: 14, color: "#333" },
+                    { name: "G", x: gx, y: gy, dx: 6, dy: -4, color: "#e74c3c" }
+                ];
+                pts.forEach(pt => {
+                    svgGraph += `<circle cx="${tx(pt.x)}" cy="${ty(pt.y)}" r="3.5" fill="${pt.color}"/>`;
+                    svgGraph += `<text x="${tx(pt.x) + pt.dx}" y="${ty(pt.y) + pt.dy}" class="svg-text svg-bold" fill="${pt.color}">${pt.name}</text>`;
+                });
                 svgGraph += `</svg>`;
 
-                let problemText = `放物線 \\(${s.eqDisplay}\\) と直線が2点 \\(A, B\\) で交わっている。点 \\(A, B\\) の \\(x\\) 座標がそれぞれ \\(${s.xA}, ${s.xB}\\) であるとき、三角形 \\(OAB\\) を \\(y\\) 軸を軸として1回転させてできる立体の体積を求めなさい。<br>` + svgGraph;
+                let problemText = `正方形 \\(ABCD\\) がある。（左上が \\(A\\)、左下が \\(B\\)、右下が \\(C\\)、右上が \\(D\\) で、1辺の長さは \\(${s}\\)）<br>` +
+                                  `\\(BC\\) の延長線上に \\(C\\) の方向（右側）へ \\(BE = ${n}BC\\) となる点 \\(E\\) をとる。<br>` +
+                                  `\\(BE\\) の中点を \\(F\\) とし、\\(AE\\) と \\(DF\\) の交点を \\(G\\) とするとき、線分 \\(CG\\) の長さを求めなさい。<br>` + svgGraph;
 
-                let explanationText = `【解説】<br>` +
-                                      `1. <strong>点A, Bの座標とy軸交点Pの導出</strong>：<br>` +
-                                      `・\\(A(${s.xA}, ${s.yA})\\)、\\(B(${s.xB}, ${s.yB})\\) となります。<br>` +
-                                      `・直線 \\(AB\\) の式を求めると \\(${s.lineEq}\\) となり、\\(y\\) 軸との交点を \\(P\\) とすると \\(P(0, ${s.cY})\\) と求められます。<br><br>` +
-                                      `2. <strong>軸をまたぐ図形の回転手法</strong>：<br>` +
-                                      `・\\(y\\) 軸の左側にある \\(\\triangle OAP\\) を \\(y\\) 軸に関して線対称に折り返し、\\(y\\) 軸の右側に寄せます（折り返した点を \\(A'\\) とすると \\(A'(${Math.abs(s.xA)}, ${s.yA})\\)）。<br>` +
-                                      `・これにより、求める体積は「大きい三角形（\\(\\triangle OBP\\)）を回転させた立体」から「折り返した重なり部分（\\(\\triangle OA'P\\)）を回転させた立体」を引く計算に帰着されます。<br><br>` +
-                                      `3. <strong>体積の計算（円錐の組み合わせ）</strong>：<br>` +
-                                      `・\\(\\triangle OBP\\) を \\(y\\) 軸回転させた立体：<br>` +
-                                      `  - 底面の半径 \\(r_1 = ${s.bigConeR}\\)、高さの和が \\(${s.bigConeH}\\) の上下2つの円錐の和になります。<br>` +
-                                      `  - 体積 \\(V_1 = \\frac{1}{3} \\pi \\times ${s.bigConeR}^2 \\times ${s.bigConeH} = \\frac{${Math.round(s.bigConeR*s.bigConeR*s.bigConeH)}}{3}\\pi\\)<br>` +
-                                      `・\\(\\triangle OA'P\\) を \\(y\\) 軸回転させた立体：<br>` +
-                                      `  - 底面の半径 \\(r_2 = ${s.smallConeR}\\)、高さの和が \\(${s.smallConeH}\\) の上下2つの円錐の和になります。<br>` +
-                                      `  - 体積 \\(V_2 = \\frac{1}{3} \\pi \\times ${s.smallConeR}^2 \\times ${s.smallConeH} = \\frac{${Math.round(s.smallConeR*s.smallConeR*s.smallConeH)}}{3}\\pi\\)<br>` +
-                                      `・求める体積 \\(V = V_1 - V_2 = \\mathbf{${s.volTeX}}\\)` + `<br><br>` +
-                                      `※ 見取り図を描くと直線が複雑に交差して混乱しやすいため、このように「y軸の一方に図形をまとめて和・差で求める」テクニックを押さえておきましょう！`;
+                let explanationText = `【解説（図形の最終手段：座標・関数化）】<br>` +
+                                      `1. <strong>座標の設定</strong><br>` +
+                                      `・右下の頂点 \\(C\\) を原点 \\((0, 0)\\) とします。各頂点は \\(C(0,0)\\), \\(B(-${s},0)\\), \\(A(-${s},${s})\\), \\(D(0,${s})\\)。点 \\(E(${ex},0)\\)、\\(F(${fx},0)\\) となります。<br><br>` +
+                                      `2. <strong>直線の式と交点 G の算出</strong><br>` +
+                                      `・直線 \\(AE\\) の式：\\(${lineAE}\\)<br>` +
+                                      `・直線 \\(DF\\) の式：\\(${lineDF}\\)<br>` +
+                                      `・連立して解くと、交点 \\(G\\) の座標は \\(\\left(${gxText}, ${gyText}\\right)\\) となります。<br><br>` +
+                                      `3. <strong>三平方の定理で CG の長さを求める</strong><br>` +
+                                      `  \\(${calcStep}\\)`;
 
-                return {
-                    problem: problemText,
-                    explanation: explanationText
-                };
+                return { problem: problemText, explanation: explanationText };
+            },
+
+            // 2. 上方向への延長
+            function() {
+                const s = 2;
+                const ex = 0, ey = 6;
+                const fx = 0, fy = 4;
+                const gx = -1, gy = 3;
+                const gxText = "-1", gyText = "3";
+                const lineAE = "y = 3x + 6";
+                const lineDF = "y = x + 4";
+                const calcStep = "CG = \\sqrt{(-1)^2 + 3^2} = \\sqrt{10}";
+
+                const cx = 0, cy = 0;
+                const bx = -s, by = 0;
+                const ax = -s, ay = s;
+                const dx = 0, dy = s;
+
+                const allX = [cx, bx, ax, dx, ex, fx, gx];
+                const allY = [cy, by, ay, dy, ey, fy, gy];
+                const minX = Math.min(...allX), maxX = Math.max(...allX);
+                const minY = Math.min(...allY), maxY = Math.max(...allY);
+
+                const svgW = 320, svgH = 240;
+                const scale = Math.min((svgW - 80) / (maxX - minX || 1), (svgH - 80) / (maxY - minY || 1));
+                const ox = svgW / 2 - ((minX + maxX) / 2) * scale;
+                const oy = svgH / 2 + ((minY + maxY) / 2) * scale;
+                const tx = (x) => ox + x * scale;
+                const ty = (y) => oy - y * scale;
+
+                let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 320px;">` +
+                               `<style>.svg-text { font-family: sans-serif; font-size: 10px; fill: #000; } .svg-bold { font-weight: bold; }</style>`;
+                svgGraph += `<polygon points="${tx(ax)},${ty(ay)} ${tx(bx)},${ty(by)} ${tx(cx)},${ty(cy)} ${tx(dx)},${ty(dy)}" fill="#eef2f7" stroke="#333" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(dx)}" y1="${ty(dy)}" x2="${tx(ex)}" y2="${ty(ey)}" stroke="#333" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(bx)}" y1="${ty(by)}" x2="${tx(ex)}" y2="${ty(ey)}" stroke="#3498db" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(ax)}" y1="${ty(ay)}" x2="${tx(fx)}" y2="${ty(fy)}" stroke="#e74c3c" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(cx)}" y1="${ty(cy)}" x2="${tx(gx)}" y2="${ty(gy)}" stroke="#27ae60" stroke-width="2" />`;
+
+                const pts = [
+                    { name: "C", x: cx, y: cy, dx: 6, dy: 14, color: "#333" },
+                    { name: "B", x: bx, y: by, dx: -16, dy: 14, color: "#333" },
+                    { name: "A", x: ax, y: ay, dx: -16, dy: -6, color: "#333" },
+                    { name: "D", x: dx, y: dy, dx: 6, dy: -6, color: "#333" },
+                    { name: "E", x: ex, y: ey, dx: 6, dy: 4, color: "#333" },
+                    { name: "F", x: fx, y: fy, dx: 6, dy: 4, color: "#333" },
+                    { name: "G", x: gx, y: gy, dx: -16, dy: 4, color: "#e74c3c" }
+                ];
+                pts.forEach(pt => {
+                    svgGraph += `<circle cx="${tx(pt.x)}" cy="${ty(pt.y)}" r="3.5" fill="${pt.color}"/>`;
+                    svgGraph += `<text x="${tx(pt.x) + pt.dx}" y="${ty(pt.y) + pt.dy}" class="svg-text svg-bold" fill="${pt.color}">${pt.name}</text>`;
+                });
+                svgGraph += `</svg>`;
+
+                let problemText = `正方形 \\(ABCD\\) がある。（左上が \\(A\\)、左下が \\(B\\)、右下が \\(C\\)、右上が \\(D\\) で、1辺の長さは \\(${s}\\)）<br>` +
+                                  `\\(CD\\) の延長線上に \\(D\\) の方向（上側）へ \\(DE = 2CD\\) となる点 \\(E\\) をとる。<br>` +
+                                  `\\(DE\\) の中点を \\(F\\) とし、\\(BE\\) と \\(AF\\) の交点を \\(G\\) とするとき、線分 \\(CG\\) の長さを求めなさい。<br>` + svgGraph;
+
+                let explanationText = `【解説（図形の最終手段：座標・関数化）】<br>` +
+                                      `1. <strong>座標の設定</strong><br>` +
+                                      `・右下の頂点 \\(C\\) を原点 \\((0, 0)\\) とします。各頂点は \\(C(0,0)\\), \\(B(-2,0)\\), \\(A(-2,2)\\), \\(D(0,2)\\)。点 \\(E(0,6)\\)、中点 \\(F(0,4)\\)。<br><br>` +
+                                      `2. <strong>直線の式と交点 G の算出</strong><br>` +
+                                      `・直線 \\(BE\\) の式：\\(${lineAE}\\)<br>` +
+                                      `・直線 \\(AF\\) の式：\\(${lineDF}\\)<br>` +
+                                      `・連立して解くと、交点 \\(G\\) の座標は \\((${gxText}, ${gyText})\\) となります。<br><br>` +
+                                      `3. <strong>三平方の定理で CG の長さを求める</strong><br>` +
+                                      `  \\(${calcStep}\\)`;
+
+                return { problem: problemText, explanation: explanationText };
+            },
+
+            // 3. 左方向への延長
+            function() {
+                const s = 2;
+                const ex = -6, ey = 0;
+                const fx = -4, fy = 0;
+                const gx = -3, gy = 1;
+                const gxText = "-3", gyText = "1";
+                const lineAE = "y = \\frac{1}{3}x + 2";
+                const lineDF = "y = x + 4";
+                const calcStep = "CG = \\sqrt{(-3)^2 + 1^2} = \\sqrt{10}";
+
+                const cx = 0, cy = 0;
+                const bx = -s, by = 0;
+                const ax = -s, ay = s;
+                const dx = 0, dy = s;
+
+                const allX = [cx, bx, ax, dx, ex, fx, gx];
+                const allY = [cy, by, ay, dy, ey, fy, gy];
+                const minX = Math.min(...allX), maxX = Math.max(...allX);
+                const minY = Math.min(...allY), maxY = Math.max(...allY);
+
+                const svgW = 320, svgH = 240;
+                const scale = Math.min((svgW - 80) / (maxX - minX || 1), (svgH - 80) / (maxY - minY || 1));
+                const ox = svgW / 2 - ((minX + maxX) / 2) * scale;
+                const oy = svgH / 2 + ((minY + maxY) / 2) * scale;
+                const tx = (x) => ox + x * scale;
+                const ty = (y) => oy - y * scale;
+
+                let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 320px;">` +
+                               `<style>.svg-text { font-family: sans-serif; font-size: 10px; fill: #000; } .svg-bold { font-weight: bold; }</style>`;
+                svgGraph += `<polygon points="${tx(ax)},${ty(ay)} ${tx(bx)},${ty(by)} ${tx(cx)},${ty(cy)} ${tx(dx)},${ty(dy)}" fill="#eef2f7" stroke="#333" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(bx)}" y1="${ty(by)}" x2="${tx(ex)}" y2="${ty(ey)}" stroke="#333" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(dx)}" y1="${ty(dy)}" x2="${tx(ex)}" y2="${ty(ey)}" stroke="#3498db" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(ax)}" y1="${ty(ay)}" x2="${tx(fx)}" y2="${ty(fy)}" stroke="#e74c3c" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(cx)}" y1="${ty(cy)}" x2="${tx(gx)}" y2="${ty(gy)}" stroke="#27ae60" stroke-width="2" />`;
+
+                const pts = [
+                    { name: "C", x: cx, y: cy, dx: 6, dy: 14, color: "#333" },
+                    { name: "B", x: bx, y: by, dx: -16, dy: 14, color: "#333" },
+                    { name: "A", x: ax, y: ay, dx: -16, dy: -6, color: "#333" },
+                    { name: "D", x: dx, y: dy, dx: 6, dy: -6, color: "#333" },
+                    { name: "E", x: ex, y: ey, dx: -16, dy: 14, color: "#333" },
+                    { name: "F", x: fx, y: fy, dx: -4, dy: 14, color: "#333" },
+                    { name: "G", x: gx, y: gy, dx: 6, dy: -4, color: "#e74c3c" }
+                ];
+                pts.forEach(pt => {
+                    svgGraph += `<circle cx="${tx(pt.x)}" cy="${ty(pt.y)}" r="3.5" fill="${pt.color}"/>`;
+                    svgGraph += `<text x="${tx(pt.x) + pt.dx}" y="${ty(pt.y) + pt.dy}" class="svg-text svg-bold" fill="${pt.color}">${pt.name}</text>`;
+                });
+                svgGraph += `</svg>`;
+
+                let problemText = `正方形 \\(ABCD\\) がある。（左上が \\(A\\)、左下が \\(B\\)、右下が \\(C\\)、右上が \\(D\\) で、1辺の長さは \\(${s}\\)）<br>` +
+                                  `\\(BC\\) の延長線上に \\(B\\) の方向（左側）へ \\(BE = 2BC\\) となる点 \\(E\\) をとる。<br>` +
+                                  `\\(BE\\) の中点を \\(F\\) とし、\\(DE\\) と \\(AF\\) の交点を \\(G\\) とするとき、線分 \\(CG\\) の長さを求めなさい。<br>` + svgGraph;
+
+                let explanationText = `【解説（図形の最終手段：座標・関数化）】<br>` +
+                                      `1. <strong>座標の設定</strong><br>` +
+                                      `・右下の頂点 \\(C\\) を原点 \\((0, 0)\\) とします。各頂点は \\(C(0,0)\\), \\(B(-2,0)\\), \\(A(-2,2)\\), \\(D(0,2)\\)。点 \\(E(-6,0)\\)、中点 \\(F(-4,0)\\)。<br><br>` +
+                                      `2. <strong>直線の式と交点 G の算出</strong><br>` +
+                                      `・直線 \\(DE\\) の式：\\(${lineAE}\\)<br>` +
+                                      `・直線 \\(AF\\) の式：\\(${lineDF}\\)<br>` +
+                                      `・連立して解くと、交点 \\(G\\) の座標は \\((${gxText}, ${gyText})\\) となります。<br><br>` +
+                                      `3. <strong>三平方の定理で CG の長さを求める</strong><br>` +
+                                      `  \\(${calcStep}\\)`;
+
+                return { problem: problemText, explanation: explanationText };
+            },
+
+            // 4. 下方向への延長
+            function() {
+                const s = 2;
+                const ex = 0, ey = -4;
+                const fx = 0, fy = -2;
+                const gx = -1, gy = -1;
+                const gxText = "-1", gyText = "-1";
+                const lineAE = "y = -3x - 4";
+                const lineDF = "y = -x - 2";
+                const calcStep = "CG = \\sqrt{(-1)^2 + (-1)^2} = \\sqrt{2}";
+
+                const cx = 0, cy = 0;
+                const bx = -s, by = 0;
+                const ax = -s, ay = s;
+                const dx = 0, dy = s;
+
+                const allX = [cx, bx, ax, dx, ex, fx, gx];
+                const allY = [cy, by, ay, dy, ey, fy, gy];
+                const minX = Math.min(...allX), maxX = Math.max(...allX);
+                const minY = Math.min(...allY), maxY = Math.max(...allY);
+
+                const svgW = 320, svgH = 260;
+                const scale = Math.min((svgW - 80) / (maxX - minX || 1), (svgH - 80) / (maxY - minY || 1));
+                const ox = svgW / 2 - ((minX + maxX) / 2) * scale;
+                const oy = svgH / 2 + ((minY + maxY) / 2) * scale;
+                const tx = (x) => ox + x * scale;
+                const ty = (y) => oy - y * scale;
+
+                let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 320px;">` +
+                               `<style>.svg-text { font-family: sans-serif; font-size: 10px; fill: #000; } .svg-bold { font-weight: bold; }</style>`;
+                svgGraph += `<polygon points="${tx(ax)},${ty(ay)} ${tx(bx)},${ty(by)} ${tx(cx)},${ty(cy)} ${tx(dx)},${ty(dy)}" fill="#eef2f7" stroke="#333" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(cx)}" y1="${ty(cy)}" x2="${tx(ex)}" y2="${ty(ey)}" stroke="#333" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(ax)}" y1="${ty(ay)}" x2="${tx(ex)}" y2="${ty(ey)}" stroke="#3498db" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(bx)}" y1="${ty(by)}" x2="${tx(fx)}" y2="${ty(fy)}" stroke="#e74c3c" stroke-width="1.5" />`;
+                svgGraph += `<line x1="${tx(cx)}" y1="${ty(cy)}" x2="${tx(gx)}" y2="${ty(gy)}" stroke="#27ae60" stroke-width="2" />`;
+
+                const pts = [
+                    { name: "C", x: cx, y: cy, dx: 6, dy: -6, color: "#333" },
+                    { name: "B", x: bx, y: by, dx: -16, dy: 14, color: "#333" },
+                    { name: "A", x: ax, y: ay, dx: -16, dy: -6, color: "#333" },
+                    { name: "D", x: dx, y: dy, dx: 6, dy: -6, color: "#333" },
+                    { name: "E", x: ex, y: ey, dx: 6, dy: 14, color: "#333" },
+                    { name: "F", x: fx, y: fy, dx: 6, dy: 14, color: "#333" },
+                    { name: "G", x: gx, y: gy, dx: 6, dy: -4, color: "#e74c3c" }
+                ];
+                pts.forEach(pt => {
+                    svgGraph += `<circle cx="${tx(pt.x)}" cy="${ty(pt.y)}" r="3.5" fill="${pt.color}"/>`;
+                    svgGraph += `<text x="${tx(pt.x) + pt.dx}" y="${ty(pt.y) + pt.dy}" class="svg-text svg-bold" fill="${pt.color}">${pt.name}</text>`;
+                });
+                svgGraph += `</svg>`;
+
+                let problemText = `正方形 \\(ABCD\\) がある。（左上が \\(A\\)、左下が \\(B\\)、右下が \\(C\\)、右上が \\(D\\) で、1辺の長さは \\(${s}\\)）<br>` +
+                                  `\\(CD\\) の延長線上に \\(C\\) の方向（下側）へ \\(CE = 2CD\\) となる点 \\(E\\) をとる。<br>` +
+                                  `\\(CE\\) の中点を \\(F\\) とし、\\(AE\\) と \\(BF\\) の交点を \\(G\\) とするとき、線分 \\(CG\\) の長さを求めなさい。<br>` + svgGraph;
+
+                let explanationText = `【解説（図形の最終手段：座標・関数化）】<br>` +
+                                      `1. <strong>座標の設定</strong><br>` +
+                                      `・右下の頂点 \\(C\\) を原点 \\((0, 0)\\) とします。各頂点は \\(C(0,0)\\), \\(B(-2,0)\\), \\(A(-2,2)\\), \\(D(0,2)\\)。点 \\(E(0,-4)\\)、中点 \\(F(0,-2)\\)。<br><br>` +
+                                      `2. <strong>直線の式と交点 G の算出</strong><br>` +
+                                      `・直線 \\(AE\\) の式：\\(${lineAE}\\)<br>` +
+                                      `・直線 \\(BF\\) の式：\\(${lineDF}\\)<br>` +
+                                      `・連立して解くと、交点 \\(G\\) の座標は \\((${gxText}, ${gyText})\\) となります。<br><br>` +
+                                      `3. <strong>三平方の定理で CG の長さを求める</strong><br>` +
+                                      `  \\(${calcStep}\\)`;
+
+                return { problem: problemText, explanation: explanationText };
             }
-        }
+        ];
+
+        // ランダムにいずれかの方向のシナリオを選択して実行
+        const selectedScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+        return selectedScenario();
+    }
+}
+
 
     },
      
     "平面図形": {
         "三平方の定理": {
-            level: "公立",
-            formula: "直角三角形において \\( a^2 + b^2 = c^2 \\) （\\( c \\)は斜辺）",
-            generateRandom: function() {
-                const triples = [[3, 4, 5], [5, 12, 13], [6, 8, 10]];
-                const t = triples[Math.floor(Math.random() * triples.length)];
-                return {
-                    problem: `直角をはさむ2辺が \\(${t[0]}\\text{cm} \\) と \\(${t[1]}\\text{cm} \\) のとき、斜辺の長さを求めなさい。`,
-                    explanation: `【解説】<br>1. 三平方の定理 \\( a^2 + b^2 = c^2 \\) に代入します。<br>　\\( ${t[0]}^2 + ${t[1]}^2 = c^2 \\)<br>2. 計算します。<br>　\\( c^2 = ${t[0]*t[0]} + ${t[1]*t[1]} = ${t[2]*t[2]} \\)<br>3. \\( c > 0 \\) より \\(c = \\sqrt{${t[2]*t[2]}} = ${t[2]}\\text{cm} \\) です。`
-                };
-            },
-            problem: "直角をはさむ2辺が \\(3\\text{cm} \\) と \\(4\\text{cm} \\) のとき、斜辺の長さを求めなさい。",
-            explanation: "【解説】<br>1. 三平方の定理 \\( a^2 + b^2 = c^2 \\) に代入します。<br>" +
-                         "2. 計算します。<br>" +
-                         "　\\( 3^2 + 4^2 = 9 + 16 = 25 \\)<br>" +
-                         "3. \\( c > 0 \\) より \\(c = \\sqrt{25} = 5\\text{cm} \\) です。"
+    category: "図形",
+    level: "公立",
+    formula: "<strong>【三平方の定理】</strong><br>" +
+             "直角三角形の直角をはさむ2辺の長さを \\(a, b\\)、斜辺の長さを \\(c\\) とすると、<br>" +
+             "\\(a^2 + b^2 = c^2\\) が成り立ちます。<br>" +
+             "・斜辺を求めるとき：\\(c = \\sqrt{a^2 + b^2}\\)<br>" +
+             "・その他の1辺を求めるとき：\\(a = \\sqrt{c^2 - b^2}\\)、\\(b = \\sqrt{c^2 - a^2}\\)<br>" +
+             "・2辺以上に文字が含まれるとき：\\(a^2 + b^2 = c^2\\) をそのまま用いて方程式を立てます。",
+    generateRandom: function() {
+        // 求める対象をランダム選択 ("a", "b", "c")
+        const targetSide = ["a", "b", "c"][Math.floor(Math.random() * 3)];
+        
+        let a, b, c;
+        let insideVal = 0;
+
+        // ルートを簡約化するヘルパー関数 (例: 20 -> {coef: 2, inside: 5})
+        const simplifyRoot = (n) => {
+            let coef = 1;
+            let inside = n;
+            for (let i = 2; i * i <= inside; i++) {
+                while (inside % (i * i) === 0) {
+                    coef *= i;
+                    inside /= (i * i);
+                }
+            }
+            return { coef, inside };
+        };
+
+        const formatRoot = (coef, inside) => {
+            if (inside === 1) return `${coef}`;
+            if (coef === 1) return `\\sqrt{${inside}}`;
+            return `${coef}\\sqrt{${inside}}`;
+        };
+        
+        if (targetSide === "c") {
+            // 斜辺 c を求める（整数にならない組み合わせ）
+            do {
+                a = Math.floor(Math.random() * 6) + 2; // 2〜7
+                b = Math.floor(Math.random() * 6) + 2; // 2〜7
+                insideVal = a * a + b * b;
+            } while (Number.isInteger(Math.sqrt(insideVal)));
+        } else if (targetSide === "a") {
+            // 辺 a を求める
+            do {
+                c = Math.floor(Math.random() * 7) + 5; // 5〜11
+                b = Math.floor(Math.random() * (c - 2)) + 2; // 2〜c-2
+                insideVal = c * c - b * b;
+            } while (Number.isInteger(Math.sqrt(insideVal)) || insideVal <= 0);
+        } else {
+            // 辺 b を求める
+            do {
+                c = Math.floor(Math.random() * 7) + 5; // 5〜11
+                a = Math.floor(Math.random() * (c - 2)) + 2; // 2〜c-2
+                insideVal = c * c - a * a;
+            } while (Number.isInteger(Math.sqrt(insideVal)) || insideVal <= 0);
         }
+
+        const simplified = simplifyRoot(insideVal);
+        const finalAnsText = formatRoot(simplified.coef, simplified.inside);
+        const expansionStep = simplified.coef > 1 ? ` = ${finalAnsText}` : "";
+
+        // --- 1°単位の精密ランダム回転 ＆ 外側ラベル配置 ---
+        const angleDeg = Math.floor(Math.random() * 360); // 0〜359度
+        const angleRad = (angleDeg * Math.PI) / 180;
+
+        const baseC = { x: 0, y: 0 };
+        const baseA = { x: 0, y: 60 }; // 縦辺
+        const baseB = { x: 80, y: 0 }; // 横辺
+
+        const rotatePoint = (pt, rad) => ({
+            x: pt.x * Math.cos(rad) - pt.y * Math.sin(rad),
+            y: pt.x * Math.sin(rad) + pt.y * Math.cos(rad)
+        });
+
+        const rC = rotatePoint(baseC, angleRad);
+        const rA = rotatePoint(baseA, angleRad);
+        const rB = rotatePoint(baseB, angleRad);
+
+        const svgW = 220, svgH = 180;
+        const allX = [rC.x, rA.x, rB.x];
+        const allY = [rC.y, rA.y, rB.y];
+        const minX = Math.min(...allX), maxX = Math.max(...allX);
+        const minY = Math.min(...allY), maxY = Math.max(...allY);
+        
+        const centerX = (minX + maxX) / 2;
+        const centerY = (minY + maxY) / 2;
+
+        const offsetX = svgW / 2 - centerX;
+        const offsetY = svgH / 2 - centerY;
+
+        const tx = (pt) => ({ x: pt.x + offsetX, y: pt.y + offsetY });
+
+        const pC = tx(rC);
+        const pA = tx(rA);
+        const pB = tx(rB);
+
+        const gX = (pC.x + pA.x + pB.x) / 3;
+        const gY = (pC.y + pA.y + pB.y) / 3;
+
+        const getOuterLabelPos = (p1, p2, dist) => {
+            const midX = (p1.x + p2.x) / 2;
+            const midY = (p1.y + p2.y) / 2;
+            let vx = midX - gX;
+            let vy = midY - gY;
+            const len = Math.hypot(vx, vy) || 1;
+            return {
+                x: midX + (vx / len) * dist,
+                y: midY + (vy / len) * dist + 4
+            };
+        };
+
+        const posA = getOuterLabelPos(pC, pA, 16);
+        const posB = getOuterLabelPos(pC, pB, 16);
+        const posC = getOuterLabelPos(pA, pB, 18);
+
+        const vCAx = (pA.x - pC.x) / Math.hypot(pA.x - pC.x, pA.y - pC.y);
+        const vCAy = (pA.y - pC.y) / Math.hypot(pA.x - pC.x, pA.y - pC.y);
+        const vCBx = (pB.x - pC.x) / Math.hypot(pB.x - pC.x, pB.y - pC.y);
+        const vCBy = (pB.y - pC.y) / Math.hypot(pB.x - pC.x, pB.y - pC.y);
+        const rLen = 10;
+
+        const q1 = { x: pC.x + vCAx * rLen, y: pC.y + vCAy * rLen };
+        const q2 = { x: q1.x + vCBx * rLen, y: q1.y + vCBy * rLen };
+        const q3 = { x: pC.x + vCBx * rLen, y: pC.y + vCBy * rLen };
+
+        // 表示用ラベル用（ダミーとして値を入れる。実際のルート表示は問題文と解説で組み立てる）
+        let labelA_val, labelB_val, labelC_val;
+        if (targetSide === "a") {
+            labelA_val = "x";
+            labelB_val = `${b}`;
+            labelC_val = targetSide === "c" ? "x" : `${c}`; // cは数値
+        } else if (targetSide === "b") {
+            labelA_val = `${a}`;
+            labelB_val = "x";
+            labelC_val = `${c}`;
+        } else {
+            labelA_val = `${a}`;
+            labelB_val = `${b}`;
+            labelC_val = "x";
+        }
+
+        // 三角形上の表示が数値になる部分はそのまま、未知数は "x"
+        let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 220px;">` +
+                       `<style>.svg-text { font-family: sans-serif; font-size: 12px; fill: #000; font-weight: bold; }</style>` +
+                       `<polygon points="${pC.x},${pC.y} ${pB.x},${pB.y} ${pA.x},${pA.y}" fill="#eef2f7" stroke="#333" stroke-width="2" />` +
+                       `<path d="M ${q1.x} ${q1.y} L ${q2.x} ${q2.y} L ${q3.x} ${q3.y}" fill="none" stroke="#e74c3c" stroke-width="1.5" />` +
+                       `<text x="${posA.x}" y="${posA.y}" class="svg-text" text-anchor="middle">${targetSide === "a" ? "x" : a}</text>` +
+                       `<text x="${posB.x}" y="${posB.y}" class="svg-text" text-anchor="middle">${targetSide === "b" ? "x" : b}</text>` +
+                       `<text x="${posC.x}" y="${posC.y}" class="svg-text" text-anchor="middle" fill="#27ae60">${targetSide === "c" ? "x" : c}</text>` +
+                       `</svg>`;
+
+        let problemText = "";
+        let explanationText = "";
+
+        if (targetSide === "c") {
+            problemText = `直角をはさむ2辺の長さが \\(${a}\\text{cm}\\) と \\(${b}\\text{cm}\\) である直角三角形の斜辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>斜辺 \\(c\\) を求める公式 \\(c = \\sqrt{a^2 + b^2}\\) にあてはめます。</strong><br>` +
+                              `　\\(x = \\sqrt{${a}^2 + ${b}^2}\\)<br>` +
+                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
+                              `　\\(x = \\sqrt{${a*a} + ${b*b}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
+                              `3. <strong>したがって、求める斜辺の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
+        } else if (targetSide === "a") {
+            problemText = `斜辺の長さが \\(${c}\\text{cm}\\)、直角をはさむ1辺の長さが \\(${b}\\text{cm}\\) である直角三角形の、もう1つの直角をはさむ辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>直角をはさむ辺 \\(a\\) を求める公式 \\(a = \\sqrt{c^2 - b^2}\\) にあてはめます。</strong><br>` +
+                              `　\\(x = \\sqrt{${c}^2 - ${b}^2}\\)<br>` +
+                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
+                              `　\\(x = \\sqrt{${c*c} - ${b*b}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
+                              `3. <strong>したがって、求める辺 \\(a\\) の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
+        } else {
+            problemText = `斜辺の長さが \\(${c}\\text{cm}\\)、直角をはさむ1辺の長さが \\(${a}\\text{cm}\\) である直角三角形の、もう1つの直角をはさむ辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>直角をはさむ辺 \\(b\\) を求める公式 \\(b = \\sqrt{c^2 - a^2}\\) にあてはめます。</strong><br>` +
+                              `　\\(x = \\sqrt{${c}^2 - ${a}^2}\\)<br>` +
+                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
+                              `　\\(x = \\sqrt{${c*c} - ${a*a}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
+                              `3. <strong>したがって、求める辺 \\(b\\) の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
+        }
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+},
+"多角形の内角・外角の和": {
+    category: "平面図形",
+    level: "基礎",
+    formula: "<strong>【多角形の内角・外角の和】</strong><br>" +
+             "・\\(n\\) 角形の内角の和は \\(180^\\circ \\times (n - 2)\\)<br>" +
+             "・どんな \\(n\\) 角形でも、外角の和は常に \\(360^\\circ\\)<br>" +
+             "・正 \\(n\\) 角形の \\(1\\) つの外角は \\(\\frac{360^\\circ}{n}\\)、\\(1\\) つの内角は \\(180^\\circ - (1\\)つ\\(の\\)外角\)",
+    generateRandom: function() {
+        // 数値を漢数字に変換するヘルパー関数
+        const toKanjiNumber = (num) => {
+            const digits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+            if (num < 10) return digits[num];
+            if (num === 10) return "十";
+            if (num < 20) return "十" + digits[num % 10];
+            const tens = Math.floor(num / 10);
+            const ones = num % 10;
+            return (tens > 1 ? digits[tens] : "") + "十" + (ones > 0 ? digits[ones] : "");
+        };
+
+        // パターン選択（0: 正多角形の内角の和, 1: 外角から正n角形を求める, 2: 内角と外角の比から正n角形を求める, 3: 正ではない多角形の内角を求める）
+        const pattern = Math.floor(Math.random() * 4);
+
+        let problemText = "";
+        let explanationText = "";
+
+        if (pattern === 0) {
+            // パターン0: 正二十角形など、正n角形の内角の和
+            const nList = [10, 12, 15, 18, 20];
+            const n = nList[Math.floor(Math.random() * nList.length)];
+            const sumAngle = 180 * (n - 2);
+            const kanjiName = `正${toKanjiNumber(n)}角形`;
+
+            problemText = `${kanjiName}の内角の和を求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>多角形の内角の和の公式</strong> \\(180^\\circ \\times (n - 2)\\) を使います。<br>` +
+                              `2. <strong>\\(n = ${n}\\) を公式に代入して計算します。</strong><br>` +
+                              `　\\(180^\\circ \\times (${n} - 2) = 180^\\circ \\times ${n - 2} = \\mathbf{${sumAngle}^\\circ}\\) です。`;
+
+        } else if (pattern === 1) {
+            // パターン1: 1つの外角の大きさから正n角形を求める
+            const exteriorAngles = [24, 30, 36, 40, 45];
+            const ext = exteriorAngles[Math.floor(Math.random() * exteriorAngles.length)];
+            const n = 360 / ext;
+            const kanjiName = `正${toKanjiNumber(n)}角形`;
+
+            problemText = `1 つの外角の大きさが \\(${ext}^\\circ\\) になる正多角形がある。正何角形かを求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>外角の和は常に \\(360^\\circ\\) です。</strong><br>` +
+                              `2. <strong>\\(1\\) つの外角の大きさから辺の数 \\(n\\) を求めます。</strong><br>` +
+                              `　\\(360^\\circ \\div ${ext}^\\circ = ${n}\\)<br>` +
+                              `3. したがって、求める図形は \\(\\mathbf{${kanjiName}}\\) です。`;
+
+        } else if (pattern === 2) {
+            // パターン2: 1つの内角が外角の〇倍である正多角形
+            const mults = [3, 4, 5, 7];
+            const m = mults[Math.floor(Math.random() * mults.length)];
+            const ext = 180 / (m + 1);
+            const n = 2 * (m + 1);
+            const kanjiName = `正${toKanjiNumber(n)}角形`;
+
+            problemText = `1 つの内角の大きさが 1 つの外角の大きさの \\(${m}\\) 倍である正多角形を求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>外角の大きさを \\(x^\\circ\\) とすると、内角の大きさは \\(${m}x^\\circ\\) と表せます。</strong><br>` +
+                              `2. <strong>内角と外角の和は \\(180^\\circ\\) なので、方程式を立てます。</strong><br>` +
+                              `　\\(${m}x + x = 180^\\circ \\implies ${m+1}x = 180^\\circ \\implies x = ${ext}^\\circ\\)（外角）<br>` +
+                              `3. <strong>外角の和 \\(360^\\circ\\) を \\(1\\) つの外角で割って辺の数 \\(n\\) を求めます。</strong><br>` +
+                              `　\\(360^\\circ \\div ${ext}^\\circ = ${n}\\)<br>` +
+                              `したがって、求める図形は \\(\\mathbf{${kanjiName}}\\) です。`;
+
+        } else {
+            // パターン3: 正ではない多角形（四角形や五角形の内角の未知の角を求める）
+            const type = Math.random() < 0.5 ? "quad" : "penta";
+            if (type === "quad") {
+                const a = Math.floor(Math.random() * 30) + 60;
+                const b = Math.floor(Math.random() * 30) + 70;
+                const c = Math.floor(Math.random() * 30) + 80;
+                const d = 360 - (a + b + c);
+
+                problemText = `四角形の4つの内角のうち、3つの角の大きさがそれぞれ \\(${a}^\\circ\\)、\\(${b}^\\circ\\)、\\(${c}^\\circ\\) であるとき、残りの角の大きさを求めなさい。`;
+                explanationText = `【解説】<br>` +
+                                  `1. <strong>四角形の内角の和は \\(180^\\circ \\times (4 - 2) = 360^\\circ\\) です。</strong><br>` +
+                                  `2. <strong>わかっている内角を足して \\(360^\\circ\\) から引きます。</strong><br>` +
+                                  `　\\(360^\\circ - (${a}^\\circ + ${b}^\\circ + ${c}^\\circ)\\)<br>` +
+                                  `　\\(= 360^\\circ - ${a+b+c}^\\circ = \\mathbf{${d}^\\circ}\\) です。`;
+            } else {
+                const angles = [95, 100, 110, 115, 120];
+                const targetIdx = Math.floor(Math.random() * 5);
+                const unknownAns = angles[targetIdx];
+                let knownSum = 0;
+                const knownAngles = angles.filter((val, idx) => {
+                    if (idx === targetIdx) return false;
+                    knownSum += val;
+                    return true;
+                });
+
+                const formattedKnownAngles = knownAngles.map(v => `\\(${v}^\\circ\\)`).join("、");
+
+                problemText = `五角形の5つの内角のうち、4つの角の大きさがそれぞれ ${formattedKnownAngles} であるとき、残りの角の大きさを求めなさい。`;
+                explanationText = `【解説】<br>` +
+                                  `1. <strong>五角形の内角の和は \\(180^\\circ \\times (5 - 2) = 540^\\circ\\) です。</strong><br>` +
+                                  `2. <strong>すべての内角の和から、わかっている内角の合計を引きます。</strong><br>` +
+                                  `　\\(540^\\circ - (${knownAngles.map(v => `${v}^\\circ`).join(" + ")})\\)<br>` +
+                                  `　\\(= 540^\\circ - ${knownSum}^\\circ = \\mathbf{${unknownAns}^\\circ}\\) です。`;
+            }
+        }
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+},
+"多角形の対角線": {
+    category: "平面図形",
+    level: "基礎",
+    formula: "<strong>【多角形の対角線】</strong><br>" +
+             "・\\(n\\) 角形の対角線の本数は \\(\\frac{n(n-3)}{2}\\) 本<br><br>" +
+             "<strong>【証明・考え方】</strong><br>" +
+             "・\\(n\\) 角形の、ある頂点 \\(A\\) から対角線を引くとき、隣の頂点 \\(2\\) つと頂点 \\(A\\) 自身には引くことができないので、\\(1\\) つの頂点からは \\((n - 3)\\) 本の対角線が引けます。<br>" +
+             "・\\(n\\) 個のすべての頂点から \\((n - 3)\\) 本ずつの対角線を引くと、全部で \\(n(n - 3)\\) 本となります。<br>" +
+             "・しかし、この計算では \\(1\\) 本の対角線 \\(AB\\) について、「頂点 \\(A\\) から引いたもの」と「頂点 \\(B\\) から引いたもの」の \\(2\\) 回ずつ重複して数えていることになるため、全体を \\(2\\) で割って \\(\\frac{n(n - 3)}{2}\\) 本となります。",
+    generateRandom: function() {
+        // 数値を漢数字に変換するヘルパー関数
+        const toKanjiNumber = (num) => {
+            const digits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+            if (num < 10) return digits[num];
+            if (num === 10) return "十";
+            if (num < 20) return "十" + digits[num % 10];
+            const tens = Math.floor(num / 10);
+            const ones = num % 10;
+            return (tens > 1 ? digits[tens] : "") + "十" + (ones > 0 ? digits[ones] : "");
+        };
+
+        // パターン選択（0: n角形の対角線の総数を求める, 1: 対角線の本数から何角形か求める, 2: 1つの頂点から引ける本数から総数を求める）
+        const pattern = Math.floor(Math.random() * 3);
+
+        let problemText = "";
+        let explanationText = "";
+
+        if (pattern === 0) {
+            // パターン0: 正n角形などの対角線の総数を求める
+            const nList = [8, 10, 12, 14, 15, 18, 20];
+            const n = nList[Math.floor(Math.random() * nList.length)];
+            const totalDiag = (n * (n - 3)) / 2;
+            const kanjiName = `${toKanjiNumber(n)}角形`;
+
+            problemText = `${kanjiName}の対角線の総数を求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>対角線の総数を求める公式</strong> \\(\\frac{n(n-3)}{2}\\) を使います。<br>` +
+                              `2. <strong>\\(n = ${n}\\) を公式に代入して計算します。</strong><br>` +
+                              `　\\(\\frac{${n} \\times (${n} - 3)}{2} = \\frac{${n} \\times ${n - 3}}{2} = \\frac{${n * (n - 3)}}{2} = \\mathbf{${totalDiag}\\text{本}}\\) です。`;
+
+        } else if (pattern === 1) {
+            // パターン1: 対角線の本数から何角形か求める
+            const nList = [7, 8, 9, 10, 12];
+            const n = nList[Math.floor(Math.random() * nList.length)];
+            const totalDiag = (n * (n - 3)) / 2;
+            const kanjiName = `${toKanjiNumber(n)}角形`;
+
+            problemText = `対角線の本数が \\(${totalDiag}\\) 本である多角形は何角形か求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>多角形の辺の数を \\(n\\) とすると、対角線の本数は \\(\\frac{n(n-3)}{2}\\) と表せます。</strong><br>` +
+                              `2. <strong>方程式を立てて解きます。</strong><br>` +
+                              `　\\(\\frac{n(n-3)}{2} = ${totalDiag}\\)<br>` +
+                              `　\\(n(n-3) = ${totalDiag * 2}\\)<br>` +
+                              `3. <strong>差が \\(3\\) で、かけ算すると \\(${totalDiag * 2}\\) になる整数の組み合わせを探します。</strong><br>` +
+                              `　\\(${n} \\times (${n} - 3) = ${n} \\times ${n - 3} = ${totalDiag * 2}\\) より、\\(n = ${n}\\) となります。<br>` +
+                              `したがって、求める図形は \\(\\mathbf{${kanjiName}}\\) です。`;
+
+        } else {
+            // パターン2: 1つの頂点から引ける対角線の本数から総数を求める
+            const nList = [8, 10, 12, 14, 15];
+            const n = nList[Math.floor(Math.random() * nList.length)];
+            const fromOne = n - 3;
+            const totalDiag = (n * (n - 3)) / 2;
+            const kanjiName = `${toKanjiNumber(n)}角形`;
+
+            problemText = `ある多角形の \\(1\\) つの頂点から引ける対角線の本数は \\(${fromOne}\\) 本である。この多角形の対角線の総数を求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>\\(1\\) つの頂点から引ける対角線の本数は \\(n - 3\\) 本なので、\\(n - 3 = ${fromOne}\\) より \\(n = ${n}\\)（${kanjiName}）とわかります。</strong><br>` +
+                              `2. <strong>対角線の総数の公式 \\(\\frac{n(n-3)}{2}\\) に代入して計算します。</strong><br>` +
+                              `　\\(\\frac{${n} \\times (${n} - 3)}{2} = \\frac{${n} \\times ${fromOne}}{2} = \\frac{${n * fromOne}}{2} = \\mathbf{${totalDiag}\\text{本}}\\) です。`;
+        }
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+}
+
     },
     "立体図形": {
         "球の体積と表面積": {
