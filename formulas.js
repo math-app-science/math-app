@@ -5918,7 +5918,1412 @@ const formulaData = {
             explanation: explanationText
         };
     }
-}
+},
+"角度計算の基本": {
+    category: "平面図形",
+    level: "基礎",
+    formula: "<strong>【角度計算の基本・重要な形】</strong><br>" +
+             "複雑な図形の角度計算ではスリッパ型（外角の定理）や二等辺三角形が使われることが多いです。<br>" +
+             "二等辺三角形を発見するために、等しい長さに印をつけましょう。<br><br>" +
+             "<strong>⭐︎覚えるべき重要な形⭐︎</strong><br>" +
+             "・<strong>スリッパ型（外角の定理）</strong>：鋭角三角形 \\(ABC\\) の線分 \\(BC\\) を \\(C\\) の方向に延長した点を \\(D\\) とするとき、\\(\\angle A = a^\\circ\\)、\\(\\angle B = b^\\circ\\)、\\(\\angle ACD = c^\\circ\\) とすると、\\(a + b = c\\) が成り立ちます。<br>" +
+             '<div style="text-align:center; margin: 4px 0;">' +
+             '<svg viewBox="0 0 130 70" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:130px; height:70px; display:inline-block;">' +
+             '<polygon points="25,55 75,55 45,18" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+             '<line x1="75" y1="55" x2="110" y2="55" stroke="#333" stroke-width="1.5"/>' +
+             '<text x="43" y="14" font-size="9" font-weight="bold">A</text>' +
+             '<text x="17" y="62" font-size="9" font-weight="bold">B</text>' +
+             '<text x="73" y="62" font-size="9" font-weight="bold">C</text>' +
+             '<text x="112" y="62" font-size="9" font-weight="bold">D</text>' +
+             '<text x="43" y="31" font-size="8" font-weight="bold">a°</text>' +
+             '<text x="34" y="51" font-size="8" font-weight="bold">b°</text>' +
+             '<text x="82" y="49" font-size="8" font-weight="bold" fill="#e74c3c">c°</text>' +
+             '</svg></div>' +
+             "・<strong>ガ型</strong>：\\(a + b = c + d\\)<br>" +
+             '<div style="text-align:center; margin: 4px 0;">' +
+             '<svg viewBox="0 0 130 70" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:130px; height:70px; display:inline-block;">' +
+             '<polygon points="12,8 25,52 65,35" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+             '<polygon points="118,8 105,52 65,35" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+             '<text x="20" y="22" font-size="9" font-weight="bold">a</text>' +
+             '<text x="28" y="45" font-size="9" font-weight="bold">b</text>' +
+             '<text x="105" y="22" font-size="9" font-weight="bold">c</text>' +
+             '<text x="94" y="45" font-size="9" font-weight="bold" fill="#e74c3c">d</text>' +
+             '</svg></div>' +
+             "・<strong>ブーメラン型（キツネ型）</strong>：\\(a + b + c = d\\)<br>" +
+             '<div style="text-align:center; margin: 4px 0;">' +
+             '<svg viewBox="0 0 140 90" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:140px; height:90px; display:inline-block;">' +
+             '<polygon points="70,10 20,70 70,48 120,70" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+             '<text x="70" y="25" font-size="8" font-weight="bold" text-anchor="middle">a</text>' +
+             '<text x="35" y="58" font-size="8" font-weight="bold">b</text>' +
+             '<text x="95" y="58" font-size="8" font-weight="bold">c</text>' +
+             '<text x="70" y="58" font-size="8" font-weight="bold" fill="#e74c3c" text-anchor="middle">d</text>' +
+             '</svg></div>',
+    generateRandom: function() {
+        const pattern = Math.floor(Math.random() * 3);
+
+        let problemText = "";
+        let explanationText = "";
+        const noticePrefix = "<strong>あえて、図形に角度は書きません。図形を自分で書いて、角度を書きましょう。</strong><br><br>";
+
+        // 点を指定した中心まわりに deg 度回転させるヘルパー関数
+        const rotatePoint = (p, cx, cy, deg) => {
+            const rad = deg * Math.PI / 180;
+            const cos = Math.cos(rad), sin = Math.sin(rad);
+            return {
+                x: cx + (p.x - cx) * cos - (p.y - cy) * sin,
+                y: cy + (p.x - cx) * sin + (p.y - cy) * cos
+            };
+        };
+
+        // 重心から外側に向かう方向にラベルを配置するヘルパー関数
+        const getOuterLabelPos = (p, cx, cy, offset = 18) => {
+            const dx = p.x - cx;
+            const dy = p.y - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist === 0) return { x: p.x, y: p.y - offset };
+            return {
+                x: p.x + (dx / dist) * offset,
+                y: p.y + (dy / dist) * offset
+            };
+        };
+
+        // 動的viewBoxを計算するヘルパー関数
+        const createDynamicSvg = (pointsArr, labelsArr) => {
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            pointsArr.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            });
+            labelsArr.forEach(l => {
+                if (l.x - 15 < minX) minX = l.x - 15;
+                if (l.x + 15 > maxX) maxX = l.x + 15;
+                if (l.y - 15 < minY) minY = l.y - 15;
+                if (l.y + 15 > maxY) maxY = l.y + 15;
+            });
+
+            const padding = 30;
+            const vx = minX - padding;
+            const vy = minY - padding;
+            const vw = (maxX - minX) + padding * 2;
+            const vh = (maxY - minY) + padding * 2;
+
+            let svg = `<svg viewBox="${vx} ${vy} ${vw} ${vh}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 260px;">` +
+                      `<style>.svg-text { font-family: sans-serif; font-size: 12px; fill: #000; font-weight: bold; }</style>`;
+            return { svg };
+        };
+
+        const rotDeg = Math.floor(Math.random() * 360);
+
+        if (pattern === 0) {
+            // パターン0: スリッパ型
+            const a = Math.floor(Math.random() * 41) + 25;
+            const b = Math.floor(Math.random() * 41) + 25;
+            const c = a + b;
+
+            let pB = { x: 45, y: 110 };
+            let pC = { x: 145, y: 110 };
+            let pD = { x: 210, y: 110 };
+            
+            const radA = a * Math.PI / 180;
+            const radB = b * Math.PI / 180;
+            const radC = (180 - a - b) * Math.PI / 180;
+
+            const lenAC = 100 * Math.sin(radB) / Math.sin(radA);
+            let pA = {
+                x: pC.x - lenAC * Math.cos(radC),
+                y: pC.y - lenAC * Math.sin(radC)
+            };
+
+            const cx = (pB.x + pC.x + pA.x) / 3;
+            const cy = (pB.y + pA.y) / 2;
+
+            pA = rotatePoint(pA, cx, cy, rotDeg);
+            pB = rotatePoint(pB, cx, cy, rotDeg);
+            pC = rotatePoint(pC, cx, cy, rotDeg);
+            pD = rotatePoint(pD, cx, cy, rotDeg);
+
+            const vecCD = { x: pD.x - pC.x, y: pD.y - pC.y };
+            const lenCD = Math.sqrt(vecCD.x * vecCD.x + vecCD.y * vecCD.y);
+            if (lenCD > 0) {
+                pD.x = pC.x + (vecCD.x / lenCD) * 65;
+                pD.y = pC.y + (vecCD.y / lenCD) * 65;
+            }
+
+            const shapeCx = (pA.x + pB.x + pC.x) / 3;
+            const shapeCy = (pA.y + pB.y + pC.y) / 3;
+
+            const posA = getOuterLabelPos(pA, shapeCx, shapeCy, 16);
+            const posB = getOuterLabelPos(pB, shapeCx, shapeCy, 16);
+            const posC = getOuterLabelPos(pC, shapeCx, shapeCy, 16);
+            const posD = { x: pD.x + (pD.x - pC.x) * 0.3, y: pD.y + (pD.y - pC.y) * 0.3 };
+
+            const { svg } = createDynamicSvg([pA, pB, pC, pD], [posA, posB, posC, posD]);
+
+            let svgGraph = svg +
+                           `<polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="#eef2f7" stroke="#333" stroke-width="2" />` +
+                           `<line x1="${pC.x}" y1="${pC.y}" x2="${pD.x}" y2="${pD.y}" stroke="#333" stroke-width="2" />` +
+                           `<text x="${posA.x}" y="${posA.y}" class="svg-text" text-anchor="middle">A</text>` +
+                           `<text x="${posB.x}" y="${posB.y}" class="svg-text" text-anchor="middle">B</text>` +
+                           `<text x="${posC.x}" y="${posC.y}" class="svg-text" text-anchor="middle">C</text>` +
+                           `<text x="${posD.x}" y="${posD.y}" class="svg-text" text-anchor="middle">D</text>` +
+                           `</svg>`;
+
+            problemText = noticePrefix +
+                          `鋭角三角形 \\(ABC\\) の線分 \\(BC\\) を \\(C\\) の方向に延長した点を \\(D\\) とする。<br>` +
+                          `\\(\\angle BAC = ${a}^\\circ\\)、\\(\\angle ABC = ${b}^\\circ\\) のとき、外角 \\(\\angle ACD\\) の大きさを求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>スリッパ型（外角の定理）</strong>より、三角形の外角はそれと隣り合わない2つの内角の和に等しくなります。<br>` +
+                              `2. <strong>\\(\\angle ACD = \\angle BAC + \\angle ABC\\) にあてはめます。</strong><br>` +
+                              `　\\(\\angle ACD = ${a} + ${b} = \\mathbf{${c}^\\circ}\\) です。`;
+
+        } else if (pattern === 1) {
+            // パターン1: ガ型
+            const a = Math.floor(Math.random() * 41) + 20;
+            const b = Math.floor(Math.random() * 41) + 20;
+            const c = Math.floor(Math.random() * 41) + 20;
+            const d = (a + b) - c < 20 ? 20 : (a + b) - c;
+
+            const baseE = { x: 120, y: 70 };
+            
+            const theta1 = -18 * Math.PI / 180;
+            const theta2 =  35 * Math.PI / 180;
+
+            const distA = 60 + a * 0.5;
+            const distC = 60 + c * 0.5;
+            const distB = 55 + b * 0.5;
+            const distD = 55 + d * 0.5;
+
+            let pA = { x: baseE.x + distA * Math.cos(theta1 + Math.PI), y: baseE.y + distA * Math.sin(theta1 + Math.PI) };
+            let pC = { x: baseE.x + distC * Math.cos(theta1), y: baseE.y + distC * Math.sin(theta1) };
+            let pB = { x: baseE.x + distB * Math.cos(theta2 + Math.PI), y: baseE.y + distB * Math.sin(theta2 + Math.PI) };
+            let pD = { x: baseE.x + distD * Math.cos(theta2), y: baseE.y + distD * Math.sin(theta2) };
+
+            const cx = baseE.x, cy = baseE.y;
+            pA = rotatePoint(pA, cx, cy, rotDeg);
+            pC = rotatePoint(pC, cx, cy, rotDeg);
+            pB = rotatePoint(pB, cx, cy, rotDeg);
+            pD = rotatePoint(pD, cx, cy, rotDeg);
+            const pE = rotatePoint(baseE, cx, cy, rotDeg);
+
+            const posA = getOuterLabelPos(pA, pE.x, pE.y, 16);
+            const posB = getOuterLabelPos(pB, pE.x, pE.y, 16);
+            const posE = { x: pE.x, y: pE.y - 12 };
+            const posC = getOuterLabelPos(pC, pE.x, pE.y, 16);
+            const posD = getOuterLabelPos(pD, pE.x, pE.y, 16);
+
+            const { svg } = createDynamicSvg([pA, pB, pC, pD, pE], [posA, posB, posC, posD, posE]);
+
+            let svgGraph = svg +
+                           `<polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pE.x},${pE.y}" fill="#eef2f7" stroke="#333" stroke-width="2" />` +
+                           `<polygon points="${pC.x},${pC.y} ${pD.x},${pD.y} ${pE.x},${pE.y}" fill="#eef2f7" stroke="#333" stroke-width="2" />` +
+                           `<text x="${posA.x}" y="${posA.y}" class="svg-text" text-anchor="middle">A</text>` +
+                           `<text x="${posB.x}" y="${posB.y}" class="svg-text" text-anchor="middle">B</text>` +
+                           `<text x="${posE.x}" y="${posE.y}" class="svg-text" text-anchor="middle">E</text>` +
+                           `<text x="${posC.x}" y="${posC.y}" class="svg-text" text-anchor="middle">C</text>` +
+                           `<text x="${posD.x}" y="${posD.y}" class="svg-text" text-anchor="middle">D</text>` +
+                           `</svg>`;
+
+            problemText = noticePrefix +
+                          `線分 \\(AC\\) と線分 \\(BD\\) が交点 \\(E\\) で交わる図形において、\\(\\angle BAE = ${a}^\\circ\\)、\\(\\angle ABE = ${b}^\\circ\\)、\\(\\angle CDE = ${c}^\\circ\\) のとき、\\(\\angle DCE\\) の大きさを求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>対頂角と内角の関係</strong>（\\(\\angle BAE + \\angle ABE = \\angle CDE + \\angle DCE\\)）を使います。<br>` +
+                              `2. <strong>方程式を立てて求めます。</strong><br>` +
+                              `　\\(${a} + ${b} = ${c} + \\angle DCE\\)<br>` +
+                              `　\\(${a + b} = ${c} + \\angle DCE\\)<br>` +
+                              `　\\(\\angle DCE = ${a + b} - ${c} = \\mathbf{${d}^\\circ}\\) です。`;
+
+        } else {
+            // パターン2: ブーメラン型
+            const a = Math.floor(Math.random() * 31) + 20;
+            const b = Math.floor(Math.random() * 31) + 20;
+            const c = Math.floor(Math.random() * 31) + 20;
+            const d = a + b + c;
+
+            let pB = { x: 120, y: 15 };
+            let pA = { x: 35, y: 120 };
+            let pC = { x: 205, y: 120 };
+
+            const dHeightRatio = Math.max(0.35, Math.min(0.7, 0.8 - (d / 200)));
+            const midX = (pA.x + pC.x) / 2;
+            
+            let pD = {
+                x: midX + (Math.random() - 0.5) * 20,
+                y: pB.y + (pA.y - pB.y) * dHeightRatio
+            };
+
+            const cx = 120, cy = 70;
+            pA = rotatePoint(pA, cx, cy, rotDeg);
+            pB = rotatePoint(pB, cx, cy, rotDeg);
+            pC = rotatePoint(pC, cx, cy, rotDeg);
+            pD = rotatePoint(pD, cx, cy, rotDeg);
+
+            const shapeCx = (pA.x + pB.x + pC.x + pD.x) / 4;
+            const shapeCy = (pA.y + pB.y + pC.y + pD.y) / 4;
+
+            const posB = getOuterLabelPos(pB, shapeCx, shapeCy, 16);
+            const posA = getOuterLabelPos(pA, shapeCx, shapeCy, 16);
+            const posC = getOuterLabelPos(pC, shapeCx, shapeCy, 16);
+            const posD = getOuterLabelPos(pD, shapeCx, shapeCy, -18);
+
+            const { svg } = createDynamicSvg([pA, pB, pC, pD], [posA, posB, posC, posD]);
+
+            let svgGraph = svg +
+                           `<polygon points="${pB.x},${pB.y} ${pA.x},${pA.y} ${pD.x},${pD.y} ${pC.x},${pC.y}" fill="#eef2f7" stroke="#333" stroke-width="2" />` +
+                           `<text x="${posB.x}" y="${posB.y}" class="svg-text" text-anchor="middle">B</text>` +
+                           `<text x="${posA.x}" y="${posA.y}" class="svg-text" text-anchor="middle">A</text>` +
+                           `<text x="${posC.x}" y="${posC.y}" class="svg-text" text-anchor="middle">C</text>` +
+                           `<text x="${posD.x}" y="${posD.y}" class="svg-text" text-anchor="middle">D</text>` +
+                           `</svg>`;
+
+            problemText = noticePrefix +
+                          `四角形 \\(ABCD\\) において、\\(\\angle DAB = ${a}^\\circ\\)、\\(\\angle ABC = ${b}^\\circ\\)、\\(\\angle BCD = ${c}^\\circ\\) のとき、\\(\\angle ADC\\) の大きさを求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>へこんだ四角形の角の性質</strong>（\\(\\angle DAB + \\angle ABC + \\angle BCD = \\angle ADC\\)）を使います。<br>` +
+                              `2. <strong>3つの角を足し合わせます。</strong><br>` +
+                              `　\\(\\angle ADC = ${a} + ${b} + ${c} = \\mathbf{${d}^\\circ}\\) です。`;
+        }
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+},
+"三枚相似": {
+    category: "平面図形",
+    level: "公立",
+    formula: "<strong>【直角三角形の3枚の相似】</strong><br>" +
+             "直角三角形の直角の頂点から斜辺に垂線を下ろすと、3つの三角形（小・中・大）がすべて相似になります。<br>" +
+             "対応関係が分かりにくくなるので、<strong>角度の印（丸やバツ）をつけるのがオススメ！</strong><br><br>" +
+             '<div style="text-align:center; margin: 6px 0;">' +
+             '<svg viewBox="0 0 320 190" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:260px; height:150px; display:inline-block;">' +
+             // 三角形 ABC (頂点Aが上、斜辺BCが水平)
+             '<polygon points="130,30 40,150 280,150" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+             // 垂線 AH
+             '<line x1="130" y1="30" x2="130" y2="150" stroke="#333" stroke-width="1.5" stroke-dasharray="3,3"/>' +
+             // Aの直角マーク
+             '<polyline points="121,41 130,50 139,40" fill="none" stroke="#333" stroke-width="1"/>' +
+             // Hの直角マーク (BH側)
+             '<rect x="121" y="141" width="9" height="9" fill="none" stroke="#333" stroke-width="1"/>' +
+             // 角度マーク (○ と ×)
+             '<text x="65" y="140" font-size="11" fill="#e74c3c" font-weight="bold">○</text>' + 
+             '<text x="245" y="140" font-size="11" fill="#2980b9" font-weight="bold">×</text>' + 
+             '<text x="110" y="58" font-size="11" fill="#2980b9" font-weight="bold">×</text>' + 
+             '<text x="142" y="58" font-size="11" fill="#e74c3c" font-weight="bold">○</text>' + 
+             // 頂点・線分ラベル
+             '<text x="130" y="20" font-size="11" font-weight="bold" text-anchor="middle">A</text>' +
+             '<text x="32" y="162" font-size="11" font-weight="bold">B</text>' +
+             '<text x="286" y="162" font-size="11" font-weight="bold">C</text>' +
+             '<text x="130" y="168" font-size="11" font-weight="bold" text-anchor="middle">H</text>' +
+             '<text x="78" y="85" font-size="10" font-weight="bold">a</text>' +
+             '<text x="205" y="85" font-size="10" font-weight="bold">b</text>' +
+             '<text x="136" y="95" font-size="10" font-weight="bold" fill="#e74c3c">h</text>' +
+             '<text x="85" y="163" font-size="10" font-weight="bold" text-anchor="middle">x</text>' +
+             '<text x="205" y="163" font-size="10" font-weight="bold" text-anchor="middle">y</text>' +
+             '<text x="160" y="182" font-size="11" font-weight="bold" fill="#333" text-anchor="middle">c (斜辺)</text>' +
+             '</svg></div>' +
+             "<strong>⭐︎覚えるべき重要関係式⭐︎</strong><br>" +
+             "① ab = ch （面積の利用）<br>" +
+             "② h² = xy （相似比より x：h ＝ h：y）<br>" +
+             "③ a² : b² = x : y （相似比²の面積比 ＝ 高さの等しい△の底辺比）",
+    generateRandom: function() {
+        const subPattern = Math.floor(Math.random() * 6); // 0〜5の6パターン
+        
+        let problemText = "";
+        let explanationText = "";
+        let xVal = 9, yVal = 16; // デフォルト比率用
+
+        if (subPattern === 0) {
+            // パターン0: h^2 = xy であえてルートが残る数値も含めるランダム
+            const pairs = [
+                { x: 2, y: 8, hStr: "4", hVal: 4 },
+                { x: 3, y: 12, hStr: "6", hVal: 6 },
+                { x: 2, y: 5, hStr: "\\sqrt{10}", hVal: Math.sqrt(10) },
+                { x: 3, y: 5, hStr: "\\sqrt{15}", hVal: Math.sqrt(15) },
+                { x: 4, y: 9, hStr: "6", hVal: 6 },
+                { x: 5, y: 10, hStr: "5\\sqrt{2}", hVal: 5*Math.sqrt(2) }
+            ];
+            const d = pairs[Math.floor(Math.random() * pairs.length)];
+            xVal = d.x; yVal = d.y;
+
+            problemText = "直角三角形 \\(ABC\\) （\\(\\angle BAC = 90^\\circ\\)）の頂点 \\(A\\) から斜辺 \\(BC\\) に垂線 \\(AH\\) を下ろす。<br>" +
+                          "\\(BH = " + d.x + "\\)、\\(CH = " + d.y + "\\) のとき、線分 \\(AH\\) の長さを求めなさい。";
+
+            explanationText = "【解説】<br>" +
+                              "1. <strong>\\(h^2 = xy\\)</strong> の関係（\\(x : h = h : y\\)）を使います。<br>" +
+                              "2. 対応する辺の比の式を立てます：<br>" +
+                              "　\\(BH : AH = AH : CH\\)<br>" +
+                              "3. 長さを代入して式を解きます：<br>" +
+                              "　\\(" + d.x + " : AH = AH : " + d.y + "\\)<br>" +
+                              "　\\(AH^2 = " + d.x + " \\times " + d.y + " = " + (d.x * d.y) + "\\)<br>" +
+                              "4. \\(AH > 0\\) より、\\(AH = \\mathbf{" + d.hStr + "}\\) です。";
+        } else if (subPattern === 1) {
+            // パターン1: a^2 = cx を使うランダム
+            const xList = [2, 3, 4, 5];
+            const yList = [6, 8, 9, 12];
+            const x = xList[Math.floor(Math.random() * xList.length)];
+            const y = yList[Math.floor(Math.random() * yList.length)];
+            const c = x + y;
+            xVal = x; yVal = y;
+            
+            const prod = c * x;
+            // 簡易的なルート簡約判定
+            let aStr = "";
+            if (prod === 16) aStr = "4";
+            else if (prod === 20) aStr = "2\\sqrt{5}";
+            else if (prod === 24) aStr = "2\\sqrt{6}";
+            else if (prod === 27) aStr = "3\\sqrt{3}";
+            else if (prod === 32) aStr = "4\\sqrt{2}";
+            else if (prod === 36) aStr = "6";
+            else if (prod === 40) aStr = "2\\sqrt{10}";
+            else if (prod === 45) aStr = "3\\sqrt{5}";
+            else if (prod === 48) aStr = "4\\sqrt{3}";
+            else if (prod === 54) aStr = "3\\sqrt{6}";
+            else if (prod === 64) aStr = "8";
+            else aStr = "\\sqrt{" + prod + "}";
+
+            problemText = "直角三角形 \\(ABC\\) （\\(\\angle BAC = 90^\\circ\\)）の頂点 \\(A\\) から斜辺 \\(BC\\) に垂線 \\(AH\\) を下ろす。<br>" +
+                          "\\(BH = " + x + "\\)、\\(CH = " + y + "\\) のとき、線分 \\(AB\\) （\\(a\\)）の長さを求めなさい。";
+
+            explanationText = "【解説】<br>" +
+                              "1. 全体の斜辺 \\(BC = BH + CH = " + x + " + " + y + " = " + c + "\\) です。<br>" +
+                              "2. <strong>\\(a^2 = cx\\)</strong> の関係（\\(BC : AB = AB : BH\\)）を使います。<br>" +
+                              "3. 対応する辺の比の式を立てます：<br>" +
+                              "　\\(BC : AB = AB : BH\\)<br>" +
+                              "4. 長さを代入して式を解きます：<br>" +
+                              "　\\(" + c + " : AB = AB : " + x + "\\)<br>" +
+                              "　\\(AB^2 = " + c + " \\times " + x + " = " + prod + "\\)<br>" +
+                              "5. \\(AB > 0\\) より、\\(AB = \\mathbf{" + aStr + "}\\) です。";
+        } else if (subPattern === 2) {
+            // パターン2: b^2 = cy を使うランダム
+            const xList = [2, 3, 4, 5];
+            const yList = [6, 8, 9, 12];
+            const x = xList[Math.floor(Math.random() * xList.length)];
+            const y = yList[Math.floor(Math.random() * yList.length)];
+            const c = x + y;
+            xVal = x; yVal = y;
+
+            const prod = c * y;
+            let bStr = "";
+            if (prod === 36) bStr = "6";
+            else if (prod === 40) bStr = "2\\sqrt{10}";
+            else if (prod === 45) bStr = "3\\sqrt{5}";
+            else if (prod === 48) bStr = "4\\sqrt{3}";
+            else if (prod === 54) bStr = "3\\sqrt{6}";
+            else if (prod === 64) bStr = "8";
+            else if (prod === 72) bStr = "6\\sqrt{2}";
+            else if (prod === 80) bStr = "4\\sqrt{5}";
+            else if (prod === 96) bStr = "4\\sqrt{6}";
+            else if (prod === 100) bStr = "10";
+            else if (prod === 108) bStr = "6\\sqrt{3}";
+            else if (prod === 144) bStr = "12";
+            else bStr = "\\sqrt{" + prod + "}";
+
+            problemText = "直角三角形 \\(ABC\\) （\\(\\angle BAC = 90^\\circ\\)）の頂点 \\(A\\) から斜辺 \\(BC\\) に垂線 \\(AH\\) を下ろす。<br>" +
+                          "\\(BH = " + x + "\\)、\\(CH = " + y + "\\) のとき、線分 \\(AC\\) （\\(b\\)）の長さを求めなさい。";
+
+            explanationText = "【解説】<br>" +
+                              "1. 全体の斜辺 \\(BC = BH + CH = " + x + " + " + y + " = " + c + "\\) です。<br>" +
+                              "2. <strong>\\(b^2 = cy\\)</strong> の関係（\\(BC : AC = AC : CH\\)）を使います。<br>" +
+                              "3. 対応する辺の比の式を立てます：<br>" +
+                              "　\\(BC : AC = AC : CH\\)<br>" +
+                              "4. 長さを代入して式を解きます：<br>" +
+                              "　\\(" + c + " : AC = AC : " + y + "\\)<br>" +
+                              "　\\(AC^2 = " + c + " \\times " + y + " = " + prod + "\\)<br>" +
+                              "5. \\(AC > 0\\) より、\\(AC = \\mathbf{" + bStr + "}\\) です。";
+        } else if (subPattern === 3) {
+            // パターン3: 面積比 (BH : CH)
+            const xList = [2, 3, 4, 5, 7];
+            const yList = [3, 4, 5, 8, 9];
+            const x = xList[Math.floor(Math.random() * xList.length)];
+            const y = yList[Math.floor(Math.random() * yList.length)];
+            xVal = x; yVal = y;
+
+            problemText = "直角三角形 \\(ABC\\) （\\(\\angle BAC = 90^\\circ\\)）の頂点 \\(A\\) から斜辺 \\(BC\\) に垂線 \\(AH\\) を下ろす。<br>" +
+                          "\\(BH = " + x + "\\)、\\(CH = " + y + "\\) のとき、三角形 \\(ABH\\) と三角形 \\(ACH\\) の面積比 \\(\\triangle ABH : \\triangle ACH\\) をもっとも簡単な整数の比で求めなさい。";
+
+            explanationText = "【解説】<br>" +
+                              "1. 2つの三角形 \\(\\triangle ABH\\) と \\(\\triangle ACH\\) は、頂点 \\(A\\) から引いた垂線 \\(AH\\) を共通の高さとする、底辺が \\(BH\\)、\\(CH\\) の三角形です。<br>" +
+                              "2. <strong>高さの等しい三角形の面積比は、底辺の比に等しくなります。</strong><br>" +
+                              "3. したがって、面積比は \\(BH : CH\\) となり、<br>" +
+                              "　\\(\\triangle ABH : \\triangle ACH = \\mathbf{" + x + " : " + y + "}\\) です。";
+        } else if (subPattern === 4) {
+            // パターン4: 辺の比から面積比
+            const pairs = [
+                { a: 2, b: 3, a2: 4, b2: 9 },
+                { a: 3, b: 4, a2: 9, b2: 16 },
+                { a: 1, b: 2, a2: 1, b2: 4 },
+                { a: 3, b: 5, a2: 9, b2: 25 }
+            ];
+            const p = pairs[Math.floor(Math.random() * pairs.length)];
+            xVal = p.a2; yVal = p.b2;
+
+            problemText = "直角三角形 \\(ABC\\) （\\(\\angle BAC = 90^\\circ\\)）において、\\(AB : AC = " + p.a + " : " + p.b + "\\) である。頂点 \\(A\\) から斜辺 \\(BC\\) に垂線 \\(AH\\) を下ろすとき、三角形 \\(ABH\\) と三角形 \\(ACH\\) の面積比 \\(\\triangle ABH : \\triangle ACH\\) をもっとも簡単な整数の比で求めなさい。";
+
+            explanationText = "【解説】<br>" +
+                              "1. 三角形 \\(ABH\\) と三角形 \\(ACH\\) の相似比は、対応する辺の比 \\(AB : AC = " + p.a + " : " + p.b + "\\) です。<br>" +
+                              "2. <strong>相似な図形の面積比は、相似比の2乗に等しくなります。</strong><br>" +
+                              "3. したがって、面積比は \\(AB^2 : AC^2 = " + p.a + "^2 : " + p.b + "^2 = \\mathbf{" + p.a2 + " : " + p.b2 + "}\\) となります。";
+        } else {
+            // パターン5: ab = ch (面積の利用)
+            const hList = [4, 6, 8, 10];
+            const h = hList[Math.floor(Math.random() * hList.length)];
+            const a = h + 2, b = h + 4; // ざっくりとした数値設定
+            xVal = 9; yVal = 16;
+
+            problemText = "直角三角形 \\(ABC\\) （\\(\\angle BAC = 90^\\circ\\)）において、\\(AB = " + (h*5/3).toFixed(0) + "\\)、\\(AC = " + (h*5/4).toFixed(0) + "\\) のとき、面積の利用等を用いて計算を工夫してみましょう。";
+            
+            explanationText = "【解説】<br>" +
+                              "1. 三角形 \\(ABC\\) の面積を \\(2\\) 通りの底辺と高さの組み合わせで表します。<br>" +
+                              "2. 公式 <strong>\\(ab = ch\\)</strong> を利用して各長さを求めます。";
+        }
+
+        // 長さに応じて動的にHの位置（X座標）を計算するロジック
+        const totalW = 240; 
+        const startX = 40;
+        const hX = startX + totalW * (xVal / (xVal + yVal));
+        const aX = hX;
+        const aY = 35;
+        const bX = startX, bY = 155;
+        const cX = startX + totalW, cY = 155;
+
+        const problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                           '<svg viewBox="0 0 320 190" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:260px; height:150px; display:inline-block;">' +
+                           '<polygon points="' + aX + ',' + aY + ' ' + bX + ',' + bY + ' ' + cX + ',' + cY + '" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+                           '<line x1="' + aX + '" y1="' + aY + '" x2="' + hX + '" y2="' + cY + '" stroke="#333" stroke-width="1.5" stroke-dasharray="3,3"/>' +
+                           '<polyline points="' + (aX-7) + ',' + (aY+9) + ' ' + aX + ',' + (aY+16) + ' ' + (aX+7) + ',' + (aY+9) + '" fill="none" stroke="#333" stroke-width="1"/>' +
+                           '<rect x="' + (hX-4) + '" y="' + (cY-9) + '" width="9" height="9" fill="none" stroke="#333" stroke-width="1"/>' +
+                           '<text x="' + aX + '" y="' + (aY-8) + '" font-size="11" font-weight="bold" text-anchor="middle">A</text>' +
+                           '<text x="' + (bX-8) + '" y="' + (bY+16) + '" font-size="11" font-weight="bold" text-anchor="middle">B</text>' +
+                           '<text x="' + (cX+8) + '" y="' + (cY+16) + '" font-size="11" font-weight="bold" text-anchor="middle">C</text>' +
+                           '<text x="' + hX + '" y="' + (cY+18) + '" font-size="11" font-weight="bold" text-anchor="middle">H</text>' +
+                           '</svg></div>';
+
+        return {
+            problem: problemText + "<br>" + problemSvg,
+            explanation: explanationText
+        };
+    }
+},
+"正五角形と黄金比": {
+    category: "平面図形",
+    level: "難関私立",
+    formula: "<strong>【正五角形と黄金比】</strong><br>" +
+             "正五角形内に対角線を結んだとき、その内部に出てくる角度は \\(36^\\circ\\)、\\(72^\\circ\\)、\\(108^\\circ\\) しか出てきません。<br>" +
+             "\\(36^\\circ\\) と \\(72^\\circ\\) で構成された二等辺三角形は、短辺：長辺の比が \\(2 : 1+\\sqrt{5}\\)（黄金比）となります。<br><br>" +
+             '<div style="text-align:center; margin: 6px 0;">' +
+             '<svg viewBox="0 0 240 230" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:200px; height:190px; display:inline-block;">' +
+             // 正五角形
+             '<polygon points="120,25 205,87 173,193 67,193 35,87" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+             // 対角線 AC, AD, BE
+             '<line x1="120" y1="25" x2="173" y2="193" stroke="#e74c3c" stroke-width="1.2"/>' +
+             '<line x1="120" y1="25" x2="67" y2="193" stroke="#e74c3c" stroke-width="1.2"/>' +
+             '<line x1="205" y1="87" x2="35" y2="87" stroke="#2980b9" stroke-width="1.2"/>' +
+             // 交点 F
+             '<circle cx="139" cy="87" r="3" fill="#333"/>' +
+             // ラベル
+             '<text x="120" y="17" font-size="11" font-weight="bold" text-anchor="middle">A</text>' +
+             '<text x="214" y="87" font-size="11" font-weight="bold">B</text>' +
+             '<text x="178" y="208" font-size="11" font-weight="bold">C</text>' +
+             '<text x="53" y="208" font-size="11" font-weight="bold">D</text>' +
+             '<text x="20" y="87" font-size="11" font-weight="bold">E</text>' +
+             '<text x="145" y="79" font-size="11" font-weight="bold" fill="#c0392b">F</text>' +
+             '</svg></div>' +
+             "<strong>【証明のポイント】</strong><br>" +
+             "等しい角度を利用して \\(\\triangle ABC \\sim \\triangle AFB\\) を示します。<br>" +
+             "正五角形の1辺を \\(2\\)、\\(AC = x\\) とすると、\\(CF = CB = 2\\) より \\(AF = x - 2\\)。<br>" +
+             "相似比より \\(2 : (x - 2) = x : 2 \\implies x^2 - 2x - 4 = 0\\)。<br>" +
+             "これを解くと \\(x = 1 \\pm \\sqrt{5}\\)。\\(x > 0\\) より \\(x = 1 + \\sqrt{5}\\) となります。",
+    generateRandom: function() {
+        const bcValues = [2, 4, 6];
+        const bc = bcValues[Math.floor(Math.random() * bcValues.length)];
+        
+        const k = bc / 2;
+        let ansStr = "";
+        if (k === 1) {
+            ansStr = "1 + \\sqrt{5}";
+        } else {
+            ansStr = k + " + " + k + "\\sqrt{5}";
+        }
+
+        const problemText = "\\(AB = AC\\)、\\(AD = BD = BC\\) である三角形 \\(ABC\\) がある。<br>" +
+                          "\\(BC = " + bc + "\\) のとき、\\(AB\\) の長さを求めなさい。";
+
+        const explanationText = "【解説】<br>" +
+                              "1. <strong>図形の性質と相似関係</strong>：<br>" +
+                              "　\\(AD = BD = BC\\) より、\\(\\triangle BCD\\) および \\(\\triangle ABD\\) の辺の長さを整理すると、<br>" +
+                              "　\\(\\triangle ABC \\sim \\triangle BCD\\) （頂角 \\(36^\\circ\\)、底角 \\(72^\\circ\\) の二等辺三角形）となります。<br>" +
+                              "2. <strong>各線分の長さの設定</strong>：<br>" +
+                              "　\\(AB = AC = x\\) とおきます。<br>" +
+                              "　\\(CD = AC - AD = x - " + bc + "\\) と表せます（\\(AD = BC = " + bc + "\\)）。<br>" +
+                              "3. <strong>相似比の利用</strong>：<br>" +
+                              "　\\(AB : BC = BC : CD\\)<br>" +
+                              "　\\(x : " + bc + " = " + bc + " : (x - " + bc + ")\\)<br>" +
+                              "　\\(x(x - " + bc + ") = " + (bc * bc) + "\\)<br>" +
+                              "　\\(x^2 - " + bc + "x - " + (bc * bc) + " = 0\\)<br>" +
+                              "4. <strong>二次方程式を解く</strong>：<br>" +
+                              "　解の公式より \\(x = \\mathbf{" + ansStr + "}\\) （\\(x > 0\\)）となります。";
+
+        const problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                           '<svg viewBox="0 0 240 210" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:200px; height:175px; display:inline-block;">' +
+                           '<polygon points="120,26 70,180 170,180" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+                           '<line x1="70" y1="180" x2="151" y2="121" stroke="#e74c3c" stroke-width="1.5"/>' +
+                           '<text x="120" y="18" font-size="11" font-weight="bold" text-anchor="middle">A</text>' +
+                           '<text x="58" y="192" font-size="11" font-weight="bold">B</text>' +
+                           '<text x="178" y="192" font-size="11" font-weight="bold">C</text>' +
+                           '<text x="160" y="120" font-size="11" font-weight="bold" fill="#c0392b">D</text>' +
+                           '</svg></div>';
+
+        return {
+            problem: problemText + "<br>" + problemSvg,
+            explanation: explanationText
+        };
+    }
+},
+        "比合わせと連比": {
+            category: "平面図形",
+            level: "公式",
+            formula: "<strong>a：b：c</strong> のように 3 つ以上の項がある場合の比を<strong>連比</strong>という。<br>" +
+                     "平行線の問題において連比を求めることも多い。同じ線分が2種類の比で表される時、合計をそろえることで比をそろえる<strong>比合わせ</strong>ができる。<br><br>" +
+                     "<strong>※1つの図形の中に書き込むとごちゃごちゃするので一度、線分を抜き出そう！</strong>",
+            generateRandom: function() {
+                // ユークリッドの互除法（最大公約数・最小公倍数・約分用）
+                function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+                function lcm(a, b) { return (a * b) / gcd(a, b); }
+                function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+                function simplifyPair(a, b) { const g = gcd(a, b); return [a / g, b / g]; }
+                function simplifyTriple(a, b, c) { const g = gcd(gcd(a, b), c); return [a / g, b / g, c / g]; }
+
+                // 線分交点の厳密計算（SVG描画用）
+                function getIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+                    const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+                    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+                    return { x: x1 + t * (x2 - x1), y: y1 + t * (y2 - y1) };
+                }
+
+                // 0: 異なる頂点から引く場合, 1: 同じ頂点から引く場合
+                const subType = Math.floor(Math.random() * 2);
+                
+                // 1〜5の整数からランダムな比を生成（約分して既約比にする）
+                const [m1, n1] = simplifyPair(randInt(1, 5), randInt(1, 5));
+                const [m2, n2] = simplifyPair(randInt(1, 5), randInt(1, 5));
+                
+                // 平行四辺形の基準座標: A(50,30), B(170,30), C(200,110), D(80,110)
+                const A = { x: 50, y: 30 }, B = { x: 170, y: 30 }, C = { x: 200, y: 110 }, D = { x: 80, y: 110 };
+
+                let problemText = "";
+                let explanationText = "";
+                let problemSvg = "";
+                
+                if (subType === 0) {
+                    const diag = Math.random() < 0.5 ? 'BD' : 'AC';
+                    
+                    if (diag === 'BD') {
+                        // 対角線 BD: EはBCを m1:n1 に分ける、FはADを m2:n2 に分ける
+                        const tE = m1 / (m1 + n1);
+                        const E = { x: B.x + tE * (C.x - B.x), y: B.y + tE * (C.y - B.y) };
+                        const tF = m2 / (m2 + n2);
+                        const F = { x: A.x + tF * (D.x - A.x), y: A.y + tF * (D.y - A.y) };
+
+                        // AEとBDの交点P, CFとBDの交点Q
+                        const P = getIntersect(A.x, A.y, E.x, E.y, B.x, B.y, D.x, D.y);
+                        const Q = getIntersect(C.x, C.y, F.x, F.y, B.x, B.y, D.x, D.y);
+
+                        // BP : PD = m1 : (m1 + n1) -> 合計 S1 = 2*m1 + n1
+                        // BQ : QD = (m2 + n2) : n2 -> 合計 S2 = m2 + 2*n2
+                        const bp1 = m1, pd1 = m1 + n1, S1 = bp1 + pd1;
+                        const bq2 = m2 + n2, qd2 = n2, S2 = bq2 + qd2;
+                        const L = lcm(S1, S2);
+                        const mult1 = L / S1, mult2 = L / S2;
+
+                        const bp = bp1 * mult1;
+                        const bq = bq2 * mult2;
+                        const qd = qd2 * mult2;
+                        const pq = bq - bp;
+                        const [ans1, ans2, ans3] = simplifyTriple(bp, pq, qd);
+
+                        problemText = "右の図の平行四辺形 \\(ABCD\\) において、点 \\(E\\) は辺 \\(BC\\) を \\(" + m1 + ":" + n1 + "\\) に分ける点、点 \\(F\\) は辺 \\(AD\\) を \\(" + m2 + ":" + n2 + "\\) に分ける点である。<br>" +
+                                      "対角線 \\(BD\\) と線分 \\(AE\\) の交点を \\(P\\)、線分 \\(CF\\) との交点を \\(Q\\) とするとき、比 \\(BP : PQ : QD\\) を最も簡単な整数の比で求めなさい。";
+                        
+                        explanationText = "【解説】<br>" +
+                                          "1. <strong>相似を利用して対角線の分割比を求める</strong>：<br>" +
+                                          "　・\\(\\triangle BPE \\sim \\triangle DPA\\) より \\(BP : PD = BE : AD = " + bp1 + " : " + pd1 + "\\)（合計 \\(" + S1 + "\\)）<br>" +
+                                          "　・\\(\\triangle DQF \\sim \\triangle BQC\\) より \\(BQ : QD = BC : DF = " + bq2 + " : " + qd2 + "\\)（合計 \\(" + S2 + "\\)）<br>" +
+                                          "2. <strong>比合わせ（最小公倍数 \\(" + L + "\\) でそろえる）</strong>：<br>" +
+                                          "　・\\(BP : PD = " + bp + " : " + (pd1 * mult1) + "\\)<br>" +
+                                          "　・\\(BQ : QD = " + bq + " : " + qd + "\\)<br>" +
+                                          "3. よって \\(BP : PQ : QD = " + bp + " : (" + bq + " - " + bp + ") : " + qd + " = \\mathbf{" + ans1 + " : " + ans2 + " : " + ans3 + "}\\) となります。";
+                                          
+                        problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                                     '<svg viewBox="0 0 220 140" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:190px; height:120px; display:inline-block;">' +
+                                     '<polygon points="50,30 170,30 200,110 80,110" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+                                     '<line x1="170" y1="30" x2="80" y2="110" stroke="#333" stroke-width="1.2" stroke-dasharray="3,3"/>' +
+                                     '<line x1="' + A.x + '" y1="' + A.y + '" x2="' + E.x + '" y2="' + E.y + '" stroke="#2980b9" stroke-width="1.3"/>' +
+                                     '<line x1="' + C.x + '" y1="' + C.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#e74c3c" stroke-width="1.3"/>' +
+                                     '<circle cx="' + P.x + '" cy="' + P.y + '" r="2.2" fill="#333"/>' +
+                                     '<circle cx="' + Q.x + '" cy="' + Q.y + '" r="2.2" fill="#333"/>' +
+                                     '<text x="40" y="25" font-size="10" font-weight="bold">A</text>' +
+                                     '<text x="175" y="25" font-size="10" font-weight="bold">B</text>' +
+                                     '<text x="208" y="120" font-size="10" font-weight="bold">C</text>' +
+                                     '<text x="70" y="120" font-size="10" font-weight="bold">D</text>' +
+                                     '<text x="' + (E.x + 6) + '" y="' + (E.y + 3) + '" font-size="10" font-weight="bold" fill="#2980b9">E</text>' +
+                                     '<text x="' + (F.x - 12) + '" y="' + (F.y + 3) + '" font-size="10" font-weight="bold" fill="#e74c3c">F</text>' +
+                                     '<text x="' + (P.x - 4) + '" y="' + (P.y - 6) + '" font-size="9" font-weight="bold">P</text>' +
+                                     '<text x="' + (Q.x + 4) + '" y="' + (Q.y + 10) + '" font-size="9" font-weight="bold">Q</text>' +
+                                     '</svg></div>';
+                    } else {
+                        // 対角線 AC: FはABを m1:n1 に分ける、EはCDを m2:n2 に分ける（A側がP、C側がQ）
+                        const tF = m1 / (m1 + n1);
+                        const F = { x: A.x + tF * (B.x - A.x), y: A.y + tF * (B.y - A.y) };
+                        const tE = m2 / (m2 + n2);
+                        const E = { x: C.x + tE * (D.x - C.x), y: C.y + tE * (D.y - C.y) };
+
+                        // DFとACの交点P, BEとACの交点Q
+                        const P = getIntersect(D.x, D.y, F.x, F.y, A.x, A.y, C.x, C.y);
+                        const Q = getIntersect(B.x, B.y, E.x, E.y, A.x, A.y, C.x, C.y);
+
+                        // AP : PC = m1 : (m1 + n1) -> 合計 S1 = 2*m1 + n1
+                        // AQ : QC = (m2 + n2) : m2 -> 合計 S2 = 2*m2 + n2
+                        const ap1 = m1, pc1 = m1 + n1, S1 = ap1 + pc1;
+                        const aq2 = m2 + n2, qc2 = m2, S2 = aq2 + qc2;
+                        const L = lcm(S1, S2);
+                        const mult1 = L / S1, mult2 = L / S2;
+
+                        const ap = ap1 * mult1;
+                        const aq = aq2 * mult2;
+                        const qc = qc2 * mult2;
+                        const pq = aq - ap;
+                        const [ans1, ans2, ans3] = simplifyTriple(ap, pq, qc);
+
+                        problemText = "右の図の平行四辺形 \\(ABCD\\) において、点 \\(F\\) は辺 \\(AB\\) を \\(" + m1 + ":" + n1 + "\\) に分ける点、点 \\(E\\) は辺 \\(CD\\) を \\(" + m2 + ":" + n2 + "\\) に分ける点である。<br>" +
+                                      "対角線 \\(AC\\) と線分 \\(DF\\) の交点を \\(P\\)、線分 \\(BE\\) との交点を \\(Q\\) とするとき、比 \\(AP : PQ : QC\\) を最も簡単な整数の比で求めなさい。";
+                        
+                        explanationText = "【解説】<br>" +
+                                          "1. <strong>相似を利用して対角線の分割比を求める</strong>：<br>" +
+                                          "　・\\(\\triangle APF \\sim \\triangle CPD\\) より \\(AP : PC = AF : CD = " + ap1 + " : " + pc1 + "\\)（合計 \\(" + S1 + "\\)）<br>" +
+                                          "　・\\(\\triangle CQE \\sim \\triangle AQB\\) より \\(AQ : QC = AB : CE = " + aq2 + " : " + qc2 + "\\)（合計 \\(" + S2 + "\\)）<br>" +
+                                          "2. <strong>比合わせ（最小公倍数 \\(" + L + "\\) でそろえる）</strong>：<br>" +
+                                          "　・\\(AP : PC = " + ap + " : " + (pc1 * mult1) + "\\)<br>" +
+                                          "　・\\(AQ : QC = " + aq + " : " + qc + "\\)<br>" +
+                                          "3. よって \\(AP : PQ : QC = " + ap + " : (" + aq + " - " + ap + ") : " + qc + " = \\mathbf{" + ans1 + " : " + ans2 + " : " + ans3 + "}\\) となります。";
+                                          
+                        problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                                     '<svg viewBox="0 0 220 140" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:190px; height:120px; display:inline-block;">' +
+                                     '<polygon points="50,30 170,30 200,110 80,110" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+                                     '<line x1="50" y1="30" x2="200" y2="110" stroke="#333" stroke-width="1.2" stroke-dasharray="3,3"/>' +
+                                     '<line x1="' + D.x + '" y1="' + D.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#e74c3c" stroke-width="1.3"/>' +
+                                     '<line x1="' + B.x + '" y1="' + B.y + '" x2="' + E.x + '" y2="' + E.y + '" stroke="#2980b9" stroke-width="1.3"/>' +
+                                     '<circle cx="' + P.x + '" cy="' + P.y + '" r="2.2" fill="#333"/>' +
+                                     '<circle cx="' + Q.x + '" cy="' + Q.y + '" r="2.2" fill="#333"/>' +
+                                     '<text x="40" y="25" font-size="10" font-weight="bold">A</text>' +
+                                     '<text x="175" y="25" font-size="10" font-weight="bold">B</text>' +
+                                     '<text x="208" y="120" font-size="10" font-weight="bold">C</text>' +
+                                     '<text x="70" y="120" font-size="10" font-weight="bold">D</text>' +
+                                     '<text x="' + (F.x - 3) + '" y="' + (F.y - 6) + '" font-size="10" font-weight="bold" fill="#e74c3c">F</text>' +
+                                     '<text x="' + (E.x - 3) + '" y="' + (E.y + 12) + '" font-size="10" font-weight="bold" fill="#2980b9">E</text>' +
+                                     '<text x="' + (P.x - 10) + '" y="' + (P.y + 5) + '" font-size="9" font-weight="bold">P</text>' +
+                                     '<text x="' + (Q.x + 5) + '" y="' + (Q.y - 3) + '" font-size="9" font-weight="bold">Q</text>' +
+                                     '</svg></div>';
+                    }
+                } else {
+                    // 同じ頂点 A(50,30) から2本引く場合（対角線 BD）
+                    // EはBCを m1:n1 に分ける、FはCDを m2:n2 に分ける
+                    const tE = m1 / (m1 + n1);
+                    const E = { x: B.x + tE * (C.x - B.x), y: B.y + tE * (C.y - B.y) };
+                    const tF = m2 / (m2 + n2);
+                    const F = { x: C.x + tF * (D.x - C.x), y: C.y + tF * (D.y - C.y) };
+
+                    // AEとBDの交点P, AFとBDの交点Q
+                    const P = getIntersect(A.x, A.y, E.x, E.y, B.x, B.y, D.x, D.y);
+                    const Q = getIntersect(A.x, A.y, F.x, F.y, B.x, B.y, D.x, D.y);
+
+                    // BP : PD = m1 : (m1 + n1) -> 合計 S1 = 2*m1 + n1
+                    // BQ : QD = (m2 + n2) : n2 -> 合計 S2 = m2 + 2*n2
+                    const bp1 = m1, pd1 = m1 + n1, S1 = bp1 + pd1;
+                    const bq2 = m2 + n2, qd2 = n2, S2 = bq2 + qd2;
+                    const L = lcm(S1, S2);
+                    const mult1 = L / S1, mult2 = L / S2;
+
+                    const bp = bp1 * mult1;
+                    const bq = bq2 * mult2;
+                    const qd = qd2 * mult2;
+                    const pq = bq - bp;
+                    const [ans1, ans2, ans3] = simplifyTriple(bp, pq, qd);
+                    
+                    problemText = "右の図の平行四辺形 \\(ABCD\\) において、対角線 \\(BD\\) をひく。点 \\(E\\) は辺 \\(BC\\) を \\(" + m1 + ":" + n1 + "\\) に分ける点、点 \\(F\\) は辺 \\(CD\\) を \\(" + m2 + ":" + n2 + "\\) に分ける点である。<br>" +
+                                  "頂点 \\(A\\) から点 \\(E\\)、点 \\(F\\) にそれぞれ直線を引き、対角線 \\(BD\\) との交点をそれぞれ \\(P, Q\\) とするとき、比 \\(BP : PQ : QD\\) を最も簡単な整数の比で求めなさい。";
+                    
+                    explanationText = "【解説】<br>" +
+                                      "1. <strong>同じ頂点からの線分と相似</strong>：<br>" +
+                                      "　・\\(\\triangle BPE \\sim \\triangle DPA\\) より \\(BP : PD = BE : AD = " + bp1 + " : " + pd1 + "\\)（合計 \\(" + S1 + "\\)）<br>" +
+                                      "　・\\(\\triangle DQF \\sim \\triangle BQA\\) より \\(BQ : QD = AB : DF = " + bq2 + " : " + qd2 + "\\)（合計 \\(" + S2 + "\\)）<br>" +
+                                      "2. <strong>比合わせ（最小公倍数 \\(" + L + "\\) でそろえる）</strong>：<br>" +
+                                      "　・\\(BP : PD = " + bp + " : " + (pd1 * mult1) + "\\)<br>" +
+                                      "　・\\(BQ : QD = " + bq + " : " + qd + "\\)<br>" +
+                                      "3. よって \\(BP : PQ : QD = " + bp + " : (" + bq + " - " + bp + ") : " + qd + " = \\mathbf{" + ans1 + " : " + ans2 + " : " + ans3 + "}\\) となります。";
+                                      
+                    problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                                 '<svg viewBox="0 0 220 140" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:190px; height:120px; display:inline-block;">' +
+                                 '<polygon points="50,30 170,30 200,110 80,110" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+                                 '<line x1="170" y1="30" x2="80" y2="110" stroke="#333" stroke-width="1.2" stroke-dasharray="3,3"/>' +
+                                 '<line x1="' + A.x + '" y1="' + A.y + '" x2="' + E.x + '" y2="' + E.y + '" stroke="#2980b9" stroke-width="1.3"/>' +
+                                 '<line x1="' + A.x + '" y1="' + A.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#e74c3c" stroke-width="1.3"/>' +
+                                 '<circle cx="' + P.x + '" cy="' + P.y + '" r="2.2" fill="#333"/>' +
+                                 '<circle cx="' + Q.x + '" cy="' + Q.y + '" r="2.2" fill="#333"/>' +
+                                 '<text x="40" y="25" font-size="10" font-weight="bold">A</text>' +
+                                 '<text x="175" y="25" font-size="10" font-weight="bold">B</text>' +
+                                 '<text x="208" y="120" font-size="10" font-weight="bold">C</text>' +
+                                 '<text x="70" y="120" font-size="10" font-weight="bold">D</text>' +
+                                 '<text x="' + (E.x + 6) + '" y="' + (E.y + 3) + '" font-size="10" font-weight="bold" fill="#2980b9">E</text>' +
+                                 '<text x="' + (F.x - 3) + '" y="' + (F.y + 12) + '" font-size="10" font-weight="bold" fill="#e74c3c">F</text>' +
+                                 '<text x="' + (P.x + 4) + '" y="' + (P.y + 10) + '" font-size="9" font-weight="bold">P</text>' +
+                                 '<text x="' + (Q.x + 4) + '" y="' + (Q.y + 10) + '" font-size="9" font-weight="bold">Q</text>' +
+                                 '</svg></div>';
+                }
+
+                return {
+                    problem: problemText + "<br>" + problemSvg,
+                    explanation: explanationText
+                };
+            }
+        },
+        "相似を作る": {
+            category: "平面図形",
+            level: "公立",
+            formula: "平行線内の対角線ではない中途半端な線分比を求める問題などで困った時は<strong>相似を作ろう</strong>。<br><br>" +
+                     "① <strong>外に延長してチョウチョ型</strong>を作る<br>" +
+                     "② <strong>内側に平行線を引いてピラミッド型 or チョウチョ型</strong>を作る<br><br>" +
+                     "<strong>※相似を作るために補助線を引くこと！とりあえず引くのではなく、目的をもって引こう！</strong>",
+            generateRandom: function() {
+                function gcd(x, y) { return y === 0 ? x : gcd(y, x % y); }
+                function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+                function simplifyPair(a, b) { const g = gcd(a, b); return [a / g, b / g]; }
+
+                function getIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+                    const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+                    if (Math.abs(denom) < 1e-9) return { x: 0, y: 0 };
+                    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+                    return { x: x1 + t * (x2 - x1), y: y1 + t * (y2 - y1) };
+                }
+
+                function distance(p1, p2) {
+                    return Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                }
+
+                const diag = Math.random() < 0.5 ? 'AC' : 'BD';
+                const corner = Math.random() < 0.5 ? 0 : 1;
+                
+                let m1, n1, m2, n2, explPattern;
+                let E, F, P, Q, ans1, ans2;
+                let side1, side2, problemText, explanationText, problemSvg, explSvg;
+                const A = { x: 60, y: 40 }, B = { x: 180, y: 40 }, C = { x: 210, y: 120 }, D = { x: 90, y: 120 };
+
+                function calcDiagRatio(m_1, n_1, m_2, n_2) {
+                    const num = m_1 * m_2;
+                    const den = m_2 * (m_1 + n_1) + n_2 * m_1;
+                    return simplifyPair(num, den);
+                }
+
+                for (let attempt = 0; attempt < 5; attempt++) {
+                    [m1, n1] = simplifyPair(randInt(1, 4), randInt(1, 4));
+                    [m2, n2] = simplifyPair(randInt(1, 4), randInt(1, 4));
+                    explPattern = Math.random() < 0.5 ? 0 : 1;
+
+                    if (diag === 'AC') {
+                        if (corner === 0) {
+                            const tE = m1 / (m1 + n1);
+                            E = { x: A.x + tE * (D.x - A.x), y: A.y + tE * (D.y - A.y) };
+                            const tF = m2 / (m2 + n2);
+                            F = { x: A.x + tF * (B.x - A.x), y: A.y + tF * (B.y - A.y) };
+                            P = getIntersect(E.x, E.y, F.x, F.y, A.x, A.y, C.x, C.y);
+                            Q = getIntersect(E.x, E.y, F.x, F.y, C.x, C.y, B.x, B.y);
+                        } else {
+                            const tE = m1 / (m1 + n1);
+                            E = { x: C.x + tE * (B.x - C.x), y: C.y + tE * (B.y - C.y) };
+                            const tF = m2 / (m2 + n2);
+                            F = { x: C.x + tF * (D.x - C.x), y: C.y + tF * (D.y - C.y) };
+                            P = getIntersect(E.x, E.y, F.x, F.y, A.x, A.y, C.x, C.y);
+                            Q = getIntersect(E.x, E.y, F.x, F.y, A.x, A.y, D.x, D.y);
+                        }
+                    } else {
+                        if (corner === 0) {
+                            const tE = m1 / (m1 + n1);
+                            E = { x: B.x + tE * (A.x - B.x), y: B.y + tE * (A.y - B.y) };
+                            const tF = m2 / (m2 + n2);
+                            F = { x: B.x + tF * (C.x - B.x), y: B.y + tF * (C.y - B.y) };
+                            P = getIntersect(E.x, E.y, F.x, F.y, B.x, B.y, D.x, D.y);
+                            Q = getIntersect(E.x, E.y, F.x, F.y, A.x, A.y, D.x, D.y);
+                        } else {
+                            const tE = m1 / (m1 + n1);
+                            E = { x: D.x + tE * (A.x - D.x), y: D.y + tE * (A.y - D.y) };
+                            const tF = m2 / (m2 + n2);
+                            F = { x: D.x + tF * (C.x - D.x), y: D.y + tF * (C.y - D.y) };
+                            P = getIntersect(E.x, E.y, F.x, F.y, B.x, B.y, D.x, D.y);
+                            Q = getIntersect(E.x, E.y, F.x, F.y, A.x, A.y, B.x, B.y);
+                        }
+                    }
+
+                    const tooCloseToVertex = distance(Q, A) < 5 || distance(Q, B) < 5 || distance(Q, C) < 5 || distance(Q, D) < 5;
+                    if (!tooCloseToVertex || attempt === 4) {
+                        break;
+                    }
+                }
+
+                // 共通の数値計算準備
+                // 対辺の長さを 1（または (m1+n1)*m2）と基準化して整数比を作る
+                const baseLen = (m1 + n1) * m2; // 平行四辺形の辺1・対辺の長さの基準値
+                const seg1 = m1 * m2;            // 頂点からEまでの長さ (AE, CE, BE, DE)
+                const extLen = n2 * m1;          // 延長してできた新しい線分の長さ (BQ, DQ)
+                const totalOpp = baseLen + extLen; // 対辺＋延長部分の合計長さ (CQ, AQ)
+
+                if (diag === 'AC') {
+                    let extTarget;
+                    if (corner === 0) {
+                        side1 = "AD"; side2 = "AB";
+                        [ans1, ans2] = calcDiagRatio(m1, n1, m2, n2);
+                        extTarget = B;
+                    } else {
+                        side1 = "CB"; side2 = "CD";
+                        const [rC, rA] = calcDiagRatio(m1, n1, m2, n2);
+                        ans1 = rA; ans2 = rC;
+                        extTarget = D;
+                    }
+
+                    problemText = "右の図の平行四辺形 \\(ABCD\\) において、点 \\(E\\) は辺 \\(" + side1 + "\\) を \\(" + m1 + ":" + n1 + "\\) に分ける点、点 \\(F\\) は辺 \\(" + side2 + "\\) を \\(" + m2 + ":" + n2 + "\\) に分ける点である。<br>" +
+                                  "対角線 \\(AC\\) と線分 \\(EF\\) の交点を \\(P\\) とするとき、補助線を引いて相似を作り、比 \\(AP : PC\\) を最も簡単な整数の比で求めなさい。";
+
+                    problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                                 '<svg viewBox="30 15 210 130" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:210px; height:130px; display:inline-block;">' +
+                                 '<polygon points="60,40 180,40 210,120 90,120" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+                                 '<line x1="60" y1="40" x2="210" y2="120" stroke="#333" stroke-width="1.2" stroke-dasharray="3,3"/>' +
+                                 '<line x1="' + E.x + '" y1="' + E.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#2980b9" stroke-width="1.5"/>' +
+                                 '<circle cx="' + E.x + '" cy="' + E.y + '" r="2.2" fill="#2980b9"/>' +
+                                 '<circle cx="' + F.x + '" cy="' + F.y + '" r="2.2" fill="#2980b9"/>' +
+                                 '<circle cx="' + P.x + '" cy="' + P.y + '" r="2.5" fill="#e74c3c"/>' +
+                                 '<text x="48" y="36" font-size="10" font-weight="bold">A</text>' +
+                                 '<text x="184" y="36" font-size="10" font-weight="bold">B</text>' +
+                                 '<text x="214" y="128" font-size="10" font-weight="bold">C</text>' +
+                                 '<text x="78" y="128" font-size="10" font-weight="bold">D</text>' +
+                                 '<text x="' + (E.x + (corner === 0 ? -12 : 6)) + '" y="' + (E.y + 4) + '" font-size="10" font-weight="bold" fill="#2980b9">E</text>' +
+                                 '<text x="' + (F.x - 3) + '" y="' + (F.y + (corner === 0 ? -6 : 12)) + '" font-size="10" font-weight="bold" fill="#2980b9">F</text>' +
+                                 '<text x="' + (P.x + 4) + '" y="' + (P.y - 5) + '" font-size="10" font-weight="bold" fill="#e74c3c">P</text>' +
+                                 '</svg></div>';
+
+                    if (explPattern === 0) {
+                        const tri1 = corner === 0 ? "\\triangle AEF \\backsim \\triangle BQF" : "\\triangle CEF \\backsim \\triangle DQF";
+                        const ratioSides1 = corner === 0 ? "AF : BF = " + m2 + " : " + n2 : "CF : DF = " + m2 + " : " + n2;
+                        const segE = corner === 0 ? "AE" : "CE";
+                        const segQ = corner === 0 ? "BQ" : "DQ";
+                        const oppSide = corner === 0 ? "BC" : "AD";
+                        const totalSeg = corner === 0 ? "CQ" : "AQ";
+                        const tri2 = corner === 0 ? "\\triangle APE \\backsim \\triangle CPQ" : "\\triangle CPE \\backsim \\triangle APQ";
+                        const orderNote = corner === 0
+                            ? "AE : CQ = " + seg1 + " : " + totalOpp + " = " + ans1 + " : " + ans2
+                            : "AQ : CE = " + totalOpp + " : " + seg1 + " = " + ans1 + " : " + ans2;
+
+                        explanationText = "【解説（外に延長してチョウチョ型）】<br>" +
+                                          "1. <strong>補助線を引いてチョウチョ型を作る</strong>：<br>" +
+                                          "　線分 \\(EF\\) を \\(F\\) の方に延長し、辺 \\(" + oppSide + "\\) の延長線との交点を \\(Q\\) とします。<br>" +
+                                          "2. <strong>新しくできた線分 \\(" + segQ + "\\) の長さを求める</strong>：<br>" +
+                                          "　チョウチョ型 <strong>\\(" + tri1 + "\\)</strong> に注目すると、辺 \\(" + side2 + "\\) の比より相似比は <strong>\\(" + ratioSides1 + "\\)</strong> です。<br>" +
+                                          "　辺 \\(" + side1 + "\\)（= \\(" + oppSide + "\\)）全体の長さを \\(" + (m1 + n1) + "\\) とおくと、\\(" + segE + " = " + m1 + "\\) なので、<br>" +
+                                          "　\\(" + segE + " : " + segQ + " = " + m2 + " : " + n2 + "\\) より、新しくできた線分 <strong>\\(" + segQ + " = " + m1 + " \\times \\frac{" + n2 + "}{" + m2 + "} = \\frac{" + extLen + "}{" + m2 + "}\\)</strong> となります。<br>" +
+                                          "　（分母を払って \\(" + oppSide + " = " + baseLen + "\\)、\\(" + segE + " = " + seg1 + "\\) とすると、<strong>\\(" + segQ + " = " + extLen + "\\)</strong>、合わせて <strong>\\(" + totalSeg + " = " + baseLen + " + " + extLen + " = " + totalOpp + "\\)</strong> です）<br>" +
+                                          "3. <strong>対角線の比を求める</strong>：<br>" +
+                                          "　次に、もう一つのチョウチョ型 <strong>\\(" + tri2 + "\\)</strong> に注目すると、対応する辺の比より<br>" +
+                                          "　\\(AP : PC = " + orderNote + "\\) となります。";
+
+                        const minX = Math.min(20, Q.x - 15);
+                        const maxX = Math.max(240, Q.x + 20);
+                        const minY = Math.min(10, Q.y - 15);
+                        const maxY = Math.max(140, Q.y + 20);
+
+                        explSvg = '<div style="text-align:center; margin: 6px 0;">' +
+                                  '<svg viewBox="' + minX + ' ' + minY + ' ' + (maxX - minX) + ' ' + (maxY - minY) + '" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:220px; height:140px; display:inline-block;">' +
+                                  '<polygon points="60,40 180,40 210,120 90,120" fill="#f8fafc" stroke="#333" stroke-width="1.2"/>' +
+                                  '<line x1="60" y1="40" x2="210" y2="120" stroke="#888" stroke-width="1.1" stroke-dasharray="3,2"/>' +
+                                  '<line x1="' + E.x + '" y1="' + E.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#2980b9" stroke-width="1.4"/>' +
+                                  '<line x1="' + F.x + '" y1="' + F.y + '" x2="' + Q.x + '" y2="' + Q.y + '" stroke="#e74c3c" stroke-width="1.3" stroke-dasharray="3,2"/>' +
+                                  '<line x1="' + extTarget.x + '" y1="' + extTarget.y + '" x2="' + Q.x + '" y2="' + Q.y + '" stroke="#e74c3c" stroke-width="1.3" stroke-dasharray="3,2"/>' +
+                                  '<circle cx="' + Q.x + '" cy="' + Q.y + '" r="2.3" fill="#e74c3c"/>' +
+                                  '<text x="48" y="36" font-size="9" font-weight="bold">A</text>' +
+                                  '<text x="184" y="36" font-size="9" font-weight="bold">B</text>' +
+                                  '<text x="214" y="128" font-size="9" font-weight="bold">C</text>' +
+                                  '<text x="78" y="128" font-size="9" font-weight="bold">D</text>' +
+                                  '<text x="' + (Q.x + 4) + '" y="' + (Q.y + 3) + '" font-size="9" font-weight="bold" fill="#e74c3c">Q</text>' +
+                                  '</svg></div>';
+                    } else {
+                        const G = getIntersect(F.x, F.y, F.x + (D.x - A.x), F.y + (D.y - A.y), A.x, A.y, C.x, C.y);
+                        const triPyr = corner === 0 ? "\\triangle AFG \\backsim \\triangle ABC" : "\\triangle CFG \\backsim \\triangle CDA";
+                        const ratioPyr = corner === 0 ? "AF : AB = " + m2 + " : " + (m2 + n2) : "CF : CD = " + m2 + " : " + (m2 + n2);
+                        const segE = corner === 0 ? "AE" : "CE";
+                        const triBut = corner === 0 ? "\\triangle APE \\backsim \\triangle GPF" : "\\triangle CPE \\backsim \\triangle GPF";
+                        const basePyrSide = corner === 0 ? "BC" : "AD";
+                        const fgVal = m2 * (m1 + n1);
+                        const aeVal = m1 * (m2 + n2);
+                        const agVal = m2;
+                        const gcVal = n2;
+                        const innerPart = corner === 0 ? "AG" : "CG";
+                        const outerPart = corner === 0 ? "GC" : "GA";
+                        const pRatio = corner === 0
+                            ? "AP : PG = " + aeVal + " : " + fgVal + " = " + ans1 + " : " + (n2 * m1)
+                            : "CP : PG = " + aeVal + " : " + fgVal + " = " + ans2 + " : " + (n2 * m1);
+
+                        explanationText = "【解説（内側に平行線を引く）】<br>" +
+                                          "1. <strong>内側に平行線を引いてピラミッド型を作る</strong>：<br>" +
+                                          "　点 \\(F\\) を通り、辺 \\(" + side1 + "\\) に平行な補助線を引き、対角線 \\(AC\\) との交点を \\(G\\) とします。<br>" +
+                                          "2. <strong>新しくできた線分 \\(FG\\) と対角線の比を求める</strong>：<br>" +
+                                          "　ピラミッド型 <strong>\\(" + triPyr + "\\)</strong> に注目すると、辺 \\(" + side2 + "\\) の比より相似比は <strong>\\(" + ratioPyr + "\\)</strong> です。<br>" +
+                                          "　よって、対角線上の比は <strong>\\(" + innerPart + " : " + outerPart + " = " + agVal + " : " + gcVal + "\\)</strong> に分かれ、新しくできた線分 <strong>\\(FG\\)</strong> は辺 \\(" + basePyrSide + "\\) の \\(\\frac{" + m2 + "}{" + (m2 + n2) + "}\\) 倍になります。<br>" +
+                                          "　平行四辺形の辺 \\(" + side1 + " = " + basePyrSide + "\\) の長さを \\(" + ((m1 + n1) * (m2 + n2)) + "\\) とおくと、\\(" + segE + " = " + aeVal + "\\)、<strong>\\(FG = " + fgVal + "\\)</strong> となります。<br>" +
+                                          "3. <strong>チョウチョ型で最後の比を求める</strong>：<br>" +
+                                          "　次に、内側のチョウチョ型 <strong>\\(" + triBut + "\\)</strong> に注目すると、相似比は <strong>\\(" + segE + " : FG = " + aeVal + " : " + fgVal + "\\)</strong> です。<br>" +
+                                          "　これと \\(" + innerPart + " : " + outerPart + " = " + agVal + " : " + gcVal + "\\) を合わせることで、<strong>\\(AP : PC = " + ans1 + " : " + ans2 + "\\)</strong> と求められます。";
+
+                        explSvg = '<div style="text-align:center; margin: 6px 0;">' +
+                                  '<svg viewBox="30 15 210 130" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:210px; height:130px; display:inline-block;">' +
+                                  '<polygon points="60,40 180,40 210,120 90,120" fill="#f8fafc" stroke="#333" stroke-width="1.2"/>' +
+                                  '<line x1="60" y1="40" x2="210" y2="120" stroke="#888" stroke-width="1.1" stroke-dasharray="3,2"/>' +
+                                  '<line x1="' + E.x + '" y1="' + E.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#2980b9" stroke-width="1.4"/>' +
+                                  '<line x1="' + F.x + '" y1="' + F.y + '" x2="' + G.x + '" y2="' + G.y + '" stroke="#e74c3c" stroke-width="1.4" stroke-dasharray="3,2"/>' +
+                                  '<circle cx="' + G.x + '" cy="' + G.y + '" r="2.2" fill="#e74c3c"/>' +
+                                  '<text x="48" y="36" font-size="9" font-weight="bold">A</text>' +
+                                  '<text x="184" y="36" font-size="9" font-weight="bold">B</text>' +
+                                  '<text x="214" y="128" font-size="9" font-weight="bold">C</text>' +
+                                  '<text x="78" y="128" font-size="9" font-weight="bold">D</text>' +
+                                  '<text x="' + (G.x + (corner === 0 ? -10 : 5)) + '" y="' + (G.y + 10) + '" font-size="9" font-weight="bold" fill="#e74c3c">G</text>' +
+                                  '</svg></div>';
+                    }
+
+                } else {
+                    let extTarget;
+                    if (corner === 0) {
+                        side1 = "BA"; side2 = "BC";
+                        [ans1, ans2] = calcDiagRatio(m1, n1, m2, n2);
+                        extTarget = D;
+                    } else {
+                        side1 = "DA"; side2 = "DC";
+                        const [rD, rB] = calcDiagRatio(m1, n1, m2, n2);
+                        ans1 = rB; ans2 = rD;
+                        extTarget = B;
+                    }
+
+                    problemText = "右の図の平行四辺形 \\(ABCD\\) において、点 \\(E\\) は辺 \\(" + side1 + "\\) を \\(" + m1 + ":" + n1 + "\\) に分ける点、点 \\(F\\) は辺 \\(" + side2 + "\\) を \\(" + m2 + ":" + n2 + "\\) に分ける点である。<br>" +
+                                  "対角線 \\(BD\\) と線分 \\(EF\\) の交点を \\(P\\) とするとき、補助線を引いて相似を作り、比 \\(BP : PD\\) を最も簡単な整数の比で求めなさい。";
+
+                    problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                                 '<svg viewBox="30 15 210 130" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:210px; height:130px; display:inline-block;">' +
+                                 '<polygon points="60,40 180,40 210,120 90,120" fill="#eef2f7" stroke="#333" stroke-width="1.5"/>' +
+                                 '<line x1="180" y1="40" x2="90" y2="120" stroke="#333" stroke-width="1.2" stroke-dasharray="3,3"/>' +
+                                 '<line x1="' + E.x + '" y1="' + E.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#2980b9" stroke-width="1.5"/>' +
+                                 '<circle cx="' + E.x + '" cy="' + E.y + '" r="2.2" fill="#2980b9"/>' +
+                                 '<circle cx="' + F.x + '" cy="' + F.y + '" r="2.2" fill="#2980b9"/>' +
+                                 '<circle cx="' + P.x + '" cy="' + P.y + '" r="2.5" fill="#e74c3c"/>' +
+                                 '<text x="48" y="36" font-size="10" font-weight="bold">A</text>' +
+                                 '<text x="184" y="36" font-size="10" font-weight="bold">B</text>' +
+                                 '<text x="214" y="128" font-size="10" font-weight="bold">C</text>' +
+                                 '<text x="78" y="128" font-size="10" font-weight="bold">D</text>' +
+                                 '<text x="' + (E.x - 3) + '" y="' + (E.y + (corner === 0 ? -6 : 4)) + '" font-size="10" font-weight="bold" fill="#2980b9">E</text>' +
+                                 '<text x="' + (F.x + 5) + '" y="' + (F.y + (corner === 0 ? 3 : 12)) + '" font-size="10" font-weight="bold" fill="#2980b9">F</text>' +
+                                 '<text x="' + (P.x - 11) + '" y="' + (P.y + 10) + '" font-size="10" font-weight="bold" fill="#e74c3c">P</text>' +
+                                 '</svg></div>';
+
+                    if (explPattern === 0) {
+                        const tri1 = corner === 0 ? "\\triangle BEF \\backsim \\triangle CQF" : "\\triangle DEF \\backsim \\triangle AQF";
+                        // ※注意：BD対角線の場合、QはADの延長（corner=0）またはABの延長（corner=1）
+                        const realTri1 = corner === 0 ? "\\triangle CEF \\backsim \\triangle DQF" : "\\triangle CEF \\backsim \\triangle BQF";
+                        const ratioSides1 = corner === 0 ? "BF : CF = " + m2 + " : " + n2 : "DF : CF = " + m2 + " : " + n2;
+                        const segE = corner === 0 ? "BE" : "DE";
+                        const segQ = corner === 0 ? "DQ" : "BQ";
+                        const oppSide = corner === 0 ? "AD" : "AB";
+                        const totalSeg = corner === 0 ? "AQ" : "AQ";
+                        const tri2 = corner === 0 ? "\\triangle BPE \\backsim \\triangle DPQ" : "\\triangle DPE \\backsim \\triangle BPQ";
+                        const orderNote = corner === 0
+                            ? "BE : DQ = " + seg1 + " : " + totalOpp + " = " + ans1 + " : " + ans2
+                            : "BQ : DE = " + totalOpp + " : " + seg1 + " = " + ans1 + " : " + ans2;
+
+                        explanationText = "【解説（外に延長してチョウチョ型）】<br>" +
+                                          "1. <strong>補助線を引いてチョウチョ型を作る</strong>：<br>" +
+                                          "　線分 \\(EF\\) を \\(F\\) の方に延長し、辺 \\(" + oppSide + "\\) の延長線との交点を \\(Q\\) とします。<br>" +
+                                          "2. <strong>新しくできた線分 \\(" + segQ + "\\) の長さを求める</strong>：<br>" +
+                                          "　チョウチョ型 <strong>\\(" + realTri1 + "\\)</strong> に注目すると、辺 \\(" + side2 + "\\) の比より相似比は <strong>\\(" + ratioSides1 + "\\)</strong> です。<br>" +
+                                          "　辺 \\(" + side1 + "\\)（= \\(" + (corner === 0 ? "CD" : "BC") + "\\)）全体の長さを \\(" + (m1 + n1) + "\\) とおくと、\\(" + segE + " = " + m1 + "\\) なので、<br>" +
+                                          "　\\(" + segE + " : " + segQ + " = " + m2 + " : " + n2 + "\\) より、新しくできた線分 <strong>\\(" + segQ + " = " + m1 + " \\times \\frac{" + n2 + "}{" + m2 + "} = \\frac{" + extLen + "}{" + m2 + "}\\)</strong> となります。<br>" +
+                                          "　（分母を払って元の辺を \\(" + baseLen + "\\)、\\(" + segE + " = " + seg1 + "\\) とすると、<strong>\\(" + segQ + " = " + extLen + "\\)</strong>、合わせて <strong>\\(" + totalSeg + " = " + baseLen + " + " + extLen + " = " + totalOpp + "\\)</strong> です）<br>" +
+                                          "3. <strong>対角線の比を求める</strong>：<br>" +
+                                          "　次に、もう一つのチョウチョ型 <strong>\\(" + tri2 + "\\)</strong> に注目すると、対応する辺の比より<br>" +
+                                          "　\\(BP : PD = " + orderNote + "\\) となります。";
+
+                        const minX = Math.min(20, Q.x - 15);
+                        const maxX = Math.max(240, Q.x + 20);
+                        const minY = Math.min(10, Q.y - 15);
+                        const maxY = Math.max(140, Q.y + 20);
+
+                        explSvg = '<div style="text-align:center; margin: 6px 0;">' +
+                                  '<svg viewBox="' + minX + ' ' + minY + ' ' + (maxX - minX) + ' ' + (maxY - minY) + '" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:220px; height:140px; display:inline-block;">' +
+                                  '<polygon points="60,40 180,40 210,120 90,120" fill="#f8fafc" stroke="#333" stroke-width="1.2"/>' +
+                                  '<line x1="180" y1="40" x2="90" y2="120" stroke="#888" stroke-width="1.1" stroke-dasharray="3,2"/>' +
+                                  '<line x1="' + E.x + '" y1="' + E.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#2980b9" stroke-width="1.4"/>' +
+                                  '<line x1="' + F.x + '" y1="' + F.y + '" x2="' + Q.x + '" y2="' + Q.y + '" stroke="#e74c3c" stroke-width="1.3" stroke-dasharray="3,2"/>' +
+                                  '<line x1="' + extTarget.x + '" y1="' + extTarget.y + '" x2="' + Q.x + '" y2="' + Q.y + '" stroke="#e74c3c" stroke-width="1.3" stroke-dasharray="3,2"/>' +
+                                  '<circle cx="' + Q.x + '" cy="' + Q.y + '" r="2.3" fill="#e74c3c"/>' +
+                                  '<text x="48" y="36" font-size="9" font-weight="bold">A</text>' +
+                                  '<text x="184" y="36" font-size="9" font-weight="bold">B</text>' +
+                                  '<text x="214" y="128" font-size="9" font-weight="bold">C</text>' +
+                                  '<text x="78" y="128" font-size="9" font-weight="bold">D</text>' +
+                                  '<text x="' + (Q.x + 4) + '" y="' + (Q.y + 3) + '" font-size="9" font-weight="bold" fill="#e74c3c">Q</text>' +
+                                  '</svg></div>';
+                    } else {
+                        const G = getIntersect(F.x, F.y, F.x + (A.x - B.x), F.y + (A.y - B.y), B.x, B.y, D.x, D.y);
+                        const triPyr = corner === 0 ? "\\triangle BFG \\backsim \\triangle BCD" : "\\triangle DFG \\backsim \\triangle DCB";
+                        const ratioPyr = corner === 0 ? "BF : BC = " + m2 + " : " + (m2 + n2) : "DF : DC = " + m2 + " : " + (m2 + n2);
+                        const segE = corner === 0 ? "BE" : "DE";
+                        const triBut = corner === 0 ? "\\triangle BPE \\backsim \\triangle GPF" : "\\triangle DPE \\backsim \\triangle GPF";
+                        const basePyrSide = corner === 0 ? "CD" : "BC";
+                        const fgVal = m2 * (m1 + n1);
+                        const aeVal = m1 * (m2 + n2);
+                        const bgVal = m2;
+                        const gdVal = n2;
+                        const innerPart = corner === 0 ? "BG" : "DG";
+                        const outerPart = corner === 0 ? "GD" : "GB";
+
+                        explanationText = "【解説（内側に平行線を引く）】<br>" +
+                                          "1. <strong>内側に平行線を引いてピラミッド型を作る</strong>：<br>" +
+                                          "　点 \\(F\\) を通り、辺 \\(" + side1 + "\\) に平行な補助線を引き、対角線 \\(BD\\) との交点を \\(G\\) とします。<br>" +
+                                          "2. <strong>新しくできた線分 \\(FG\\) と対角線の比を求める</strong>：<br>" +
+                                          "　ピラミッド型 <strong>\\(" + triPyr + "\\)</strong> に注目すると、辺 \\(" + side2 + "\\) の比より相似比は <strong>\\(" + ratioPyr + "\\)</strong> です。<br>" +
+                                          "　よって、対角線上の比は <strong>\\(" + innerPart + " : " + outerPart + " = " + bgVal + " : " + gdVal + "\\)</strong> に分かれ、新しくできた線分 <strong>\\(FG\\)</strong> は辺 \\(" + basePyrSide + "\\) の \\(\\frac{" + m2 + "}{" + (m2 + n2) + "}\\) 倍になります。<br>" +
+                                          "　平行四辺形の辺 \\(" + side1 + " = " + basePyrSide + "\\) の長さを \\(" + ((m1 + n1) * (m2 + n2)) + "\\) とおくと、\\(" + segE + " = " + aeVal + "\\)、<strong>\\(FG = " + fgVal + "\\)</strong> となります。<br>" +
+                                          "3. <strong>チョウチョ型で最後の比を求める</strong>：<br>" +
+                                          "　次に、内側のチョウチョ型 <strong>\\(" + triBut + "\\)</strong> に注目すると、相似比は <strong>\\(" + segE + " : FG = " + aeVal + " : " + fgVal + "\\)</strong> です。<br>" +
+                                          "　これと \\(" + innerPart + " : " + outerPart + " = " + bgVal + " : " + gdVal + "\\) を合わせることで、<strong>\\(BP : PD = " + ans1 + " : " + ans2 + "\\)</strong> と求められます。";
+
+                        explSvg = '<div style="text-align:center; margin: 6px 0;">' +
+                                  '<svg viewBox="30 15 210 130" style="background:#fff; border:1px solid #ddd; border-radius:4px; width:210px; height:130px; display:inline-block;">' +
+                                  '<polygon points="60,40 180,40 210,120 90,120" fill="#f8fafc" stroke="#333" stroke-width="1.2"/>' +
+                                  '<line x1="180" y1="40" x2="90" y2="120" stroke="#888" stroke-width="1.1" stroke-dasharray="3,2"/>' +
+                                  '<line x1="' + E.x + '" y1="' + E.y + '" x2="' + F.x + '" y2="' + F.y + '" stroke="#2980b9" stroke-width="1.4"/>' +
+                                  '<line x1="' + F.x + '" y1="' + F.y + '" x2="' + G.x + '" y2="' + G.y + '" stroke="#e74c3c" stroke-width="1.4" stroke-dasharray="3,2"/>' +
+                                  '<circle cx="' + G.x + '" cy="' + G.y + '" r="2.2" fill="#e74c3c"/>' +
+                                  '<text x="48" y="36" font-size="9" font-weight="bold">A</text>' +
+                                  '<text x="184" y="36" font-size="9" font-weight="bold">B</text>' +
+                                  '<text x="214" y="128" font-size="9" font-weight="bold">C</text>' +
+                                  '<text x="78" y="128" font-size="9" font-weight="bold">D</text>' +
+                                  '<text x="' + (G.x + 5) + '" y="' + (G.y + 4) + '" font-size="9" font-weight="bold" fill="#e74c3c">G</text>' +
+                                  '</svg></div>';
+                    }
+                }
+
+                return {
+                    problem: problemText + "<br>" + problemSvg,
+                    explanation: explanationText + "<br><br><strong>【補助線のイメージ】</strong>" + explSvg
+                };
+            }
+        },
+        "台形の内分線": {
+            category: "平面図形",
+            level: "公立",
+            formula: "台形の内部に上底・下底に平行な線を引いて2つの台形に分ける時、その線分を台形の内分線という。<br><br>" +
+                     '<div style="text-align:center; margin: 8px 0;">' +
+                     '<svg viewBox="0 0 240 190" style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; width:220px; height:174px; display:inline-block;">' +
+                     // 平行記号（矢印）
+                     '<polyline points="116,52 121,55 116,58" fill="none" stroke="#64748b" stroke-width="1.2"/>' +
+                     '<polyline points="116,89.5 121,92.5 116,95.5" fill="none" stroke="#2980b9" stroke-width="1.2"/>' +
+                     '<polyline points="116,132 121,135 116,138" fill="none" stroke="#64748b" stroke-width="1.2"/>' +
+                     // 台形ABCD
+                     '<polygon points="80,55 160,55 195,135 45,135" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>' +
+                     // 内分線EF
+                     '<line x1="63.6" y1="92.5" x2="176.4" y2="92.5" stroke="#2980b9" stroke-width="1.6"/>' +
+                     '<circle cx="63.6" cy="92.5" r="2.3" fill="#2980b9"/>' +
+                     '<circle cx="176.4" cy="92.5" r="2.3" fill="#2980b9"/>' +
+                     // 頂点・点のラベル
+                     '<text x="68" y="51" font-size="11" font-weight="bold" fill="#1e293b">A</text>' +
+                     '<text x="163" y="51" font-size="11" font-weight="bold" fill="#1e293b">D</text>' +
+                     '<text x="33" y="143" font-size="11" font-weight="bold" fill="#1e293b">B</text>' +
+                     '<text x="199" y="143" font-size="11" font-weight="bold" fill="#1e293b">C</text>' +
+                     '<text x="50" y="96" font-size="11" font-weight="bold" fill="#2980b9">E</text>' +
+                     '<text x="181" y="96" font-size="11" font-weight="bold" fill="#2980b9">F</text>' +
+                     // 長さ a, b, x
+                     '<text x="116" y="45" font-size="11" font-weight="bold" font-style="italic" fill="#1e293b">a</text>' +
+                     '<text x="116" y="151" font-size="11" font-weight="bold" font-style="italic" fill="#1e293b">b</text>' +
+                     '<text x="116" y="86" font-size="11" font-weight="bold" font-style="italic" fill="#2980b9">x</text>' +
+                     // 比（左側のみ）
+                     '<text x="53" y="76" font-size="11" font-weight="bold" fill="#e11d48">ⓜ</text>' +
+                     '<text x="37" y="116" font-size="11" font-weight="bold" fill="#e11d48">ⓝ</text>' +
+                     '</svg>' +
+                     '</div>' +
+                     "台形 \\(ABCD\\) の上底 \\(AD = a\\)、下底 \\(BC = b\\) とし、辺 \\(AB\\)、\\(CD\\) をそれぞれ \\(m : n\\) に分ける点を \\(E\\)、\\(F\\) とするとき、内分線の長さ \\(x\\) は次式で求められる。<br><br>" +
+                     "\\(x = \\frac{an + bm}{m + n}\\)<br><br>" +
+                     "<strong>※覚え方のコツ：</strong>「たすき掛け」の要領で、上底 \\(a\\) には反対側の比 \\(n\\) を、下底 \\(b\\) には反対側の比 \\(m\\) を掛け合わせて足し、比の合計 \\((m + n)\\) で割る！",
+            generateRandom: function() {
+                function gcd(x, y) { return y === 0 ? x : gcd(y, x % y); }
+                function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+                function getCircled(n) {
+                    const map = {1: '①', 2: '②', 3: '③', 4: '④', 5: '⑤'};
+                    return map[n] || n;
+                }
+
+                const a = randInt(2, 5) * 2;
+                const b = a + randInt(2, 4) * 2;
+                const m = randInt(1, 3);
+                const n = randInt(1, 3);
+                const finalN = (m === n) ? n + 1 : n;
+
+                const num = a * finalN + b * m;
+                const den = m + finalN;
+                const g = gcd(num, den);
+                
+                let ansText = "";
+                if (den / g === 1) {
+                    ansText = (num / g).toString();
+                } else {
+                    ansText = "\\frac{" + (num / g) + "}{" + (den / g) + "}";
+                }
+
+                const mCircled = getCircled(m);
+                const nCircled = getCircled(finalN);
+
+                const problemText = "右の図の台形 \\(ABCD\\) において、上底 \\(AD = " + a + "\\)、下底 \\(BC = " + b + "\\) である。<br>" +
+                                    "辺 \\(AB\\) 上の点 \\(E\\)、辺 \\(CD\\) 上の点 \\(F\\) が \\(AE : EB = " + mCircled + " : " + nCircled + "\\) となるように引いた線分 \\(EF\\) の長さ \\(x\\) を求めなさい。";
+
+                const maxBottomWidth = 140;
+                const scale = maxBottomWidth / b;
+                const widthAD = a * scale;
+                const widthBC = b * scale;
+
+                const yTop = 55;
+                const yBottom = 135;
+                const cx = 120;
+                const cy = 95;
+
+                const xA = cx - widthAD / 2;
+                const xD = cx + widthAD / 2;
+                const xB = cx - widthBC / 2;
+                const xC = cx + widthBC / 2;
+
+                const ratio = m / (m + finalN);
+                const yE = yTop + ratio * (yBottom - yTop);
+                const xE = xA + ratio * (xB - xA);
+                const xF = xD + ratio * (xC - xD);
+
+                const midAD_x = cx;
+                const midAD_y = yTop;
+                const midBC_x = cx;
+                const midBC_y = yBottom;
+                const midEF_x = (xE + xF) / 2;
+                const midEF_y = yE;
+
+                const xAE_mid = (xA + xE) / 2;
+                const yAE_mid = (yTop + yE) / 2;
+                const xEB_mid = (xE + xB) / 2;
+                const yEB_mid = (yE + yBottom) / 2;
+
+                const rotations = [0, 90, 180, 270];
+                const rot = rotations[Math.floor(Math.random() * rotations.length)];
+
+                function rotatePoint(px, py, angleDeg) {
+                    const rad = angleDeg * Math.PI / 180;
+                    const cos = Math.cos(rad);
+                    const sin = Math.sin(rad);
+                    const dx = px - cx;
+                    const dy = py - cy;
+                    return {
+                        x: cx + dx * cos - dy * sin,
+                        y: cy + dx * sin + dy * cos
+                    };
+                }
+
+                const pA = rotatePoint(xA, yTop, rot);
+                const pD = rotatePoint(xD, yTop, rot);
+                const pB = rotatePoint(xB, yBottom, rot);
+                const pC = rotatePoint(xC, yBottom, rot);
+                const pE = rotatePoint(xE, yE, rot);
+                const pF = rotatePoint(xF, yE, rot);
+
+                const pMidAD = rotatePoint(midAD_x, midAD_y, rot);
+                const pMidBC = rotatePoint(midBC_x, midBC_y, rot);
+                const pMidEF = rotatePoint(midEF_x, midEF_y, rot);
+                const pAE = rotatePoint(xAE_mid, yAE_mid, rot);
+                const pEB = rotatePoint(xEB_mid, yEB_mid, rot);
+
+                function getLabelPos(pt, dist = 12) {
+                    const dx = pt.x - cx;
+                    const dy = pt.y - cy;
+                    const len = Math.hypot(dx, dy) || 1;
+                    return {
+                        x: pt.x + (dx / len) * dist,
+                        y: pt.y + (dy / len) * dist
+                    };
+                }
+
+                const labA = getLabelPos(pA, 11);
+                const labD = getLabelPos(pD, 11);
+                const labB = getLabelPos(pB, 11);
+                const labC = getLabelPos(pC, 11);
+                const labE = getLabelPos(pE, 11);
+                const labF = getLabelPos(pF, 11);
+                const labA_len = getLabelPos(pMidAD, 12);
+                const labB_len = getLabelPos(pMidBC, 12);
+                const labX_len = getLabelPos(pMidEF, 10);
+                const labM = getLabelPos(pAE, 13);
+                const labN = getLabelPos(pEB, 13);
+
+                const problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                                   '<svg viewBox="0 0 240 190" style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; width:220px; height:174px; display:inline-block;">' +
+                                   
+                                   '<g transform="rotate(' + rot + ' ' + cx + ' ' + cy + ')">' +
+                                   '<polyline points="' + (midAD_x - 3) + ',' + (yTop - 3) + ' ' + (midAD_x + 2) + ',' + yTop + ' ' + (midAD_x - 3) + ',' + (yTop + 3) + '" fill="none" stroke="#64748b" stroke-width="1.2"/>' +
+                                   '<polyline points="' + (midEF_x - 3) + ',' + (yE - 3) + ' ' + (midEF_x + 2) + ',' + yE + ' ' + (midEF_x - 3) + ',' + (yE + 3) + '" fill="none" stroke="#2980b9" stroke-width="1.2"/>' +
+                                   '<polyline points="' + (midBC_x - 3) + ',' + (yBottom - 3) + ' ' + (midBC_x + 2) + ',' + yBottom + ' ' + (midBC_x - 3) + ',' + (yBottom + 3) + '" fill="none" stroke="#64748b" stroke-width="1.2"/>' +
+                                   '<polygon points="' + xA + ',' + yTop + ' ' + xD + ',' + yTop + ' ' + xC + ',' + yBottom + ' ' + xB + ',' + yBottom + '" fill="#eef2f7" stroke="#334155" stroke-width="1.5"/>' +
+                                   '<line x1="' + xE + '" y1="' + yE + '" x2="' + xF + '" y2="' + yE + '" stroke="#2980b9" stroke-width="1.6"/>' +
+                                   '<circle cx="' + xE + '" cy="' + yE + '" r="2.3" fill="#2980b9"/>' +
+                                   '<circle cx="' + xF + '" cy="' + yE + '" r="2.3" fill="#2980b9"/>' +
+                                   '</g>' +
+
+                                   '<text x="' + (labA.x - 4) + '" y="' + (labA.y + 3) + '" font-size="10" font-weight="bold" fill="#1e293b">A</text>' +
+                                   '<text x="' + (labD.x - 4) + '" y="' + (labD.y + 3) + '" font-size="10" font-weight="bold" fill="#1e293b">D</text>' +
+                                   '<text x="' + (labB.x - 4) + '" y="' + (labB.y + 3) + '" font-size="10" font-weight="bold" fill="#1e293b">B</text>' +
+                                   '<text x="' + (labC.x - 4) + '" y="' + (labC.y + 3) + '" font-size="10" font-weight="bold" fill="#1e293b">C</text>' +
+                                   '<text x="' + (labE.x - 5) + '" y="' + (labE.y + 4) + '" font-size="10" font-weight="bold" fill="#2980b9">E</text>' +
+                                   '<text x="' + (labF.x - 4) + '" y="' + (labF.y + 4) + '" font-size="10" font-weight="bold" fill="#2980b9">F</text>' +
+                                   '<text x="' + (labA_len.x - 4) + '" y="' + (labA_len.y + 3) + '" font-size="10" font-weight="bold" fill="#1e293b">' + a + '</text>' +
+                                   '<text x="' + (labB_len.x - 4) + '" y="' + (labB_len.y + 3) + '" font-size="10" font-weight="bold" fill="#1e293b">' + b + '</text>' +
+                                   '<text x="' + (labX_len.x - 4) + '" y="' + (labX_len.y + 3) + '" font-size="10" font-weight="bold" font-style="italic" fill="#2980b9">x</text>' +
+                                   '<text x="' + (labM.x - 5) + '" y="' + (labM.y + 4) + '" font-size="10" font-weight="bold" fill="#e11d48">' + mCircled + '</text>' +
+                                   '<text x="' + (labN.x - 5) + '" y="' + (labN.y + 4) + '" font-size="10" font-weight="bold" fill="#e11d48">' + nCircled + '</text>' +
+                                   '</svg></div>';
+
+                const explanationText = "【解説】<br>" +
+                                        "1. <strong>公式の利用</strong>：<br>" +
+                                        "　台形の内分線の長さ \\(x\\) は、上底 \\(a\\) と下底 \\(b\\) に、反対側の比 \\(n\\)、\\(m\\) をたすき掛けにして足し、比の和 \\((m + n)\\) で割ることで求められます。<br>" +
+                                        "2. <strong>代入して計算</strong>：<br>" +
+                                        "　\\(x = \\frac{an + bm}{m + n}\\)<br>" +
+                                        "　\\(x = \\frac{" + a + " \\times " + finalN + " + " + b + " \\times " + m + "}{" + m + " + " + finalN + "}\\)<br>" +
+                                        "　\\(x = \\frac{" + (a * finalN) + " + " + (b * m) + "}{" + (m + finalN) + "}\\)<br>" +
+                                        "　\\(x = \\frac{" + num + "}{" + den + "} = \\mathbf{" + ansText + "}\\)";
+
+                return {
+                    problem: problemText + "<br>" + problemSvg,
+                    explanation: explanationText
+                };
+            }
+        }, 
+        "三角形内の垂線": {
+            category: "平面図形",
+            level: "難関私立",
+            formula: "三角形の内部や辺上に複数の垂線が下ろされている問題では、<strong>頂点から下ろした全体の高さを \\(h\\) とおき、相似比や平行線と線分の比を利用してそれぞれの垂線の長さを \\(h\\) の式で表す</strong>ことが基本。<br><br>" +
+                     "左側の辺の比（\\(AD:AB\\)）や右側の辺の比（\\(AE:AC\\)）を利用して、それぞれの垂線が全体の高さ \\(h\\) に対して何倍になっているかを求め、比や和から長さを算出しよう！",
+            generateRandom: function() {
+                function gcd(x, y) { return y === 0 ? x : gcd(y, x % y); }
+                function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+                function simplifyPair(a, b) {
+                    const g = gcd(a, b);
+                    return [a / g, b / g];
+                }
+
+                let m, n, ab, p, q, ac, leftCoeffNum, rightCoeffNum, commonDenom;
+                
+                // 比の数値をランダムに生成し、それぞれ最も簡単な整数比に約分する
+                while (true) {
+                    let rawM = randInt(1, 5);
+                    let rawN = randInt(1, 5);
+                    [m, n] = simplifyPair(rawM, rawN);
+                    // 1:1 のように左右同じ比になるのを防ぐ、または m===n を避ける
+                    if (m === n) continue;
+                    ab = m + n;
+
+                    let rawP = randInt(1, 5);
+                    let rawQ = randInt(1, 5);
+                    [p, q] = simplifyPair(rawP, rawQ);
+                    if (p === q) continue;
+                    ac = p + q;
+
+                    leftCoeffNum = m * ac;
+                    rightCoeffNum = p * ab;
+                    commonDenom = ab * ac;
+
+                    // 最終的な係数が一致しない場合にループを抜ける
+                    if (leftCoeffNum !== rightCoeffNum) break;
+                }
+
+                const g = gcd(leftCoeffNum, rightCoeffNum);
+                const ratioL = leftCoeffNum / g;
+                const ratioR = rightCoeffNum / g;
+
+                const targetSum = leftCoeffNum + rightCoeffNum;
+                const mult = randInt(1, 6);
+                const totalSum = targetSum * mult;
+                const hVal = commonDenom * mult;
+                const dhVal = leftCoeffNum * mult;
+                const eiVal = rightCoeffNum * mult;
+
+                const problemText = "不等辺三角形 \\(ABC\\) において、辺 \\(AB\\) 上に点 \\(D\\)、辺 \\(AC\\) 上に点 \\(E\\) がある。<br>" +
+                                    "点 \\(D\\)、\\(E\\) から底辺 \\(BC\\) にそれぞれ垂線を下ろしたときの足を \\(H\\)、\\(I\\) とする。<br>" +
+                                    "\\(AD : DB = " + m + " : " + n + "\\)、\\(AE : EC = " + p + " : " + q + "\\) であり、\\(DH + EI = " + totalSum + "\\) のとき、線分 \\(DH\\) および \\(EI\\) の長さをそれぞれ求めなさい。";
+
+                const xA = 120, yA = 25;
+                const xB = 40, yB = 135;
+                const xC = 200, yC = 135;
+
+                const tD = m / ab;
+                const xD = xB + tD * (xA - xB);
+                const yD = yB + tD * (yA - yB);
+
+                const tE = p / ac;
+                const xE = xC + tE * (xA - xC);
+                const yE = yC + tE * (yA - yC);
+
+                const xH = xD;
+                const yH = 135;
+
+                const xI = xE;
+                const yI = 135;
+
+                const problemSvg = '<div style="text-align:center; margin: 8px 0;">' +
+                                   '<svg viewBox="0 0 240 160" style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; width:220px; height:146px; display:inline-block;">' +
+                                   '<polygon points="' + xA + ',' + yA + ' ' + xB + ',' + yB + ' ' + xC + ',' + yC + '" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>' +
+                                   '<line x1="' + xD + '" y1="' + yD + '" x2="' + xH + '" y2="' + yH + '" stroke="#2980b9" stroke-width="1.5" stroke-dasharray="3,3"/>' +
+                                   '<line x1="' + xE + '" y1="' + yE + '" x2="' + xI + '" y2="' + yI + '" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="3,3"/>' +
+                                   '<rect x="' + (xH - 2) + '" y="' + (yH - 8) + '" width="8" height="8" fill="none" stroke="#334155" stroke-width="1"/>' +
+                                   '<rect x="' + (xI - 6) + '" y="' + (yI - 8) + '" width="8" height="8" fill="none" stroke="#334155" stroke-width="1"/>' +
+                                   '<text x="' + (xA - 4) + '" y="' + (yA - 8) + '" font-size="10" font-weight="bold" fill="#1e293b">A</text>' +
+                                   '<text x="' + (xB - 12) + '" y="' + (yB + 14) + '" font-size="10" font-weight="bold" fill="#1e293b">B</text>' +
+                                   '<text x="' + (xC + 6) + '" y="' + (yC + 14) + '" font-size="10" font-weight="bold" fill="#1e293b">C</text>' +
+                                   '<text x="' + (xD - 12) + '" y="' + (yD + 2) + '" font-size="10" font-weight="bold" fill="#2980b9">D</text>' +
+                                   '<text x="' + (xE + 6) + '" y="' + (yE + 2) + '" font-size="10" font-weight="bold" fill="#e11d48">E</text>' +
+                                   '<text x="' + (xH - 4) + '" y="' + (yH + 14) + '" font-size="10" font-weight="bold" fill="#2980b9">H</text>' +
+                                   '<text x="' + (xI - 4) + '" y="' + (yI + 14) + '" font-size="10" font-weight="bold" fill="#e11d48">I</text>' +
+                                   '</svg></div>';
+
+                const explanationText = "【解説】<br>" +
+                                        "1. <strong>全体の高さを基準にする</strong>：<br>" +
+                                        "　頂点 \\(A\\) から底辺 \\(BC\\) に下ろした垂線の足を \\(P\\) とし、高さ \\(AP\\) を \\(h\\) とおく。<br>" +
+                                        "2. <strong>左右の比からそれぞれの垂線の長さを表す</strong>：<br>" +
+                                        "　\\(AD : AB = " + m + " : " + ab + "\\) より、\\(DH = \\frac{" + m + "}{" + ab + "}h\\)<br>" +
+                                        "　\\(AE : AC = " + p + " : " + ac + "\\) より、\\(EI = \\frac{" + p + "}{" + ac + "}h\\)<br>" +
+                                        "3. <strong>\\(DH : EI\\) の比を求めて最も簡単な整数比にする</strong>：<br>" +
+                                        "　\\(DH : EI = \\frac{" + m + "}{" + ab + "} : \\frac{" + p + "}{" + ac + "} = " + leftCoeffNum + " : " + rightCoeffNum + "\\)<br>" +
+                                        "　これを最も簡単な整数の比に直すと、\\(DH : EI = \\mathbf{" + ratioL + " : " + ratioR + "}\\) となる。<br>" +
+                                        "4. <strong>文字でおいて方程式を立てて解く</strong>：<br>" +
+                                        "　\\(DH = " + ratioL + "x\\)、\\(EI = " + ratioR + "x\\) とおく（\\(x\\) は比例定数）。<br>" +
+                                        "　\\(DH + EI = " + totalSum + "\\) より、<br>" +
+                                        "　\\(" + ratioL + "x + " + ratioR + "x = " + totalSum + "\\)<br>" +
+                                        "　\\(" + (ratioL + ratioR) + "x = " + totalSum + "\\) 　\\(\\to\\)　\\(x = " + (totalSum / (ratioL + ratioR)) + "\\)<br>" +
+                                        "5. <strong>答えの算出</strong>：<br>" +
+                                        "　\\(DH = " + ratioL + " \\times " + (totalSum / (ratioL + ratioR)) + " = \\mathbf{" + dhVal + "}\\)<br>" +
+                                        "　\\(EI = " + ratioR + " \\times " + (totalSum / (ratioL + ratioR)) + " = \\mathbf{" + eiVal + "}\\)";
+
+                return {
+                    problem: problemText + "<br>" + problemSvg,
+                    explanation: explanationText
+                };
+            }
+        }
+
+
 
     },
     "立体図形": {
