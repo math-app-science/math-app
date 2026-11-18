@@ -8339,39 +8339,280 @@ const formulaData = {
         "角の二等分線と円と接線": {
             category: "平面図形",
             level: "公立",
-            formula: "円の外側の点から引いた接線と割線において、接弦定理や相似、および角の二等分線の性質を利用して線分の比や長さを求めることができる。<br><br>" +
+            formula: "円の外側の点から引いた接線と角の二等分線があると二等辺三角形ができる。<br><br>" +
                      '<div style="text-align:center; margin: 8px 0;"><svg viewBox="20 20 240 170" style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; width:220px; height:160px; display:inline-block;">' +
                      // 円の描画 (中心: 175, 105 / 半径: 52)
                      '<circle cx="175" cy="105" r="52" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>' +
-                     // 割線 ABC
+                     // AQの下側（赤）: △CAQ（二等分線より下側）
+                     '<polygon points="45,165 226.8,110.5 172.0,84.9" fill="#fecdd3" fill-opacity="0.55"/>' +
+                     // AQの上側（青）: △DAP（二等分線より上側）
+                     '<polygon points="137.5,68.8 45,165 136.4,109.2" fill="#bae6fd" fill-opacity="0.6"/>' +
+                     // △DPQ の薄い緑色の塗りつぶし
+                     '<polygon points="137.5,68.8 136.4,109.2 172.0,84.9" fill="#bbf7d0" fill-opacity="0.65"/>' +
+                     // 割線 ABC のベース線（延長部分用）
                      '<line x1="40" y1="166.5" x2="238" y2="107.1" stroke="#334155" stroke-width="1.5"/>' +
-                     // 接線 AD (延長)
-                     '<line x1="45" y1="165" x2="152.0" y2="53.8" stroke="#2980b9" stroke-width="1.6"/>' +
-                     // 三角形BCDの辺 DB, DC
-                     '<line x1="137.5" y1="68.8" x2="134.8" y2="138.1" stroke="#334155" stroke-width="1.3"/>' +
-                     '<line x1="137.5" y1="68.8" x2="226.8" y2="110.5" stroke="#334155" stroke-width="1.3"/>' +
-                     // 角CADの二等分線
-                     '<line x1="45" y1="165" x2="145" y2="104" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="3,2"/>' +
-                     // 等角を示すマーク（・）
-                     '<text x="68" y="145" font-size="11" font-weight="bold" fill="#e11d48">・</text>' +
-                     '<text x="76" y="138" font-size="11" font-weight="bold" fill="#e11d48">・</text>' +
+                     // 線分 AC を赤色で強調
+                     '<line x1="45" y1="165" x2="226.8" y2="110.5" stroke="#e11d48" stroke-width="1.6"/>' +
+                     // 接線 AD (延長) - 青色
+                     '<line x1="45" y1="165" x2="152.0" y2="53.8" stroke="#2563eb" stroke-width="1.6"/>' +
+                     // 辺 DB（DP部分を青、PB部分をダークグレーに分割）
+                     '<line x1="137.5" y1="68.8" x2="136.4" y2="109.2" stroke="#2563eb" stroke-width="1.6"/>' +
+                     '<line x1="136.4" y1="109.2" x2="134.8" y2="138.1" stroke="#334155" stroke-width="1.3"/>' +
+                     // 辺 DC（D, Q, C が完全に一直線になるよう DQ と CQ に分割）
+                     '<line x1="137.5" y1="68.8" x2="172.0" y2="84.9" stroke="#334155" stroke-width="1.3"/>' +
+                     '<line x1="172.0" y1="84.9" x2="226.8" y2="110.5" stroke="#e11d48" stroke-width="1.6"/>' +
+                     // 角CADの二等分線 AQ（線の太さの上半分を青、下半分を赤に分割）
+                     '<line x1="44.6" y1="164.3" x2="189.6" y2="73.3" stroke="#2563eb" stroke-width="1.5"/>' +
+                     '<line x1="45.4" y1="165.7" x2="190.4" y2="74.7" stroke="#e11d48" stroke-width="1.5"/>' +
+                     // 等角を示すマーク（・） - 角DAQと角CAQ
+                     '<circle cx="71.5" cy="143.7" r="1.8" fill="#2563eb"/>' +
+                     '<circle cx="76.0" cy="151.1" r="1.8" fill="#e11d48"/>' +
+                     // 等角を示すマーク（×） - 角ADPと角ACQ
+                     '<text x="132.1" y="81.7" font-size="8.5" font-weight="bold" fill="#2563eb" text-anchor="middle" dominant-baseline="central">×</text>' +
+                     '<text x="206.9" y="109.1" font-size="8.5" font-weight="bold" fill="#e11d48" text-anchor="middle" dominant-baseline="central">×</text>' +
+                     // 等角を示すマーク（・×） - 角DPQ（青）と角DQP（赤）
+                     '<text x="143.1" y="96.9" font-size="7.5" font-weight="bold" fill="#2563eb" text-anchor="middle" dominant-baseline="central">・×</text>' +
+                     '<text x="157.5" y="86.3" font-size="7.5" font-weight="bold" fill="#e11d48" text-anchor="middle" dominant-baseline="central">・×</text>' +
                      // 点A
                      '<circle cx="45" cy="165" r="2.2" fill="#334155"/>' +
                      '<text x="30" y="174" font-size="10" font-weight="bold" fill="#1e293b">A</text>' +
-                     // 交点B (ラベルを下に移動)
+                     // 交点B
                      '<circle cx="134.8" cy="138.1" r="2.2" fill="#334155"/>' +
                      '<text x="124" y="156" font-size="10" font-weight="bold" fill="#1e293b">B</text>' +
-                     // 交点C (ラベルを下に移動)
+                     // 交点C
                      '<circle cx="226.8" cy="110.5" r="2.2" fill="#334155"/>' +
                      '<text x="233" y="124" font-size="10" font-weight="bold" fill="#1e293b">C</text>' +
                      // 接点D
-                     '<circle cx="137.5" cy="68.8" r="2.2" fill="#2980b9"/>' +
-                     '<text x="122" y="65" font-size="10" font-weight="bold" fill="#2980b9">D</text>' +
-                     '</svg></div>',
+                     '<circle cx="137.5" cy="68.8" r="2.2" fill="#2563eb"/>' +
+                     '<text x="122" y="65" font-size="10" font-weight="bold" fill="#2563eb">D</text>' +
+                     // 交点P
+                     '<circle cx="136.4" cy="109.2" r="2.2" fill="#334155"/>' +
+                     '<text x="123" y="112" font-size="10" font-weight="bold" fill="#334155">P</text>' +
+                     // 交点Q
+                     '<circle cx="172.0" cy="84.9" r="2.2" fill="#334155"/>' +
+                     '<text x="174" y="79" font-size="10" font-weight="bold" fill="#334155">Q</text>' +
+                     '</svg></div><br>' +
+                     '<strong>【証明】</strong><br>' +
+                     '角の二等分線より<br>' +
+                     '∠DAP＝∠CAQ（・）<br>' +
+                     '接弦定理により<br>' +
+                     '∠ADP＝∠ACQ（×）<br>' +
+                     '△ADPの外角の定理より<br>' +
+                     '∠DPQ＝∠DAP＋∠ADP（<span style="color:#2563eb; font-weight:bold;">・×</span>）<br>' +
+                     '△ACQの外角の定理より<br>' +
+                     '∠DQP＝∠CAQ＋∠ACQ（<span style="color:#e11d48; font-weight:bold;">・×</span>）<br>' +
+                     'よって、∠DPQ＝∠DQPなので<strong>△DPQは二等辺三角形</strong>',
             generateRandom: function() {
+                const presets = [
+                    { ad: 16, cd: 9,  ab: 20, ac: 25, bc: 15 },
+                    { ad: 9,  cd: 16, ab: 15, ac: 25, bc: 20 },
+                    { ad: 5,  cd: 20, ab: 10, ac: 25, bc: 22.36, bcStr: "5√21" },
+                    { ad: 4,  cd: 5,  ab: 6,  ac: 9,  bc: 6.71,  bcStr: "3√5" },
+                    { ad: 12, cd: 15, ab: 18, ac: 27, bc: 20.12, bcStr: "9√5" },
+                    { ad: 8,  cd: 10, ab: 12, ac: 18, bc: 13.42, bcStr: "6√5" }
+                ];
+                const p = presets[Math.floor(Math.random() * presets.length)];
+                const ad = p.ad;
+                const cd = p.cd;
+                const ab = p.ab;
+                const ac = p.ac;
+                const bcVal = p.bc;
+                const bcDisplay = p.bcStr ? p.bcStr : String(p.bc);
+
+                const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+
+                let beAnswer = "";
+                const sumAbAc = ab + ac;
+                if (!p.bcStr) {
+                    const num = bcVal * ab;
+                    const den = sumAbAc;
+                    const g = gcd(num, den);
+                    beAnswer = (den / g === 1) ? `${num / g}` : `${num / g}/${den / g}`;
+                } else {
+                    const parts = p.bcStr.split("√");
+                    const k = parseInt(parts[0], 10);
+                    const r = parts[1];
+                    const num = k * ab;
+                    const den = sumAbAc;
+                    const g = gcd(num, den);
+                    const n2 = num / g;
+                    const d2 = den / g;
+                    beAnswer = (d2 === 1) ? `${n2}√${r}` : `(${n2}√${r})/${d2}`;
+                }
+
+                const diffAcAb = ac - ab;
+                const gRatio = gcd(ab, diffAcAb);
+                const ratioAnswer = `${ab / gRatio} : ${diffAcAb / gRatio}`;
+
+                const targetACpx = 135;
+                const S = targetACpx / ac;
+
+                const ABpx = ab * S;
+                const BCpx = bcVal * S;
+                const Rpx = BCpx / 2;
+
+                const localO = { x: 0, y: 0 };
+                const localB = { x: 0, y: -Rpx };
+                const localC = { x: 0, y: Rpx };
+                const localA = { x: -ABpx, y: -Rpx };
+
+                const dxAC = localC.x - localA.x;
+                const dyAC = localC.y - localA.y;
+                const aCoef = dxAC * dxAC + dyAC * dyAC;
+                const bCoef = 2 * (localA.x * dxAC + localA.y * dyAC);
+                const cCoef = localA.x * localA.x + localA.y * localA.y - Rpx * Rpx;
+                const disc = Math.sqrt(bCoef * bCoef - 4 * aCoef * cCoef);
+                const t1 = (-bCoef - disc) / (2 * aCoef);
+                const t2 = (-bCoef + disc) / (2 * aCoef);
+                const tD = Math.abs(t1 - 1) > 0.01 ? t1 : t2;
+                const localD = {
+                    x: localA.x + tD * dxAC,
+                    y: localA.y + tD * dyAC
+                };
+
+                const ratioBF = ABpx / (ABpx + ac * S);
+                const localF = {
+                    x: localB.x + (localC.x - localB.x) * ratioBF,
+                    y: localB.y + (localC.y - localB.y) * ratioBF
+                };
+
+                const x1 = localA.x, y1 = localA.y, x2 = localF.x, y2 = localF.y;
+                const x3 = localB.x, y3 = localB.y, x4 = localD.x, y4 = localD.y;
+                const denom = (x1 - x2)*(y3 - y4) - (y1 - y2)*(x3 - x4);
+                const localE = {
+                    x: ((x1*y2 - y1*x2)*(x3 - x4) - (x1 - x2)*(x3*y4 - y3*x4)) / denom,
+                    y: ((x1*y2 - y1*x2)*(y3 - y4) - (y1 - y2)*(x3*y4 - y3*x4)) / denom
+                };
+
+                const baseAngles = [0, Math.PI/6, Math.PI/3, Math.PI/2, Math.PI, 3*Math.PI/2];
+                const rot = baseAngles[Math.floor(Math.random() * baseAngles.length)] + (Math.random() - 0.5) * 0.2;
+                const flip = Math.random() < 0.5 ? 1 : -1;
+
+                const cx = 130, cy = 95;
+                const cosR = Math.cos(rot), sinR = Math.sin(rot);
+                const transform = (pt) => {
+                    const px = pt.x * flip;
+                    const py = pt.y;
+                    return {
+                        x: cx + px * cosR - py * sinR,
+                        y: cy + px * sinR + py * cosR
+                    };
+                };
+
+                const P = {
+                    O: transform(localO),
+                    B: transform(localB),
+                    C: transform(localC),
+                    A: transform(localA),
+                    D: transform(localD),
+                    E: transform(localE),
+                    F: transform(localF)
+                };
+
+                const labelPos = (target, ref, dist) => {
+                    const vx = target.x - ref.x;
+                    const vy = target.y - ref.y;
+                    const l = Math.hypot(vx, vy) || 1;
+                    return {
+                        x: target.x + (vx / l) * dist,
+                        y: target.y + (vy / l) * dist
+                    };
+                };
+
+                const lblA = labelPos(P.A, P.O, 12);
+                const lblB = labelPos(P.B, P.C, 12);
+                const lblC = labelPos(P.C, P.B, 12);
+                const lblD = labelPos(P.D, P.O, 11);
+                const bisDir = { x: P.F.x - P.A.x, y: P.F.y - P.A.y };
+                const bisLen = Math.hypot(bisDir.x, bisDir.y) || 1;
+                const perp = { x: -bisDir.y / bisLen, y: bisDir.x / bisLen };
+                const lblE = { x: P.E.x - perp.x * 10, y: P.E.y - perp.y * 10 };
+                const lblF = { x: P.F.x + (bisDir.x / bisLen) * 10, y: P.F.y + (bisDir.y / bisLen) * 10 };
+
+                // --- 動的 viewBox の計算（見切れ防止） ---
+                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+                const addPt = (pt) => {
+                    if (pt.x < minX) minX = pt.x;
+                    if (pt.x > maxX) maxX = pt.x;
+                    if (pt.y < minY) minY = pt.y;
+                    if (pt.y > maxY) maxY = pt.y;
+                };
+                // すべての頂点とラベル、円周上の端点を走査
+                [P.O, P.B, P.C, P.A, P.D, P.E, P.F, lblA, lblB, lblC, lblD, lblE, lblF].forEach(addPt);
+                addPt({ x: P.O.x - Rpx, y: P.O.y - Rpx });
+                addPt({ x: P.O.x + Rpx, y: P.O.y + Rpx });
+
+                const margin = 20;
+                const vbX = minX - margin;
+                const vbY = minY - margin;
+                const vbW = (maxX - minX) + margin * 2;
+                const vbH = (maxY - minY) + margin * 2;
+
+                const uBA = { x: (P.A.x - P.B.x) / ABpx, y: (P.A.y - P.B.y) / ABpx };
+                const uBC = { x: (P.C.x - P.B.x) / BCpx, y: (P.C.y - P.B.y) / BCpx };
+                const sz = 7;
+                const r1 = `${(P.B.x + uBA.x * sz).toFixed(1)},${(P.B.y + uBA.y * sz).toFixed(1)}`;
+                const r2 = `${(P.B.x + (uBA.x + uBC.x) * sz).toFixed(1)},${(P.B.y + (uBA.y + uBC.y) * sz).toFixed(1)}`;
+                const r3 = `${(P.B.x + uBC.x * sz).toFixed(1)},${(P.B.y + uBC.y * sz).toFixed(1)}`;
+
+                const polyBEF = `${P.B.x.toFixed(1)},${P.B.y.toFixed(1)} ${P.E.x.toFixed(1)},${P.E.y.toFixed(1)} ${P.F.x.toFixed(1)},${P.F.y.toFixed(1)}`;
+
+                const svgDiagram =
+                    '<div style="text-align:center; margin: 10px 0;">' +
+                    `<svg viewBox="${vbX.toFixed(1)} ${vbY.toFixed(1)} ${vbW.toFixed(1)} ${vbH.toFixed(1)}" style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; width:240px; height:175px; display:inline-block;">` +
+                    `<circle cx="${P.O.x.toFixed(1)}" cy="${P.O.y.toFixed(1)}" r="${Rpx.toFixed(1)}" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>` +
+                    `<polygon points="${polyBEF}" fill="#bbf7d0" fill-opacity="0.65"/>` +
+                    `<polyline points="${r1} ${r2} ${r3}" fill="none" stroke="#64748b" stroke-width="1.1"/>` +
+                    `<line x1="${P.A.x.toFixed(1)}" y1="${P.A.y.toFixed(1)}" x2="${P.B.x.toFixed(1)}" y2="${P.B.y.toFixed(1)}" stroke="#2563eb" stroke-width="1.6"/>` +
+                    `<line x1="${P.B.x.toFixed(1)}" y1="${P.B.y.toFixed(1)}" x2="${P.C.x.toFixed(1)}" y2="${P.C.y.toFixed(1)}" stroke="#334155" stroke-width="1.5"/>` +
+                    `<line x1="${P.A.x.toFixed(1)}" y1="${P.A.y.toFixed(1)}" x2="${P.C.x.toFixed(1)}" y2="${P.C.y.toFixed(1)}" stroke="#334155" stroke-width="1.5"/>` +
+                    `<line x1="${P.B.x.toFixed(1)}" y1="${P.B.y.toFixed(1)}" x2="${P.D.x.toFixed(1)}" y2="${P.D.y.toFixed(1)}" stroke="#334155" stroke-width="1.3"/>` +
+                    `<line x1="${P.A.x.toFixed(1)}" y1="${P.A.y.toFixed(1)}" x2="${P.F.x.toFixed(1)}" y2="${P.F.y.toFixed(1)}" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="3,2"/>` +
+                    `<circle cx="${P.A.x.toFixed(1)}" cy="${P.A.y.toFixed(1)}" r="2.2" fill="#334155"/>` +
+                    `<text x="${lblA.x.toFixed(1)}" y="${lblA.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#1e293b" text-anchor="middle" dominant-baseline="central">A</text>` +
+                    `<circle cx="${P.B.x.toFixed(1)}" cy="${P.B.y.toFixed(1)}" r="2.2" fill="#2563eb"/>` +
+                    `<text x="${lblB.x.toFixed(1)}" y="${lblB.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#2563eb" text-anchor="middle" dominant-baseline="central">B</text>` +
+                    `<circle cx="${P.C.x.toFixed(1)}" cy="${P.C.y.toFixed(1)}" r="2.2" fill="#334155"/>` +
+                    `<text x="${lblC.x.toFixed(1)}" y="${lblC.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#1e293b" text-anchor="middle" dominant-baseline="central">C</text>` +
+                    `<circle cx="${P.D.x.toFixed(1)}" cy="${P.D.y.toFixed(1)}" r="2.2" fill="#334155"/>` +
+                    `<text x="${lblD.x.toFixed(1)}" y="${lblD.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#1e293b" text-anchor="middle" dominant-baseline="central">D</text>` +
+                    `<circle cx="${P.E.x.toFixed(1)}" cy="${P.E.y.toFixed(1)}" r="2.2" fill="#e11d48"/>` +
+                    `<text x="${lblE.x.toFixed(1)}" y="${lblE.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#e11d48" text-anchor="middle" dominant-baseline="central">E</text>` +
+                    `<circle cx="${P.F.x.toFixed(1)}" cy="${P.F.y.toFixed(1)}" r="2.2" fill="#e11d48"/>` +
+                    `<text x="${lblF.x.toFixed(1)}" y="${lblF.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#e11d48" text-anchor="middle" dominant-baseline="central">F</text>` +
+                    '</svg></div>';
+
+                const problem =
+                    "図のように円の外部の点Aから接線を引き接点をBとし、Bを通る直径をBCとする。" +
+                    "直線ACと円の交点をDとし、∠BADの二等分線が線分BD、BCと交わる点をそれぞれE, Fとする。<br>" +
+                    `AD = ${ad}、CD = ${cd} のとき次の問いに答えよ。<br>` +
+                    svgDiagram +
+                    "① AB<br>" +
+                    "② BE<br>" +
+                    "③ AE : EF";
+
+                const explanation =
+                    `<strong>① AB = ${ab}</strong><br>` +
+                    `AC = AD + CD = ${ad} + ${cd} = ${ac}<br>` +
+                    `方べきの定理より、AB² = AD × AC = ${ad} × ${ac} = ${ad * ac}<br>` +
+                    `AB &gt; 0 より、<strong>AB = ${ab}</strong><br><br>` +
+                    `<strong>② BE = ${beAnswer}</strong><br>` +
+                    `BCは直径なので ∠ABC = 90°。△ABCで三平方の定理より、<br>` +
+                    `BC = √(${ac}² − ${ab}²) = ${bcDisplay}<br>` +
+                    `接弦定理と角の二等分線の性質より、<strong>△BEFは BE = BF の二等辺三角形</strong>になる。<br>` +
+                    `また、△ABCでAFは∠BACの二等分線なので、<br>` +
+                    `BF : FC = AB : AC = ${ab} : ${ac}<br>` +
+                    `よって、BE = BF = ${bcDisplay} × ${ab}/(${ab} + ${ac}) = <strong>${beAnswer}</strong><br><br>` +
+                    `<strong>③ AE : EF = ${ratioAnswer}</strong><br>` +
+                    `△ABEと△ACFにおいて、<br>` +
+                    `角の二等分線より ∠BAE = ∠CAF、接弦定理より ∠ABE = ∠ACF なので、<br>` +
+                    `△ABE ∽ △ACF（2組の角がそれぞれ等しい）<br>` +
+                    `よって、AE : AF = AB : AC = ${ab} : ${ac}<br>` +
+                    `したがって、AE : EF = ${ab} : (${ac} − ${ab}) = <strong>${ratioAnswer}</strong>`;
+
                 return {
-                    problem: "",
-                    explanation: ""
+                    problem: problem,
+                    explanation: explanation
                 };
             }
         }
