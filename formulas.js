@@ -8421,13 +8421,25 @@ const formulaData = {
 
                 const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
 
+                // --- 分数を綺麗に出力するためのヘルパー関数 ---
+                const frac = (num, den) => 
+                    `<span style="display:inline-block; vertical-align:middle; text-align:center; font-size:0.9em; margin:0 2px;">` +
+                    `<span style="display:block; border-bottom:1px solid #334155; padding-bottom:1px; line-height:1.1;">${num}</span>` +
+                    `<span style="display:block; padding-top:1px; line-height:1.1;">${den}</span>` +
+                    `</span>`;
+
+                // ② BE (= BF) の計算と美しい分数表現
                 let beAnswer = "";
+                let beFormula = "";
                 const sumAbAc = ab + ac;
                 if (!p.bcStr) {
                     const num = bcVal * ab;
                     const den = sumAbAc;
                     const g = gcd(num, den);
-                    beAnswer = (den / g === 1) ? `${num / g}` : `${num / g}/${den / g}`;
+                    const n2 = num / g;
+                    const d2 = den / g;
+                    beAnswer = (d2 === 1) ? `${n2}` : frac(n2, d2);
+                    beFormula = `${bcDisplay} × ${frac(ab, ab + ac)}`;
                 } else {
                     const parts = p.bcStr.split("√");
                     const k = parseInt(parts[0], 10);
@@ -8437,13 +8449,16 @@ const formulaData = {
                     const g = gcd(num, den);
                     const n2 = num / g;
                     const d2 = den / g;
-                    beAnswer = (d2 === 1) ? `${n2}√${r}` : `(${n2}√${r})/${d2}`;
+                    beAnswer = (d2 === 1) ? `${n2}√${r}` : `${frac(n2 + "√" + r, d2)}`;
+                    beFormula = `${bcDisplay} × ${frac(ab, ab + ac)}`;
                 }
 
+                // ③ AE : EF の計算
                 const diffAcAb = ac - ab;
                 const gRatio = gcd(ab, diffAcAb);
                 const ratioAnswer = `${ab / gRatio} : ${diffAcAb / gRatio}`;
 
+                // --- 幾何学的かつ正確なSVG座標の自動計算 ---
                 const targetACpx = 135;
                 const S = targetACpx / ac;
 
@@ -8529,7 +8544,6 @@ const formulaData = {
                 const lblE = { x: P.E.x - perp.x * 10, y: P.E.y - perp.y * 10 };
                 const lblF = { x: P.F.x + (bisDir.x / bisLen) * 10, y: P.F.y + (bisDir.y / bisLen) * 10 };
 
-                // --- 動的 viewBox の計算（見切れ防止） ---
                 let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
                 const addPt = (pt) => {
                     if (pt.x < minX) minX = pt.x;
@@ -8537,7 +8551,6 @@ const formulaData = {
                     if (pt.y < minY) minY = pt.y;
                     if (pt.y > maxY) maxY = pt.y;
                 };
-                // すべての頂点とラベル、円周上の端点を走査
                 [P.O, P.B, P.C, P.A, P.D, P.E, P.F, lblA, lblB, lblC, lblD, lblE, lblF].forEach(addPt);
                 addPt({ x: P.O.x - Rpx, y: P.O.y - Rpx });
                 addPt({ x: P.O.x + Rpx, y: P.O.y + Rpx });
@@ -8601,13 +8614,13 @@ const formulaData = {
                     `BC = √(${ac}² − ${ab}²) = ${bcDisplay}<br>` +
                     `接弦定理と角の二等分線の性質より、<strong>△BEFは BE = BF の二等辺三角形</strong>になる。<br>` +
                     `また、△ABCでAFは∠BACの二等分線なので、<br>` +
-                    `BF : FC = AB : AC = ${ab} : ${ac}<br>` +
-                    `よって、BE = BF = ${bcDisplay} × ${ab}/(${ab} + ${ac}) = <strong>${beAnswer}</strong><br><br>` +
+                    `BF : FC = AB : AC = ${frac(ab, ac)}<br>` +
+                    `よって、BE = BF = ${beFormula} = <strong>${beAnswer}</strong><br><br>` +
                     `<strong>③ AE : EF = ${ratioAnswer}</strong><br>` +
                     `△ABEと△ACFにおいて、<br>` +
                     `角の二等分線より ∠BAE = ∠CAF、接弦定理より ∠ABE = ∠ACF なので、<br>` +
                     `△ABE ∽ △ACF（2組の角がそれぞれ等しい）<br>` +
-                    `よって、AE : AF = AB : AC = ${ab} : ${ac}<br>` +
+                    `よって、AE : AF = AB : AC = ${frac(ab, ac)}<br>` +
                     `したがって、AE : EF = ${ab} : (${ac} − ${ab}) = <strong>${ratioAnswer}</strong>`;
 
                 return {
@@ -8615,8 +8628,334 @@ const formulaData = {
                     explanation: explanation
                 };
             }
-        }
+        },
+        "メネラウスの定理": {
+            category: "平面図形",
+            level: "公立",
+            formula: (() => {
+                const frac = (num, den) =>
+                    `<span style="display:inline-block; vertical-align:middle; text-align:center; font-size:0.9em; margin:0 2px;">` +
+                    `<span style="display:block; border-bottom:1px solid #334155; padding-bottom:1px; line-height:1.1;">${num}</span>` +
+                    `<span style="display:block; padding-top:1px; line-height:1.1;">${den}</span>` +
+                    `</span>`;
 
+                return "線分比を求める方法として三角形2枚が重なっているとき、メネラウスの定理を利用しよう。<br>" +
+                       "【例題】<br>" +
+                       "AD:DB=3:4、BE:EC=5:6の時、AF:FEを求めなさい。<br><br>" +
+                       '<div style="text-align:center; margin: 8px 0;"><svg viewBox="12 12 225 162" style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; width:235px; height:172px; display:inline-block;">' +
+                       // △ABE（薄く赤く塗りつぶし）
+                       '<polygon points="65,32 35,142 104.8,133.0" fill="#fecdd3" fill-opacity="0.55" stroke="#0f172a" stroke-width="1.5"/>' +
+                       // △BCD（B(35,142), C(190,122), D(51.5,81.5)）
+                       '<polygon points="35,142 190,122 51.5,81.5" fill="none" stroke="#0f172a" stroke-width="1.5"/>' +
+                       // 線分 DC と線分 AE（交点 F(88.8, 92.4)）
+                       '<line x1="51.5" y1="81.5" x2="190" y2="122" stroke="#0f172a" stroke-width="1.5"/>' +
+                       '<line x1="65" y1="32" x2="104.8" y2="133.0" stroke="#0f172a" stroke-width="1.5"/>' +
+                       // 点D（AB上）、点E（BC上）、交点F（DCとAEの交点）
+                       '<circle cx="51.5" cy="81.5" r="2.5" fill="#0f172a"/>' +
+                       '<text x="39" y="79" font-size="10" font-weight="bold" fill="#0f172a">D</text>' +
+                       '<circle cx="104.8" cy="133.0" r="2.5" fill="#0f172a"/>' +
+                       '<text x="108" y="126" font-size="10" font-weight="bold" fill="#0f172a">E</text>' +
+                       '<circle cx="88.8" cy="92.4" r="2.5" fill="#0f172a"/>' +
+                       '<text x="93" y="88" font-size="10" font-weight="bold" fill="#0f172a">F</text>' +
+                       // 頂点A, B, C
+                       '<circle cx="65" cy="32" r="2.5" fill="#0f172a"/>' +
+                       '<text x="61" y="25" font-size="10" font-weight="bold" fill="#0f172a">A</text>' +
+                       '<circle cx="35" cy="142" r="2.5" fill="#0f172a"/>' +
+                       '<text x="21" y="146" font-size="10" font-weight="bold" fill="#0f172a">B</text>' +
+                       '<circle cx="190" cy="122" r="2.5" fill="#0f172a"/>' +
+                       '<text x="196" y="125" font-size="10" font-weight="bold" fill="#0f172a">C</text>' +
+                       // 3:4（丸付き文字 ③, ④）
+                       '<text x="45" y="58" font-size="9.5" font-weight="bold" fill="#0f172a">③</text>' +
+                       '<text x="28" y="114" font-size="9.5" font-weight="bold" fill="#0f172a">④</text>' +
+                       // 5:6（四角付き文字 5, 6）
+                       '<rect x="64" y="141" width="11" height="11" fill="#fff" stroke="#0f172a" stroke-width="1.1"/>' +
+                       '<text x="69.5" y="147" font-size="8.5" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="central">5</text>' +
+                       '<rect x="142" y="134" width="11" height="11" fill="#fff" stroke="#0f172a" stroke-width="1.1"/>' +
+                       '<text x="147.5" y="140" font-size="8.5" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="central">6</text>' +
+                       // x, y（AF:FE = x:y）
+                       '<text x="84" y="63" font-size="9.5" font-weight="bold" font-style="italic" fill="#0f172a">x</text>' +
+                       '<text x="101" y="114" font-size="9.5" font-weight="bold" font-style="italic" fill="#0f172a">y</text>' +
+                       '</svg></div><br>' +
+                       'まず分かっている辺の長さや比と求めたい線分にx：yと書きこむ。<br>' +
+                       '（AD:DB=3:4、BE:EC=5:6とAF:FE=x:yを辺に書き込む）<br>' +
+                       '① <strong>基準の三角形</strong>をさがす<br>' +
+                       '　→ 三辺が長さや比、xやyで埋まっている三角形になることが多い。<br>' +
+                       '　(今回なら△ABE)<br>' +
+                       '② 基準の三角形の頂点に<strong>●</strong>、のこりの点に<strong>○</strong>をつける<br>' +
+                       '　→ ○が一直線上に並べば条件OK！<br>' +
+                       '③ <strong>● → ○ → ● → ○ → …</strong> と一筆書きで結びながら以下のような式に比やx、yを代入しよう。<br>' +
+                       '<div style="text-align:center; margin: 10px 0;">' +
+                       '<span style="display:inline-block; vertical-align:middle; text-align:center; font-size:0.95em;">' +
+                       `${frac("BD", "DA")} × ${frac("AF", "FE")} × ${frac("EC", "CB")} ＝ 1` +
+                       '</span></div>' +
+                       '<div style="text-align:center; margin: 8px 0;">' +
+                       `<span style="display:inline-block; vertical-align:middle; text-align:center; font-size:0.95em;">${frac("4", "3")}×${frac("x", "y")}×${frac("6", "6+5")}=1</span>` +
+                       '</div>' +
+                       'よってx:y=11:8<br>' +
+                       '※かけて1になることから逆数で答えを出す！<br>' +
+                       '※見た目で比の順番をチェック！';
+            })(),
+            generateRandom: function() {
+                const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+                const frac = (num, den) =>
+                    `<span style="display:inline-block; vertical-align:middle; text-align:center; font-size:0.9em; margin:0 2px;">` +
+                    `<span style="display:block; border-bottom:1px solid #334155; padding-bottom:1px; line-height:1.1;">${num}</span>` +
+                    `<span style="display:block; padding-top:1px; line-height:1.1;">${den}</span>` +
+                    `</span>`;
+
+                const ratioPairs = [
+                    [2, 3], [3, 2], [3, 4], [4, 3],
+                    [2, 5], [5, 2], [3, 5], [5, 3],
+                    [4, 5], [5, 4], [5, 6], [6, 5]
+                ];
+                const pickPair = (exclude) => {
+                    const candidates = ratioPairs.filter(
+                        ([a, b]) => !(exclude && a === exclude[0] && b === exclude[1])
+                    );
+                    return candidates[Math.floor(Math.random() * candidates.length)];
+                };
+
+                const [ad, db] = pickPair(null);
+                const [be, ec] = pickPair([ad, db]);
+
+                // 出題パターン（0〜8）
+                // 0..2: 基準△ABE（AF:FE, AF:AE, FE:AE）
+                // 3..5: 基準△BCD（DF:FC, DF:DC, FC:DC）
+                // 6..8: 基準△ADF（DF:FC, DF:DC, FC:DC）
+                const pattern = Math.floor(Math.random() * 9);
+
+                const tD = ad / (ad + db);
+                const tE = be / (be + ec);
+
+                const baseA = { x: 75, y: 42 };
+                const baseB = { x: 42, y: 142 };
+                const baseC = { x: 168, y: 125 };
+                const baseD = { x: baseA.x + (baseB.x - baseA.x) * tD, y: baseA.y + (baseB.y - baseA.y) * tD };
+                const baseE = { x: baseB.x + (baseC.x - baseB.x) * tE, y: baseB.y + (baseC.y - baseB.y) * tE };
+
+                const lineIntersect = (p1, p2, p3, p4) => {
+                    const denom = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+                    if (Math.abs(denom) < 1e-6) return { x: (p1.x + p4.x) / 2, y: (p1.y + p4.y) / 2 };
+                    return {
+                        x: ((p1.x * p2.y - p1.y * p2.x) * (p3.x - p4.x) - (p1.x - p2.x) * (p3.x * p4.y - p3.y * p4.x)) / denom,
+                        y: ((p1.x * p2.y - p1.y * p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x * p4.y - p3.y * p4.x)) / denom
+                    };
+                };
+                const baseF = lineIntersect(baseD, baseC, baseA, baseE);
+
+                // 1°単位（0〜359°）でランダム回転
+                const deg = Math.floor(Math.random() * 360);
+                const rad = (deg * Math.PI) / 180;
+                const cosA = Math.cos(rad);
+                const sinA = Math.sin(rad);
+                const pivot = {
+                    x: (baseA.x + baseB.x + baseC.x) / 3,
+                    y: (baseA.y + baseB.y + baseC.y) / 3
+                };
+                const rotatePt = (pt) => {
+                    const dx = pt.x - pivot.x;
+                    const dy = pt.y - pivot.y;
+                    return {
+                        x: pivot.x + dx * cosA - dy * sinA,
+                        y: pivot.y + dx * sinA + dy * cosA
+                    };
+                };
+
+                const A = rotatePt(baseA);
+                const B = rotatePt(baseB);
+                const C = rotatePt(baseC);
+                const D = rotatePt(baseD);
+                const E = rotatePt(baseE);
+                const F = rotatePt(baseF);
+
+                const offsetFrom = (target, ref, dist) => {
+                    const vx = target.x - ref.x;
+                    const vy = target.y - ref.y;
+                    const len = Math.hypot(vx, vy) || 1;
+                    return { x: target.x + (vx / len) * dist, y: target.y + (vy / len) * dist };
+                };
+                const lblA = offsetFrom(A, pivot, 12);
+                const lblB = offsetFrom(B, pivot, 12);
+                const lblC = offsetFrom(C, pivot, 12);
+                const lblD = offsetFrom(D, pivot, 11);
+                const lblE = offsetFrom(E, pivot, 11);
+                const lblF = offsetFrom(F, pivot, 10);
+
+                let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+                [A, B, C, D, E, F, lblA, lblB, lblC, lblD, lblE, lblF].forEach(p => {
+                    if (p.x < minX) minX = p.x;
+                    if (p.x > maxX) maxX = p.x;
+                    if (p.y < minY) minY = p.y;
+                    if (p.y > maxY) maxY = p.y;
+                });
+                const pad = 16;
+                const vbX = minX - pad;
+                const vbY = minY - pad;
+                const vbW = (maxX - minX) + pad * 2;
+                const vbH = (maxY - minY) + pad * 2;
+
+                const svgProblem =
+                    '<div style="text-align:center; margin: 10px 0;">' +
+                    `<svg viewBox="${vbX.toFixed(1)} ${vbY.toFixed(1)} ${vbW.toFixed(1)} ${vbH.toFixed(1)}" style="background:#fff; border:1px solid #cbd5e1; border-radius:6px; width:235px; height:172px; display:inline-block;">` +
+                    `<polygon points="${A.x.toFixed(1)},${A.y.toFixed(1)} ${B.x.toFixed(1)},${B.y.toFixed(1)} ${E.x.toFixed(1)},${E.y.toFixed(1)}" fill="none" stroke="#0f172a" stroke-width="1.5"/>` +
+                    `<polygon points="${B.x.toFixed(1)},${B.y.toFixed(1)} ${C.x.toFixed(1)},${C.y.toFixed(1)} ${D.x.toFixed(1)},${D.y.toFixed(1)}" fill="none" stroke="#0f172a" stroke-width="1.5"/>` +
+                    `<line x1="${D.x.toFixed(1)}" y1="${D.y.toFixed(1)}" x2="${C.x.toFixed(1)}" y2="${C.y.toFixed(1)}" stroke="#0f172a" stroke-width="1.5"/>` +
+                    `<line x1="${A.x.toFixed(1)}" y1="${A.y.toFixed(1)}" x2="${E.x.toFixed(1)}" y2="${E.y.toFixed(1)}" stroke="#0f172a" stroke-width="1.5"/>` +
+                    `<circle cx="${A.x.toFixed(1)}" cy="${A.y.toFixed(1)}" r="2.4" fill="#0f172a"/>` +
+                    `<text x="${lblA.x.toFixed(1)}" y="${lblA.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="central">A</text>` +
+                    `<circle cx="${B.x.toFixed(1)}" cy="${B.y.toFixed(1)}" r="2.4" fill="#0f172a"/>` +
+                    `<text x="${lblB.x.toFixed(1)}" y="${lblB.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="central">B</text>` +
+                    `<circle cx="${C.x.toFixed(1)}" cy="${C.y.toFixed(1)}" r="2.4" fill="#0f172a"/>` +
+                    `<text x="${lblC.x.toFixed(1)}" y="${lblC.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="central">C</text>` +
+                    `<circle cx="${D.x.toFixed(1)}" cy="${D.y.toFixed(1)}" r="2.4" fill="#0f172a"/>` +
+                    `<text x="${lblD.x.toFixed(1)}" y="${lblD.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="central">D</text>` +
+                    `<circle cx="${E.x.toFixed(1)}" cy="${E.y.toFixed(1)}" r="2.4" fill="#0f172a"/>` +
+                    `<text x="${lblE.x.toFixed(1)}" y="${lblE.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="central">E</text>` +
+                    `<circle cx="${F.x.toFixed(1)}" cy="${F.y.toFixed(1)}" r="2.4" fill="#0f172a"/>` +
+                    `<text x="${lblF.x.toFixed(1)}" y="${lblF.y.toFixed(1)}" font-size="10" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="central">F</text>` +
+                    '</svg></div>';
+
+                const intro =
+                    "図のように、△ABEと△BCDが重なっており、点Dは辺AB上、点Eは辺BC上にある。" +
+                    "線分DCと線分AEの交点をFとする。<br>";
+
+                const cb = be + ec;
+                const ba = ad + db;
+
+                // 基準△ABE系（AF : FE = pFE : qFE）
+                const pRaw = ad * cb;
+                const qRaw = db * ec;
+                const gFE = gcd(pRaw, qRaw);
+                const pFE = pRaw / gFE;
+                const qFE = qRaw / gFE;
+
+                // 基準△BCD / △ADF系（DF : FC = uFC : vFC）
+                const uRaw = ad * be;
+                const vRaw = ba * ec;
+                const gFC = gcd(uRaw, vRaw);
+                const uFC = uRaw / gFC;
+                const vFC = vRaw / gFC;
+
+                let targetLabel = "";
+                let ansStr = "";
+                let explanation = "";
+
+                if (pattern <= 2) {
+                    if (pattern === 0) {
+                        targetLabel = "AF : FE";
+                        ansStr = `${pFE} : ${qFE}`;
+                    } else if (pattern === 1) {
+                        targetLabel = "AF : AE";
+                        const gSum = gcd(pFE, pFE + qFE);
+                        ansStr = `${pFE / gSum} : ${(pFE + qFE) / gSum}`;
+                    } else {
+                        targetLabel = "FE : AE";
+                        const gSum = gcd(qFE, pFE + qFE);
+                        ansStr = `${qFE / gSum} : ${(pFE + qFE) / gSum}`;
+                    }
+
+                    const extraLine = pattern === 0
+                        ? ""
+                        : `<br>よって AF : FE ＝ ${pFE} : ${qFE} なので、<strong>${targetLabel} ＝ ${ansStr}</strong>`;
+
+                    explanation =
+                        `AF : FE ＝ x : y とおく。<br>` +
+                        `① 基準の三角形は <strong>△ABE</strong><br>` +
+                        `② △ABEの頂点A, B, Eに●、残りの点D, F, Cに○をつけると、3点D, F, Cは一直線上にある。<br>` +
+                        `③ メネラウスの定理より：<br>` +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac("BD", "DA")} × ${frac("AF", "FE")} × ${frac("EC", "CB")} ＝ 1` +
+                        '</div>' +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac(db, ad)} × ${frac("x", "y")} × ${frac(ec, `${be}+${ec}`)} ＝ 1` +
+                        '</div>' +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac(db * ec, ad * cb)} × ${frac("x", "y")} ＝ 1` +
+                        '</div>' +
+                        (pattern === 0
+                            ? `よって、<strong>AF : FE ＝ ${ansStr}</strong>`
+                            : `AF : FE ＝ ${pFE} : ${qFE}${extraLine}`);
+                } else if (pattern <= 5) {
+                    if (pattern === 3) {
+                        targetLabel = "DF : FC";
+                        ansStr = `${uFC} : ${vFC}`;
+                    } else if (pattern === 4) {
+                        targetLabel = "DF : DC";
+                        const gSum = gcd(uFC, uFC + vFC);
+                        ansStr = `${uFC / gSum} : ${(uFC + vFC) / gSum}`;
+                    } else {
+                        targetLabel = "FC : DC";
+                        const gSum = gcd(vFC, uFC + vFC);
+                        ansStr = `${vFC / gSum} : ${(uFC + vFC) / gSum}`;
+                    }
+
+                    const extraLine = pattern === 3
+                        ? ""
+                        : `<br>よって DF : FC ＝ ${uFC} : ${vFC} なので、<strong>${targetLabel} ＝ ${ansStr}</strong>`;
+
+                    explanation =
+                        `DF : FC ＝ x : y とおく。<br>` +
+                        `① 基準の三角形は <strong>△BCD</strong><br>` +
+                        `② △BCDの頂点B, C, Dに●、残りの点E, F, Aに○をつけると、3点E, F, Aは一直線上にある。<br>` +
+                        `③ メネラウスの定理より：<br>` +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac("BA", "AD")} × ${frac("DF", "FC")} × ${frac("CE", "EB")} ＝ 1` +
+                        '</div>' +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac(`${ad}+${db}`, ad)} × ${frac("x", "y")} × ${frac(ec, be)} ＝ 1` +
+                        '</div>' +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac(ba * ec, ad * be)} × ${frac("x", "y")} ＝ 1` +
+                        '</div>' +
+                        (pattern === 3
+                            ? `よって、<strong>DF : FC ＝ ${ansStr}</strong>`
+                            : `DF : FC ＝ ${uFC} : ${vFC}${extraLine}`);
+                } else {
+                    if (pattern === 6) {
+                        targetLabel = "DF : FC";
+                        ansStr = `${uFC} : ${vFC}`;
+                    } else if (pattern === 7) {
+                        targetLabel = "DF : DC";
+                        const gSum = gcd(uFC, uFC + vFC);
+                        ansStr = `${uFC / gSum} : ${(uFC + vFC) / gSum}`;
+                    } else {
+                        targetLabel = "FC : DC";
+                        const gSum = gcd(vFC, uFC + vFC);
+                        ansStr = `${vFC / gSum} : ${(uFC + vFC) / gSum}`;
+                    }
+
+                    const aeNum = pFE + qFE;
+                    const extraLine = pattern === 6
+                        ? ""
+                        : `<br>よって DF : FC ＝ ${uFC} : ${vFC} なので、<strong>${targetLabel} ＝ ${ansStr}</strong>`;
+
+                    explanation =
+                        `DF : FC ＝ x : y とおく。<br>` +
+                        `① 基準の三角形は <strong>△ADF</strong><br>` +
+                        `② △ADFの頂点A, D, Fに●、残りの点B, E, Cに○をつけると、3点B, E, Cは一直線上にある。<br>` +
+                        `③ メネラウスの定理より：<br>` +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac("DB", "BA")} × ${frac("AE", "EF")} × ${frac("FC", "CD")} ＝ 1` +
+                        '</div>' +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac(db, `${ad}+${db}`)} × ${frac(aeNum, qFE)} × ${frac("y", "x+y")} ＝ 1` +
+                        '</div>' +
+                        '<div style="text-align:center; margin: 8px 0;">' +
+                        `${frac("x", "y")} ＝ ${frac(uFC, vFC)}` +
+                        '</div>' +
+                        (pattern === 6
+                            ? `よって、<strong>DF : FC ＝ ${ansStr}</strong>`
+                            : `DF : FC ＝ ${uFC} : ${vFC}${extraLine}`);
+                }
+
+                const problem =
+                    intro +
+                    `AD : DB ＝ ${ad} : ${db}、BE : EC ＝ ${be} : ${ec} のとき、<strong>${targetLabel}</strong> を求めなさい。` +
+                    svgProblem;
+
+                return { problem, explanation };
+            }
+        }
 
 
     },
