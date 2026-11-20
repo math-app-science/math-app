@@ -4,14 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数学公式＆演習アプリ</title>
-    
+
     <!-- MathJaxの読み込み -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            startup: {
+                typeset: false
+            }
+        };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
-        body { font-family: sans-serif; margin: 20px; background: #f9f9f9; color: #333; line-height: 1.6; }
-        .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        select, button { padding: 10px; font-size: 16px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+            margin: 16px;
+            background: #f9f9f9;
+            color: #333;
+            line-height: 1.65;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
         /* トップヘッダー（タイトル ＋ 右上の共有QRボタン） */
         .top-header {
@@ -23,7 +54,7 @@
         }
         .top-header h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 22px;
         }
         .qr-btn {
             width: auto;
@@ -44,15 +75,18 @@
         .qr-btn:hover {
             background: #e2e8f0;
         }
-        
+
         /* 枠からはみ出さないよう word-break と overflow-x を設定 */
-        .card { 
-            background: #f1f5f9; 
-            padding: 15px; 
-            border-radius: 6px; 
-            margin-top: 15px; 
-            word-break: break-word; 
-            overflow-x: auto; 
+        .card {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 12px;
+            word-break: break-word;
+            overflow-x: auto;
+        }
+        .card h4 {
+            margin: 0 0 8px 0;
         }
 
         .empty-notice {
@@ -143,11 +177,44 @@
             min-height: 200px;
             margin-bottom: 12px;
         }
-        
-        .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto;}
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
-        .hidden { display: none; }
-        .filter-group { background: #e0f2fe; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 90%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .filter-group {
+            background: #e0f2fe;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -166,14 +233,14 @@
             共有QR
         </button>
     </div>
-    
+
     <!-- トップ画面：問題演習ボタン -->
-    <button onclick="startExercise()" style="background-color: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer;">問題演習モードへ</button>
+    <button type="button" onclick="startExercise()" style="background-color: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer;">問題演習モードへ</button>
     <hr style="margin: 20px 0;">
 
     <!-- ① プルダウン選択エリア -->
     <h3>公式・学習モード</h3>
-    <label>レベル：</label>
+    <label for="levelSelect">レベル：</label>
     <select id="levelSelect" onchange="updateUnits()">
         <option value="全て">全て</option>
         <option value="基礎">基礎</option>
@@ -181,7 +248,7 @@
         <option value="難関私立">難関私立</option>
     </select>
 
-    <label>カテゴリ：</label>
+    <label for="categorySelect">カテゴリ：</label>
     <select id="categorySelect" onchange="updateUnits()">
         <option value="全て">全て</option>
         <option value="数式">数式</option>
@@ -191,7 +258,7 @@
         <option value="その他">その他</option>
     </select>
 
-    <label>単元：</label>
+    <label for="unitSelect">単元：</label>
     <select id="unitSelect" onchange="loadFormulaContent()">
         <!-- JSで動的に書き換え -->
     </select>
@@ -201,39 +268,39 @@
         単元を選択すると、公式・問題・答え・解説が表示されます。
     </div>
 
-    <!-- ② 公式・問題表示エリア（順番：問題 ➔ 答え ➔ 解説 ➔ 問題の更新） -->
+    <!-- ② 公式・問題表示エリア -->
     <div id="learningArea" class="hidden">
         <div class="card">
             <h4 id="formulaTitle">【公式】</h4>
             <div id="displayFormula">-</div>
         </div>
-        
+
         <!-- 1. 問題 -->
         <div class="card">
             <h4>【問題】</h4>
             <div id="displayProblem">-</div>
         </div>
-        
+
         <!-- 2. 答えボタンとボックス -->
-        <button onclick="toggleAnswer()" style="background-color: #f59e0b; color: white; border: none; border-radius: 5px; cursor: pointer;">答えを見る</button>
+        <button type="button" onclick="toggleAnswer()" style="background-color: #f59e0b; color: white; border: none; border-radius: 5px; cursor: pointer;">答えを見る</button>
         <div id="answerBox" class="card hidden">
             <h4>【答え】</h4>
             <div id="displayAnswer">-</div>
         </div>
 
         <!-- 3. 解説ボタンとボックス -->
-        <button onclick="toggleExplanation()" style="background-color: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer;">解説を見る</button>
+        <button type="button" onclick="toggleExplanation()" style="background-color: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer;">解説を見る</button>
         <div id="explanationBox" class="card hidden">
             <h4>【解説】</h4>
             <div id="displayExplanation">-</div>
         </div>
 
         <!-- 4. 問題の更新ボタン -->
-        <button onclick="refreshProblem()" style="background-color: #0284c7; color: white; border: none; border-radius: 5px; cursor: pointer;">問題の更新（別パターン生成）</button>
+        <button type="button" onclick="refreshProblem()" style="background-color: #0284c7; color: white; border: none; border-radius: 5px; cursor: pointer;">問題の更新（別パターン生成）</button>
     </div>
 </div>
 
-<!-- 共有用QRコードモーダル（URL文字列は非表示・初期は固定トップURL／単元表示中は外部API） -->
+<!-- 共有用QRコードモーダル -->
 <div class="overlay" id="qrOverlay" onclick="closeQrModal()"></div>
 <div class="popup" id="qrPopup" style="max-width: 320px; text-align: center;">
     <h3 style="margin-top: 0;">共有用QRコード</h3>
@@ -248,14 +315,14 @@
 <!-- ③ 問題演習モード用ポップアップ -->
 <div class="overlay" id="overlay" onclick="closeExercise()"></div>
 <div class="popup" id="exercisePopup">
-    <h2>ランダム問題演習</h2>
-    
+    <h2 style="margin-top: 0;">ランダム問題演習</h2>
+
     <!-- レベル・カテゴリ選択フィルター -->
     <div class="filter-group">
         <label style="font-size: 14px; font-weight: bold;">【出題条件の絞り込み】</label>
         <div style="display: flex; gap: 10px;">
             <div style="flex: 1;">
-                <label style="font-size: 12px;">レベル：</label>
+                <label for="exLevelSelect" style="font-size: 12px;">レベル：</label>
                 <select id="exLevelSelect" style="font-size: 14px; padding: 6px;">
                     <option value="全て">全て</option>
                     <option value="基礎">基礎</option>
@@ -264,7 +331,7 @@
                 </select>
             </div>
             <div style="flex: 1;">
-                <label style="font-size: 12px;">カテゴリ：</label>
+                <label for="exCategorySelect" style="font-size: 12px;">カテゴリ：</label>
                 <select id="exCategorySelect" style="font-size: 14px; padding: 6px;">
                     <option value="全て">全て</option>
                     <option value="数式">数式</option>
@@ -275,11 +342,11 @@
                 </select>
             </div>
         </div>
-        <button onclick="nextExercise()" style="background-color: #0ea5e9; color: white; border: none; border-radius: 4px; margin-top: 8px; cursor: pointer; padding: 6px;">この条件で問題を出題</button>
+        <button type="button" onclick="nextExercise()" style="background-color: #0ea5e9; color: white; border: none; border-radius: 4px; margin-top: 8px; cursor: pointer; padding: 6px;">この条件で問題を出題</button>
     </div>
 
     <p><strong>単元:</strong> <span id="exUnitName">-</span> (レベル: <span id="exLevelName">-</span>)</p>
-    
+
     <!-- 1. 問題 -->
     <div class="card">
         <div id="exProblem">-</div>
@@ -293,36 +360,36 @@
         </label>
         <button type="button" class="reset-done-btn" onclick="resetCompletedUnits()" title="できた記録をすべて解除">記録リセット</button>
     </div>
-    
+
     <!-- 公式確認ボタンと切り替え用領域 -->
-    <button onclick="togglePopupFormula()" style="background-color: #64748b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">公式を確認</button>
+    <button type="button" onclick="togglePopupFormula()" style="background-color: #64748b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">公式を確認</button>
     <div id="exFormulaResult" class="hidden card" style="font-weight: bold; color: #475569; margin-top: 5px;"></div>
-    
+
     <!-- 2. 答えボタンと切り替え用領域 -->
-    <button onclick="togglePopupAnswer()" style="background-color: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">答えを見る</button>
+    <button type="button" onclick="togglePopupAnswer()" style="background-color: #f59e0b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">答えを見る</button>
     <div id="exAnswerResult" class="hidden card" style="margin-top: 5px;"></div>
-    
+
     <!-- 3. 解説ボタンと切り替え用領域 -->
-    <button onclick="togglePopupExplanation()" style="background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">解説を見る</button>
+    <button type="button" onclick="togglePopupExplanation()" style="background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">解説を見る</button>
     <div id="exExplanationResult" class="hidden card" style="margin-top: 5px;"></div>
 
     <!-- 解説ボタンの直下：同じ公式で問題を更新 -->
-    <button onclick="refreshSameUnitExercise()" style="background-color: #0284c7; color: white; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">同じ公式で問題を更新</button>
+    <button type="button" onclick="refreshSameUnitExercise()" style="background-color: #0284c7; color: white; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">同じ公式で問題を更新</button>
 
     <!-- 次の問題へボタン -->
-    <button onclick="nextExercise()" style="background-color: #2563eb; color: white; border: none; border-radius: 4px; margin-top: 5px; cursor: pointer;">次の問題へ</button>
-    <button onclick="closeExercise()" style="margin-top: 5px; cursor: pointer; background: #e2e8f0; border: none; border-radius: 4px; padding: 10px;">閉じる</button>
+    <button type="button" onclick="nextExercise()" style="background-color: #2563eb; color: white; border: none; border-radius: 4px; margin-top: 5px; cursor: pointer;">次の問題へ</button>
+    <button type="button" onclick="closeExercise()" style="margin-top: 5px; cursor: pointer; background: #e2e8f0; border: none; border-radius: 4px; padding: 10px;">閉じる</button>
 </div>
 
 <!-- 外部データの読み込み -->
 <script src="formulas.js"></script>
 <script>
-    let currentData = null; 
-    let activeCategoryMap = {}; 
-    let unitIndexMap = {}; 
+    let currentData = null;
+    let activeCategoryMap = {};
+    let unitIndexMap = {};
+    let currentExData = {};
     const completedUnitKeys = new Set();
 
-    // 初期画面（クエリなしのトップURL）を固定保持
     const INITIAL_TOP_URL = (() => {
         const u = new URL(window.location.href);
         u.search = "";
@@ -361,12 +428,10 @@
         alert("「できた」記録をリセットしました。");
     }
 
-    // 単元選択中かどうかを判定
     function hasSelectedUnit() {
         return Boolean(currentData && currentData.actualCategory && currentData.actualUnit);
     }
 
-    // 共有用URLを取得（単元未選択時は固定トップURL、単元選択時は単元URL）
     function getShareUrl() {
         if (!hasSelectedUnit()) {
             return INITIAL_TOP_URL;
@@ -377,7 +442,6 @@
         return url.toString();
     }
 
-    // 共有QRコードモーダルを開く（単元選択中は外部APIでQR生成、未選択時は固定トップURL）
     function openQrModal() {
         const isUnitPage = hasSelectedUnit();
         const shareUrl = getShareUrl();
@@ -392,13 +456,11 @@
         document.getElementById('qrPopup').style.display = 'block';
     }
 
-    // 共有QRコードモーダルを閉じる
     function closeQrModal() {
         document.getElementById('qrOverlay').style.display = 'none';
         document.getElementById('qrPopup').style.display = 'none';
     }
 
-    // 共有リンクをクリップボードへコピー
     function copyShareUrl() {
         const shareUrl = getShareUrl();
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -416,7 +478,6 @@
         }
     }
 
-    // URLパラメータ（?cat=...&unit=...）から初期単元を適用
     function applyQueryParams() {
         if (typeof formulaData === "undefined") return;
         const params = new URLSearchParams(window.location.search);
@@ -441,18 +502,19 @@
         }
     }
 
-    // MathJax 3 を安全に再描画するヘルパー関数
     function renderMath(elementId) {
-        if (window.MathJax) {
-            if (elementId && MathJax.typesetClear) {
-                const el = document.getElementById(elementId);
-                if (el) MathJax.typesetClear([el]);
+        if (!window.MathJax) return;
+        const targets = elementId ? [document.getElementById(elementId)].filter(Boolean) : undefined;
+        if (typeof MathJax.typesetPromise === "function") {
+            if (targets && typeof MathJax.typesetClear === "function") {
+                MathJax.typesetClear(targets);
             }
-            MathJax.typeset();
+            MathJax.typesetPromise(targets).catch(() => {});
+        } else if (typeof MathJax.typeset === "function") {
+            MathJax.typeset(targets);
         }
     }
 
-    // 解説文から結論（答え部分）を抽出するフォールバック関数
     function extractAnswer(explanation) {
         if (!explanation) return "（答えなし）";
         let clean = explanation.replace(/【解説】<br>/g, "");
@@ -460,7 +522,6 @@
         return parts[parts.length - 1] || clean;
     }
 
-    // formulas.js の単元データ（または generated）から自己チェック欄HTMLを生成
     function buildSelfCheckHtml(unitData, generated) {
         const rawCheck = (generated && generated.selfCheck) || (unitData && unitData.selfCheck);
 
@@ -489,7 +550,6 @@
         `;
     }
 
-    // 独立した「答え」＋「自己チェック欄」HTMLを生成
     function buildAnswerAndCheckHtml(unitData, generated, fallbackExplanation) {
         const rawAnswer = (generated && generated.answer)
             ? generated.answer
@@ -533,12 +593,11 @@
         activeCategoryMap = {};
         unitIndexMap = {};
 
-        // 未選択プレースホルダーを追加
         const placeholderOpt = document.createElement('option');
         placeholderOpt.value = "";
         placeholderOpt.textContent = "-- 単元を選択してください --";
         unitSelect.appendChild(placeholderOpt);
-        
+
         let targetCategories = [];
         if (cat === "全て") {
             targetCategories = Object.keys(formulaData);
@@ -549,13 +608,13 @@
         let count = 1;
         targetCategories.forEach(category => {
             Object.keys(formulaData[category]).forEach(unit => {
-                const levelStr = formulaData[category][unit].level;
+                const levelStr = formulaData[category][unit].level || "";
                 const matchesLevel = (selectedLevel === "全て") || levelStr.includes(selectedLevel);
-                
+
                 if (matchesLevel) {
                     let optVal = cat === "全て" ? `${category}___${unit}` : unit;
                     let optText = cat === "全て" ? `${count}. [${category}] ${unit}` : `${count}. ${unit}`;
-                    
+
                     let opt = document.createElement('option');
                     opt.value = optVal;
                     opt.textContent = optText;
@@ -577,7 +636,7 @@
         const selectedLevel = document.getElementById('levelSelect').value;
         const catSelect = document.getElementById('categorySelect').value;
         const unitVal = document.getElementById('unitSelect').value;
-        
+
         if (!unitVal) {
             showEmptyState("単元を選択すると、公式・問題・答え・解説が表示されます。");
             return;
@@ -590,28 +649,28 @@
             cat = activeCategoryMap[unitVal];
             unit = unitVal.split("___")[1];
         }
-        
+
         const currentNumber = unitIndexMap[unitVal] || 1;
-        
+
         if (selectedLevel === "全て" && catSelect === "全て" && formulaData[cat] && formulaData[cat][unit]) {
-            const itemLevel = formulaData[cat][unit].level;
+            const itemLevel = formulaData[cat][unit].level || "";
             document.getElementById('formulaTitle').textContent = `【公式】 No.${currentNumber} ${itemLevel}`;
         } else {
             document.getElementById('formulaTitle').textContent = `【公式】 No.${currentNumber}`;
         }
-        
+
         if (formulaData[cat] && formulaData[cat][unit]) {
             showLearningState();
             currentData = formulaData[cat][unit];
-            currentData.actualCategory = cat; 
+            currentData.actualCategory = cat;
             currentData.actualUnit = unit;
-            
+
             document.getElementById('displayFormula').innerHTML = currentData.formula;
-            
+
             let generated = null;
             let prob = "";
             let expl = "";
-            if (currentData.generateRandom) {
+            if (typeof currentData.generateRandom === "function") {
                 generated = currentData.generateRandom();
                 prob = generated.problem;
                 expl = generated.explanation;
@@ -623,11 +682,11 @@
             document.getElementById('displayProblem').innerHTML = prob;
             document.getElementById('displayAnswer').innerHTML = buildAnswerAndCheckHtml(currentData, generated, expl);
             document.getElementById('displayExplanation').innerHTML = expl;
-            
+
             currentData.activeProblem = prob;
             currentData.activeAnswer = (generated && generated.answer) ? generated.answer : extractAnswer(expl);
             currentData.activeExplanation = expl;
-            
+
             renderMath('learningArea');
         } else {
             showEmptyState("（データ準備中）");
@@ -637,12 +696,12 @@
     }
 
     function refreshProblem() {
-        if (currentData && currentData.generateRandom) {
+        if (currentData && typeof currentData.generateRandom === "function") {
             let generated = currentData.generateRandom();
             currentData.activeProblem = generated.problem;
             currentData.activeAnswer = generated.answer || extractAnswer(generated.explanation);
             currentData.activeExplanation = generated.explanation;
-            
+
             document.getElementById('displayProblem').innerHTML = generated.problem;
             document.getElementById('displayAnswer').innerHTML = buildAnswerAndCheckHtml(
                 currentData,
@@ -650,10 +709,10 @@
                 generated.explanation
             );
             document.getElementById('displayExplanation').innerHTML = generated.explanation;
-            
+
             document.getElementById('answerBox').classList.add('hidden');
             document.getElementById('explanationBox').classList.add('hidden');
-            
+
             renderMath('learningArea');
         } else {
             alert("この単元のランダム生成はまだ準備されていません。");
@@ -663,16 +722,18 @@
     function toggleAnswer() {
         const box = document.getElementById('answerBox');
         box.classList.toggle('hidden');
-        renderMath('answerBox');
+        if (!box.classList.contains('hidden')) {
+            renderMath('answerBox');
+        }
     }
 
     function toggleExplanation() {
         const box = document.getElementById('explanationBox');
         box.classList.toggle('hidden');
-        renderMath('explanationBox');
+        if (!box.classList.contains('hidden')) {
+            renderMath('explanationBox');
+        }
     }
-
-    let currentExData = {};
 
     function renderExerciseProblem(targetCategory, randomSubKey, targetItem) {
         let gen = null;
@@ -691,21 +752,21 @@
         currentExData = {
             category: targetCategory,
             unit: randomSubKey,
-            level: targetItem.level,
-            formula: targetItem.formula,
+            level: targetItem.level || "",
+            formula: targetItem.formula || "",
             problem: prob,
             answer: (gen && gen.answer) ? gen.answer : extractAnswer(expl),
             explanation: expl,
             unitData: targetItem,
             generated: gen
         };
-        
+
         document.getElementById('exUnitName').textContent = `${targetCategory} / ${randomSubKey}`;
-        document.getElementById('exLevelName').textContent = targetItem.level;
+        document.getElementById('exLevelName').textContent = currentExData.level;
         document.getElementById('exProblem').innerHTML = currentExData.problem;
 
         syncDoneCheckbox();
-        
+
         const formulaRes = document.getElementById('exFormulaResult');
         formulaRes.innerHTML = "【公式】<br>" + currentExData.formula;
         formulaRes.classList.add('hidden');
@@ -755,6 +816,7 @@
     }
 
     function nextExercise() {
+        if (typeof formulaData === "undefined") return;
         const selectedLevel = document.getElementById('exLevelSelect').value;
         let selectedCategory = document.getElementById('exCategorySelect').value;
 
@@ -769,9 +831,9 @@
         targetCategories.forEach(cat => {
             if (formulaData[cat]) {
                 Object.keys(formulaData[cat]).forEach(unit => {
-                    const levelStr = formulaData[cat][unit].level;
+                    const levelStr = formulaData[cat][unit].level || "";
                     const matchesLevel = (selectedLevel === "全て") || levelStr.includes(selectedLevel);
-                    
+
                     if (matchesLevel) {
                         matchedUnits.push({ category: cat, unit: unit });
                     }
@@ -808,22 +870,28 @@
     function togglePopupFormula() {
         const formulaRes = document.getElementById('exFormulaResult');
         formulaRes.classList.toggle('hidden');
-        renderMath('exFormulaResult');
+        if (!formulaRes.classList.contains('hidden')) {
+            renderMath('exFormulaResult');
+        }
     }
 
     function togglePopupAnswer() {
         const ansRes = document.getElementById('exAnswerResult');
         ansRes.classList.toggle('hidden');
-        renderMath('exAnswerResult');
+        if (!ansRes.classList.contains('hidden')) {
+            renderMath('exAnswerResult');
+        }
     }
 
     function togglePopupExplanation() {
         const explRes = document.getElementById('exExplanationResult');
         explRes.classList.toggle('hidden');
-        renderMath('exExplanationResult');
+        if (!explRes.classList.contains('hidden')) {
+            renderMath('exExplanationResult');
+        }
     }
 
-    window.onload = function() {
+    window.onload = function () {
         updateUnits();
         applyQueryParams();
     };

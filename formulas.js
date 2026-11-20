@@ -9177,7 +9177,329 @@ const formulaData = {
                     explanation
                 };
             }
-        }
+        },
+"中点連結定理": {
+    level: "公立",
+    formula: `
+        <div>三角形において以下の条件を満たす<strong>中点連結定理</strong>が成立する。</div>
+        <ul style="margin: 6px 0 10px 18px; padding: 0;">
+            <li>① 2辺に中点があり、中点同士を結ぶ線分がある</li>
+            <li>② 中点から平行線が引かれている</li>
+        </ul>
+        <div style="font-weight: bold; color: #1e40af; margin-bottom: 10px;">3等分されているときは2個ずつ考えよう！</div>
+
+        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+            <div><strong>【図形1】</strong>不等辺三角形 $\\triangle \\mathrm{ABC}$ があり、辺 $\\mathrm{AB}$ と辺 $\\mathrm{AC}$ 上に中点があり、それぞれ $\\mathrm{D}$、$\\mathrm{E}$ とする。</div>
+            <div style="margin: 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="0 0 260 150" width="240" height="140" style="max-width: 100%; height: auto;">
+                    <polygon points="95,18 30,126 225,126" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                    <line x1="62.5" y1="72" x2="160" y2="72" stroke="#2563eb" stroke-width="2.2"/>
+                    <circle cx="62.5" cy="72" r="3.5" fill="#2563eb"/>
+                    <circle cx="160" cy="72" r="3.5" fill="#2563eb"/>
+                    <text x="95" y="13" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">A</text>
+                    <text x="20" y="136" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">B</text>
+                    <text x="235" y="136" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">C</text>
+                    <text x="48" y="75" font-size="13" font-weight="bold" text-anchor="end" fill="#2563eb">D</text>
+                    <text x="174" y="75" font-size="13" font-weight="bold" text-anchor="start" fill="#2563eb">E</text>
+                </svg>
+            </div>
+            <div style="margin-top: 4px;">
+                <strong>【中点連結定理】</strong><br>
+                ・DE／／BC<br>
+                ・$$\\mathrm{DE} = \\frac{1}{2}\\mathrm{BC}$$
+            </div>
+        </div>
+
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+            <div><strong>【図形2】</strong>台形 $\\mathrm{ABCD}$（AD／／BC）があり、辺 $\\mathrm{AB}$ と辺 $\\mathrm{CD}$ 上に中点 $\\mathrm{E}$、$\\mathrm{F}$ がある。</div>
+            <div style="margin: 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="0 0 260 150" width="240" height="140" style="max-width: 100%; height: auto;">
+                    <polygon points="75,24 185,24 232,124 28,124" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                    <line x1="51.5" y1="74" x2="208.5" y2="74" stroke="#059669" stroke-width="2.2"/>
+                    <circle cx="51.5" cy="74" r="3.5" fill="#059669"/>
+                    <circle cx="208.5" cy="74" r="3.5" fill="#059669"/>
+                    <text x="75" y="17" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">A</text>
+                    <text x="185" y="17" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">D</text>
+                    <text x="20" y="136" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">B</text>
+                    <text x="240" y="136" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">C</text>
+                    <text x="38" y="78" font-size="13" font-weight="bold" text-anchor="end" fill="#059669">E</text>
+                    <text x="222" y="78" font-size="13" font-weight="bold" text-anchor="start" fill="#059669">F</text>
+                </svg>
+            </div>
+            <div style="margin-top: 4px;">
+                <strong>【中点連結定理】</strong><br>
+                ・AD／／EF／／BC<br>
+                ・$$\\mathrm{EF} = \\frac{\\mathrm{AD} + \\mathrm{BC}}{2}$$
+            </div>
+        </div>
+    `,
+    selfCheck: [
+        "三角形の中点連結定理で、底辺の「2倍」と「2分の1（半分）」を取り違えていないか？（中点同士を結ぶ線分は底辺の $\\frac{1}{2}$）",
+        "台形の中点連結線分 $\\mathrm{EF}$ を求めるとき、上底と下底の「和の半分」になっているか？（$\\frac{\\mathrm{AD}+\\mathrm{BC}}{2}$）",
+        "3等分点がある図形で、中点になる2個分の組み合わせ（$\\mathrm{E}$ は $\\mathrm{AF}$ の中点など）を見つけて適用できているか？",
+        "交点 $\\mathrm{Q}$ 周辺の相似な三角形（$\\triangle \\mathrm{QPE} \\sim \\triangle \\mathrm{QCF}$ など）の対応する辺の比を正しく取れているか？"
+    ],
+    generateRandom: function () {
+        const CX = 160;
+        const CY = 130;
+        const getRandomAngle = () => Math.floor(Math.random() * 360);
+
+        const rotatePoint = (x, y, angleDeg) => {
+            const rad = (angleDeg * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            const dx = x - CX;
+            const dy = y - CY;
+            return {
+                x: Number((CX + dx * cos - dy * sin).toFixed(2)),
+                y: Number((CY + dx * sin + dy * cos).toFixed(2))
+            };
+        };
+
+        const normalLabel = (x, y, angleDeg, text, opts = {}) => {
+            const pt = rotatePoint(x, y, angleDeg);
+            const fill = opts.fill || "#0f172a";
+            const anchor = opts.anchor || "middle";
+            const fontSize = opts.fontSize || 13;
+            return `<text x="${pt.x}" y="${pt.y}" font-size="${fontSize}" font-weight="bold" text-anchor="${anchor}" dominant-baseline="central" fill="${fill}">${text}</text>`;
+        };
+
+        const computeDynamicViewBox = (basePoints, angleDeg, pad = 22) => {
+            const rotated = basePoints.map(([x, y]) => rotatePoint(x, y, angleDeg));
+            let minX = Infinity;
+            let maxX = -Infinity;
+            let minY = Infinity;
+            let maxY = -Infinity;
+            rotated.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            });
+            const x = Math.floor(minX - pad);
+            const y = Math.floor(minY - pad);
+            const w = Math.ceil((maxX - minX) + pad * 2);
+            const h = Math.ceil((maxY - minY) + pad * 2);
+            return `${x} ${y} ${w} ${h}`;
+        };
+
+        // 線分上の点 (mx, my) を通り、線分方向 (dx, dy) に垂直な等長マークを生成
+        const buildSegmentTicks = (x1, y1, x2, y2, ratio, count, halfLen = 5, gap = 3.5) => {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const len = Math.hypot(dx, dy) || 1;
+            const tx = dx / len;
+            const ty = dy / len;
+            // 法線ベクトル
+            const nx = -ty;
+            const ny = tx;
+
+            const mx = x1 + dx * ratio;
+            const my = y1 + dy * ratio;
+
+            const lines = [];
+            for (let i = 0; i < count; i++) {
+                const shift = (i - (count - 1) / 2) * gap;
+                const cx = mx + tx * shift;
+                const cy = my + ty * shift;
+                const sx = (cx - nx * halfLen).toFixed(2);
+                const sy = (cy - ny * halfLen).toFixed(2);
+                const ex = (cx + nx * halfLen).toFixed(2);
+                const ey = (cy + ny * halfLen).toFixed(2);
+                lines.push(`<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="#475569" stroke-width="1.5"/>`);
+            }
+            return lines.join("");
+        };
+
+        const buildTriangleProblemSvg = (deLabel, bcLabel, deIsTarget) => {
+            const angle = getRandomAngle();
+            const viewBox = computeDynamicViewBox([
+                [120, 34], [38, 182], [276, 182], [70, 105], [208, 105]
+            ], angle, 20);
+            return `
+                <div style="margin: 10px 0 4px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 300px; height: auto;">
+                        <g transform="rotate(${angle} ${CX} ${CY})">
+                            <polygon points="120,48 52,162 262,162" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                            <line x1="86" y1="105" x2="191" y2="105" stroke="${deIsTarget ? '#dc2626' : '#2563eb'}" stroke-width="2.2"/>
+                            <circle cx="86" cy="105" r="3.5" fill="#2563eb"/>
+                            <circle cx="191" cy="105" r="3.5" fill="#2563eb"/>
+                            ${buildSegmentTicks(120, 48, 52, 162, 0.25, 1)}
+                            ${buildSegmentTicks(120, 48, 52, 162, 0.75, 1)}
+                            ${buildSegmentTicks(120, 48, 262, 162, 0.25, 2)}
+                            ${buildSegmentTicks(120, 48, 262, 162, 0.75, 2)}
+                        </g>
+                        ${normalLabel(120, 36, angle, "A", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(40, 172, angle, "B", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(274, 172, angle, "C", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(71, 105, angle, "D", { fill: "#2563eb", anchor: "end" })}
+                        ${normalLabel(206, 105, angle, "E", { fill: "#2563eb", anchor: "start" })}
+                        ${normalLabel(138.5, 93, angle, deLabel, { fill: deIsTarget ? "#dc2626" : "#1e40af", anchor: "middle" })}
+                        ${normalLabel(157, 178, angle, bcLabel, { fill: !deIsTarget ? "#dc2626" : "#0f172a", anchor: "middle" })}
+                    </svg>
+                </div>
+            `;
+        };
+
+        const buildTrapezoidProblemSvg = (adLabel, efLabel, bcLabel, efIsTarget) => {
+            const angle = getRandomAngle();
+            const viewBox = computeDynamicViewBox([
+                [90, 44], [230, 44], [40, 182], [280, 182], [62, 110], [258, 110]
+            ], angle, 20);
+            return `
+                <div style="margin: 10px 0 4px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 300px; height: auto;">
+                        <g transform="rotate(${angle} ${CX} ${CY})">
+                            <polygon points="102,58 218,58 266,162 54,162" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                            <line x1="78" y1="110" x2="242" y2="110" stroke="${efIsTarget ? '#dc2626' : '#059669'}" stroke-width="2.2"/>
+                            <circle cx="78" cy="110" r="3.5" fill="#059669"/>
+                            <circle cx="242" cy="110" r="3.5" fill="#059669"/>
+                            ${buildSegmentTicks(102, 58, 54, 162, 0.25, 1)}
+                            ${buildSegmentTicks(102, 58, 54, 162, 0.75, 1)}
+                            ${buildSegmentTicks(218, 58, 266, 162, 0.25, 2)}
+                            ${buildSegmentTicks(218, 58, 266, 162, 0.75, 2)}
+                        </g>
+                        ${normalLabel(92, 46, angle, "A", { fill: "#0f172a", anchor: "end" })}
+                        ${normalLabel(228, 46, angle, "D", { fill: "#0f172a", anchor: "start" })}
+                        ${normalLabel(42, 174, angle, "B", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(278, 174, angle, "C", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(63, 110, angle, "E", { fill: "#059669", anchor: "end" })}
+                        ${normalLabel(257, 110, angle, "F", { fill: "#059669", anchor: "start" })}
+                        ${normalLabel(160, 44, angle, adLabel, { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(160, 98, angle, efLabel, { fill: efIsTarget ? "#dc2626" : "#047857", anchor: "middle" })}
+                        ${normalLabel(160, 179, angle, bcLabel, { fill: "#0f172a", anchor: "middle" })}
+                    </svg>
+                </div>
+            `;
+        };
+
+        const buildTrisectPcProblemSvg = () => {
+            const angle = getRandomAngle();
+            const viewBox = computeDynamicViewBox([
+                [120, 32], [36, 183], [280, 183], [68, 109], [169, 73], [233, 130], [175, 158]
+            ], angle, 24);
+            return `
+                <div style="margin: 10px 0 4px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 300px; height: auto;">
+                        <g transform="rotate(${angle} ${CX} ${CY})">
+                            <polygon points="120,46 50,172 266,172" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                            <line x1="50" y1="172" x2="217.3" y2="130" stroke="#0f172a" stroke-width="1.8"/>
+                            <line x1="85" y1="109" x2="266" y2="172" stroke="#2563eb" stroke-width="1.8"/>
+                            <line x1="85" y1="109" x2="168.7" y2="88" stroke="#059669" stroke-width="2.2"/>
+                            <circle cx="175.5" cy="140.5" r="3.8" fill="#dc2626"/>
+                            <circle cx="85" cy="109" r="3.5" fill="#2563eb"/>
+                            <circle cx="168.7" cy="88" r="3.5" fill="#059669"/>
+                            <circle cx="217.3" cy="130" r="3.2" fill="#475569"/>
+                            <!-- AB中点等長記号（AP・PB の各中点上に正確に配置） -->
+                            ${buildSegmentTicks(120, 46, 50, 172, 0.25, 1)}
+                            ${buildSegmentTicks(120, 46, 50, 172, 0.75, 1)}
+                            <!-- AC3等分（AE = EF = FC）の等長記号：各2本線を各中点上に正確に配置 -->
+                            ${buildSegmentTicks(120, 46, 266, 172, 1 / 6, 2)}
+                            ${buildSegmentTicks(120, 46, 266, 172, 3 / 6, 2)}
+                            ${buildSegmentTicks(120, 46, 266, 172, 5 / 6, 2)}
+                        </g>
+                        ${normalLabel(120, 34, angle, "A", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(38, 181, angle, "B", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(278, 181, angle, "C", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(70, 109, angle, "P", { fill: "#2563eb", anchor: "end" })}
+                        ${normalLabel(169, 75, angle, "E", { fill: "#059669", anchor: "middle" })}
+                        ${normalLabel(231, 130, angle, "F", { fill: "#475569", anchor: "start" })}
+                        ${normalLabel(175, 156, angle, "Q", { fill: "#dc2626", anchor: "middle" })}
+                    </svg>
+                </div>
+            `;
+        };
+
+        const patterns = [
+            () => {
+                const de = (Math.floor(Math.random() * 6) + 3) * 2;
+                const bc = de * 2;
+                return {
+                    problem: `
+                        <div>下の図で、辺 $\\mathrm{AB}$、$\\mathrm{AC}$ の中点をそれぞれ $\\mathrm{D}$、$\\mathrm{E}$ とするとき、$x$ の値を求めなさい。</div>
+                        ${buildTriangleProblemSvg(`${de} cm`, `x cm`, false)}
+                    `,
+                    answer: `$x = ${bc}$`,
+                    explanation: `
+                        $\\triangle \\mathrm{ABC}$ で $\\mathrm{D}$、$\\mathrm{E}$ はそれぞれ $\\mathrm{AB}$、$\\mathrm{AC}$ の中点なので、中点連結定理より<br>
+                        $$\\mathrm{DE} = \\frac{1}{2}\\mathrm{BC}$$<br>
+                        よって $x = 2 \\times ${de} = ${bc}$ です。<br>
+                        <strong>$x = ${bc}$</strong>
+                    `
+                };
+            },
+            () => {
+                const de = Math.floor(Math.random() * 8) + 4;
+                const bc = de * 2;
+                return {
+                    problem: `
+                        <div>下の図で、辺 $\\mathrm{AB}$、$\\mathrm{AC}$ の中点をそれぞれ $\\mathrm{D}$、$\\mathrm{E}$ とするとき、$x$ の値を求めなさい。</div>
+                        ${buildTriangleProblemSvg(`x cm`, `${bc} cm`, true)}
+                    `,
+                    answer: `$x = ${de}$`,
+                    explanation: `
+                        中点連結定理より $\\mathrm{DE} = \\frac{1}{2}\\mathrm{BC}$ なので、<br>
+                        $$x = \\frac{1}{2} \\times ${bc} = ${de}$$<br>
+                        <strong>$x = ${de}$</strong>
+                    `
+                };
+            },
+            () => {
+                const ad = (Math.floor(Math.random() * 5) + 2) * 2;
+                const bc = ad + (Math.floor(Math.random() * 4) + 2) * 2;
+                const ef = (ad + bc) / 2;
+                return {
+                    problem: `
+                        <div>下の台形 $\\mathrm{ABCD}$（AD／／BC）で、辺 $\\mathrm{AB}$、$\\mathrm{CD}$ の中点をそれぞれ $\\mathrm{E}$、$\\mathrm{F}$ とするとき、$x$ の値を求めなさい。</div>
+                        ${buildTrapezoidProblemSvg(`${ad} cm`, `x cm`, `${bc} cm`, true)}
+                    `,
+                    answer: `$x = ${ef}$`,
+                    explanation: `
+                        台形の中点連結定理より、$\\mathrm{EF}$ は $\\mathrm{AD}$ と $\\mathrm{BC}$ の平均（和の半分）になる。<br>
+                        $$x = \\frac{${ad} + ${bc}}{2} = ${ef}$$<br>
+                        <strong>$x = ${ef}$</strong>
+                    `
+                };
+            },
+            () => {
+                const qf = Math.floor(Math.random() * 4) + 2;
+                const bq = qf * 3;
+                const bf = qf + bq;
+                return {
+                    problem: `
+                        <div>下の不等辺三角形 $\\triangle \\mathrm{ABC}$ で、点 $\\mathrm{P}$ は辺 $\\mathrm{AB}$ の中点、点 $\\mathrm{E}$、$\\mathrm{F}$ は辺 $\\mathrm{AC}$ を3等分する点（$\\mathrm{AE}=\\mathrm{EF}=\\mathrm{FC}$）である。$\\mathrm{PC}$ と $\\mathrm{BF}$ の交点を $\\mathrm{Q}$ とし、$\\mathrm{BF} = ${bf}\\text{ cm}$ のとき、$\\mathrm{BQ}$ の長さ $x$ を求めなさい。</div>
+                        ${buildTrisectPcProblemSvg()}
+                    `,
+                    answer: `$x = ${bq}$`,
+                    explanation: `
+                        $\\triangle \\mathrm{ABF}$ で $\\mathrm{P}$ は $\\mathrm{AB}$ の中点、$\\mathrm{E}$ は $\\mathrm{AF}$ の中点なので、中点連結定理より $\\mathrm{PE} = \\frac{1}{2}\\mathrm{BF}$ かつ PE／／FC。<br>
+                        $\\triangle \\mathrm{QPE} \\sim \\triangle \\mathrm{QCF}$ であり、$\\mathrm{PE} = \\frac{1}{2}\\mathrm{BF}$ かつ $\\mathrm{FC} = \\frac{1}{3}\\mathrm{AC}$ より、比を整理すると $\\mathrm{BQ} : \\mathrm{QF} = 3 : 1$ となる。<br>
+                        よって $x = \\mathrm{BQ} = \\frac{3}{4}\\mathrm{BF} = \\frac{3}{4} \\times ${bf} = ${bq}$ です。<br>
+                        <strong>$x = ${bq}$</strong>
+                    `
+                };
+            },
+            () => {
+                return {
+                    problem: `
+                        <div>下の不等辺三角形 $\\triangle \\mathrm{ABC}$ で、点 $\\mathrm{P}$ は辺 $\\mathrm{AB}$ の中点、点 $\\mathrm{E}$、$\\mathrm{F}$ は辺 $\\mathrm{AC}$ を3等分する点（$\\mathrm{AE}=\\mathrm{EF}=\\mathrm{FC}$）である。$\\mathrm{PC}$ と $\\mathrm{BF}$ の交点を $\\mathrm{Q}$ とするとき、線分の比 $\\mathrm{PE} : \\mathrm{BQ}$ を最も簡単な整数の比で表しなさい。</div>
+                        ${buildTrisectPcProblemSvg()}
+                    `,
+                    answer: `$\\mathrm{PE} : \\mathrm{BQ} = 2 : 3$`,
+                    explanation: `
+                        $\\triangle \\mathrm{ABF}$ において $\\mathrm{P}$ は $\\mathrm{AB}$ の中点、$\\mathrm{E}$ は $\\mathrm{AF}$ の中点なので、中点連結定理より $\\mathrm{PE} = \\frac{1}{2}\\mathrm{BF}$。<br>
+                        また、PE／／FC より $\\triangle \\mathrm{QPE} \\sim \\triangle \\mathrm{QCF}$ で、$\\mathrm{BQ} : \\mathrm{QF} = 3 : 1$ なので $\\mathrm{BQ} = \\frac{3}{4}\\mathrm{BF}$。<br>
+                        したがって $\\mathrm{PE} : \\mathrm{BQ} = \\frac{1}{2}\\mathrm{BF} : \\frac{3}{4}\\mathrm{BF} = 2 : 3$ です。<br>
+                        <strong>$\\mathrm{PE} : \\mathrm{BQ} = 2 : 3$</strong>
+                    `
+                };
+            }
+        ];
+
+        const pick = patterns[Math.floor(Math.random() * patterns.length)];
+        return pick();
+    }
+}
 
 
 
