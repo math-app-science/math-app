@@ -12,6 +12,38 @@
         body { font-family: sans-serif; margin: 20px; background: #f9f9f9; color: #333; line-height: 1.6; }
         .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         select, button { padding: 10px; font-size: 16px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+
+        /* トップヘッダー（タイトル ＋ 右上の共有QRボタン） */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .top-header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .qr-btn {
+            width: auto;
+            margin: 0;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            background: #f1f5f9;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .qr-btn:hover {
+            background: #e2e8f0;
+        }
         
         /* 枠からはみ出さないよう word-break と overflow-x を設定 */
         .card { 
@@ -21,6 +53,95 @@
             margin-top: 15px; 
             word-break: break-word; 
             overflow-x: auto; 
+        }
+
+        .empty-notice {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            padding: 18px;
+            margin-top: 15px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .check-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-top: 10px;
+        }
+        .check-box-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 4px;
+        }
+        .check-box ul {
+            margin: 4px 0 0 18px;
+            padding: 0;
+            font-size: 14px;
+            color: #334155;
+        }
+
+        /* 演習モード「できた」チェックエリア */
+        .done-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .done-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #166534;
+            margin: 0;
+        }
+        .done-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #16a34a;
+            cursor: pointer;
+            margin: 0;
+        }
+        .reset-done-btn {
+            width: auto;
+            margin: 0;
+            padding: 4px 8px;
+            font-size: 12px;
+            background: #ffffff;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .reset-done-btn:hover {
+            background: #f1f5f9;
+        }
+
+        /* QR描画エリア */
+        .qr-box {
+            background: #fff;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+            min-height: 200px;
+            margin-bottom: 12px;
         }
         
         .popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 2px solid #ccc; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 1000; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto;}
@@ -32,7 +153,19 @@
 <body>
 
 <div class="container">
-    <h1>数学公式アプリ</h1>
+    <!-- トップヘッダー：左にタイトル、右上に共有QRボタン -->
+    <div class="top-header">
+        <h1>数学公式アプリ</h1>
+        <button type="button" class="qr-btn" onclick="openQrModal()" title="共有用QRコードを表示">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 20h2M20 14v2"/>
+            </svg>
+            共有QR
+        </button>
+    </div>
     
     <!-- トップ画面：問題演習ボタン -->
     <button onclick="startExercise()" style="background-color: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer;">問題演習モードへ</button>
@@ -63,8 +196,13 @@
         <!-- JSで動的に書き換え -->
     </select>
 
+    <!-- 単元未選択時の案内（初期表示） -->
+    <div id="emptyStateArea" class="empty-notice">
+        単元を選択すると、公式・問題・答え・解説が表示されます。
+    </div>
+
     <!-- ② 公式・問題表示エリア（順番：問題 ➔ 答え ➔ 解説 ➔ 問題の更新） -->
-    <div id="learningArea">
+    <div id="learningArea" class="hidden">
         <div class="card">
             <h4 id="formulaTitle">【公式】</h4>
             <div id="displayFormula">-</div>
@@ -95,7 +233,19 @@
     </div>
 </div>
 
-<!-- ③ 問題演習モード用ポップアップ（順番：問題 ➔ 答え ➔ 解説 ➔ 問題の更新） -->
+<!-- 共有用QRコードモーダル（URL文字列は非表示・初期は固定トップURL／単元表示中は外部API） -->
+<div class="overlay" id="qrOverlay" onclick="closeQrModal()"></div>
+<div class="popup" id="qrPopup" style="max-width: 320px; text-align: center;">
+    <h3 style="margin-top: 0;">共有用QRコード</h3>
+    <p id="qrUnitLabel" style="font-size: 13px; font-weight: bold; color: #334155; margin-bottom: 10px;"></p>
+    <div class="qr-box">
+        <img id="qrImage" src="" alt="共有用QRコード" width="200" height="200" style="display: block;">
+    </div>
+    <button type="button" id="copyUrlBtn" onclick="copyShareUrl()" style="background-color: #0284c7; color: white; border: none; border-radius: 4px; cursor: pointer;">リンクをコピー</button>
+    <button type="button" onclick="closeQrModal()" style="margin-top: 6px; cursor: pointer; background: #e2e8f0; border: none; border-radius: 4px; padding: 10px;">閉じる</button>
+</div>
+
+<!-- ③ 問題演習モード用ポップアップ -->
 <div class="overlay" id="overlay" onclick="closeExercise()"></div>
 <div class="popup" id="exercisePopup">
     <h2>ランダム問題演習</h2>
@@ -134,6 +284,15 @@
     <div class="card">
         <div id="exProblem">-</div>
     </div>
+
+    <!-- 「できた」チェックバー -->
+    <div class="done-bar">
+        <label class="done-label">
+            <input type="checkbox" id="exDoneCheckbox" onchange="toggleCurrentDone()">
+            <span>この問題は「できた」</span>
+        </label>
+        <button type="button" class="reset-done-btn" onclick="resetCompletedUnits()" title="できた記録をすべて解除">記録リセット</button>
+    </div>
     
     <!-- 公式確認ボタンと切り替え用領域 -->
     <button onclick="togglePopupFormula()" style="background-color: #64748b; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">公式を確認</button>
@@ -144,11 +303,14 @@
     <div id="exAnswerResult" class="hidden card" style="margin-top: 5px;"></div>
     
     <!-- 3. 解説ボタンと切り替え用領域 -->
-    <button onclick="togglePopupExplanation()" style="background-color: #10b981; color: white; border: none; border-radius: 4px; margin-top: 5px; cursor: pointer;">解説を見る</button>
+    <button onclick="togglePopupExplanation()" style="background-color: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 5px;">解説を見る</button>
     <div id="exExplanationResult" class="hidden card" style="margin-top: 5px;"></div>
 
-    <!-- 4. 問題の更新ボタン -->
-    <button onclick="nextExercise()" style="background-color: #0284c7; color: white; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">問題の更新（新しい問題）</button>
+    <!-- 解説ボタンの直下：同じ公式で問題を更新 -->
+    <button onclick="refreshSameUnitExercise()" style="background-color: #0284c7; color: white; border: none; border-radius: 4px; margin-top: 10px; cursor: pointer;">同じ公式で問題を更新</button>
+
+    <!-- 次の問題へボタン -->
+    <button onclick="nextExercise()" style="background-color: #2563eb; color: white; border: none; border-radius: 4px; margin-top: 5px; cursor: pointer;">次の問題へ</button>
     <button onclick="closeExercise()" style="margin-top: 5px; cursor: pointer; background: #e2e8f0; border: none; border-radius: 4px; padding: 10px;">閉じる</button>
 </div>
 
@@ -158,6 +320,126 @@
     let currentData = null; 
     let activeCategoryMap = {}; 
     let unitIndexMap = {}; 
+    const completedUnitKeys = new Set();
+
+    // 初期画面（クエリなしのトップURL）を固定保持
+    const INITIAL_TOP_URL = (() => {
+        const u = new URL(window.location.href);
+        u.search = "";
+        u.hash = "";
+        return u.toString();
+    })();
+
+    function getUnitKey(category, unit) {
+        return `${category}___${unit}`;
+    }
+
+    function syncDoneCheckbox() {
+        const cb = document.getElementById('exDoneCheckbox');
+        if (!cb) return;
+        if (currentExData && currentExData.category && currentExData.unit) {
+            cb.checked = completedUnitKeys.has(getUnitKey(currentExData.category, currentExData.unit));
+        } else {
+            cb.checked = false;
+        }
+    }
+
+    function toggleCurrentDone() {
+        const cb = document.getElementById('exDoneCheckbox');
+        if (!cb || !currentExData || !currentExData.category || !currentExData.unit) return;
+        const key = getUnitKey(currentExData.category, currentExData.unit);
+        if (cb.checked) {
+            completedUnitKeys.add(key);
+        } else {
+            completedUnitKeys.delete(key);
+        }
+    }
+
+    function resetCompletedUnits() {
+        completedUnitKeys.clear();
+        syncDoneCheckbox();
+        alert("「できた」記録をリセットしました。");
+    }
+
+    // 単元選択中かどうかを判定
+    function hasSelectedUnit() {
+        return Boolean(currentData && currentData.actualCategory && currentData.actualUnit);
+    }
+
+    // 共有用URLを取得（単元未選択時は固定トップURL、単元選択時は単元URL）
+    function getShareUrl() {
+        if (!hasSelectedUnit()) {
+            return INITIAL_TOP_URL;
+        }
+        const url = new URL(INITIAL_TOP_URL);
+        url.searchParams.set("cat", currentData.actualCategory);
+        url.searchParams.set("unit", currentData.actualUnit);
+        return url.toString();
+    }
+
+    // 共有QRコードモーダルを開く（単元選択中は外部APIでQR生成、未選択時は固定トップURL）
+    function openQrModal() {
+        const isUnitPage = hasSelectedUnit();
+        const shareUrl = getShareUrl();
+        const qrApiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(shareUrl);
+
+        document.getElementById('qrImage').src = qrApiUrl;
+        document.getElementById('qrUnitLabel').textContent = isUnitPage
+            ? `【${currentData.actualCategory}】${currentData.actualUnit}`
+            : "最初の画面（アプリトップ・固定）";
+        document.getElementById('copyUrlBtn').textContent = "リンクをコピー";
+        document.getElementById('qrOverlay').style.display = 'block';
+        document.getElementById('qrPopup').style.display = 'block';
+    }
+
+    // 共有QRコードモーダルを閉じる
+    function closeQrModal() {
+        document.getElementById('qrOverlay').style.display = 'none';
+        document.getElementById('qrPopup').style.display = 'none';
+    }
+
+    // 共有リンクをクリップボードへコピー
+    function copyShareUrl() {
+        const shareUrl = getShareUrl();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                document.getElementById('copyUrlBtn').textContent = "コピーしました！";
+            });
+        } else {
+            const tempInput = document.createElement('input');
+            tempInput.value = shareUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            document.getElementById('copyUrlBtn').textContent = "コピーしました！";
+        }
+    }
+
+    // URLパラメータ（?cat=...&unit=...）から初期単元を適用
+    function applyQueryParams() {
+        if (typeof formulaData === "undefined") return;
+        const params = new URLSearchParams(window.location.search);
+        const paramCat = params.get("cat");
+        const paramUnit = params.get("unit");
+
+        if (!paramCat || !paramUnit) return;
+        if (!formulaData[paramCat] || !formulaData[paramCat][paramUnit]) return;
+
+        document.getElementById('levelSelect').value = "全て";
+        document.getElementById('categorySelect').value = paramCat;
+        updateUnits(true);
+
+        const unitSelect = document.getElementById('unitSelect');
+        const targetOption = Array.from(unitSelect.options).find(opt => {
+            const rawUnit = opt.value.includes("___") ? opt.value.split("___")[1] : opt.value;
+            return rawUnit === paramUnit;
+        });
+        if (targetOption) {
+            unitSelect.value = targetOption.value;
+            loadFormulaContent();
+        }
+    }
 
     // MathJax 3 を安全に再描画するヘルパー関数
     function renderMath(elementId) {
@@ -170,7 +452,7 @@
         }
     }
 
-    // 解説文から結論（答え部分）を抽出するヘルパー関数
+    // 解説文から結論（答え部分）を抽出するフォールバック関数
     function extractAnswer(explanation) {
         if (!explanation) return "（答えなし）";
         let clean = explanation.replace(/【解説】<br>/g, "");
@@ -178,13 +460,84 @@
         return parts[parts.length - 1] || clean;
     }
 
-    function updateUnits() {
+    // formulas.js の単元データ（または generated）から自己チェック欄HTMLを生成
+    function buildSelfCheckHtml(unitData, generated) {
+        const rawCheck = (generated && generated.selfCheck) || (unitData && unitData.selfCheck);
+
+        if (typeof rawCheck === "string" && rawCheck.trim() !== "") {
+            return `
+                <div class="check-box">
+                    <div class="check-box-title">間違えたときの自己チェック</div>
+                    <div>${rawCheck}</div>
+                </div>
+            `;
+        }
+
+        const items = (Array.isArray(rawCheck) && rawCheck.length > 0)
+            ? rawCheck
+            : [
+                "どの定理・どの図形（三角形や辺）を使うか正しく選べたか？",
+                "比の逆数や線分の合計（足し算）を取り違えていないか？",
+                "求める線分比の「順番」を逆にしていないか？"
+            ];
+
+        return `
+            <div class="check-box">
+                <div class="check-box-title">間違えたときの自己チェック</div>
+                <ul style="line-height:1.5;">${items.map(t => `<li style="margin-bottom:6px;">${t}</li>`).join("")}</ul>
+            </div>
+        `;
+    }
+
+    // 独立した「答え」＋「自己チェック欄」HTMLを生成
+    function buildAnswerAndCheckHtml(unitData, generated, fallbackExplanation) {
+        const rawAnswer = (generated && generated.answer)
+            ? generated.answer
+            : extractAnswer(fallbackExplanation);
+
+        return `
+            <div style="font-size: 18px; font-weight: bold; color: #0f172a;">${rawAnswer}</div>
+            ${buildSelfCheckHtml(unitData, generated)}
+        `;
+    }
+
+    function showEmptyState(messageText) {
+        currentData = null;
+        const emptyEl = document.getElementById('emptyStateArea');
+        const learnEl = document.getElementById('learningArea');
+        if (emptyEl) {
+            emptyEl.textContent = messageText || "単元を選択すると、公式・問題・答え・解説が表示されます。";
+            emptyEl.classList.remove('hidden');
+        }
+        if (learnEl) {
+            learnEl.classList.add('hidden');
+        }
+    }
+
+    function showLearningState() {
+        const emptyEl = document.getElementById('emptyStateArea');
+        const learnEl = document.getElementById('learningArea');
+        if (emptyEl) emptyEl.classList.add('hidden');
+        if (learnEl) learnEl.classList.remove('hidden');
+    }
+
+    function updateUnits(skipLoad = false) {
+        if (typeof formulaData === "undefined") {
+            showEmptyState("公式データ（formulas.js）を読み込めませんでした。");
+            return;
+        }
         const selectedLevel = document.getElementById('levelSelect').value;
         const cat = document.getElementById('categorySelect').value;
         const unitSelect = document.getElementById('unitSelect');
         unitSelect.innerHTML = '';
         activeCategoryMap = {};
         unitIndexMap = {};
+
+        // 未選択プレースホルダーを追加
+        const placeholderOpt = document.createElement('option');
+        placeholderOpt.value = "";
+        placeholderOpt.textContent = "-- 単元を選択してください --";
+        unitSelect.appendChild(placeholderOpt);
         
         let targetCategories = [];
         if (cat === "全て") {
@@ -197,8 +550,6 @@
         targetCategories.forEach(category => {
             Object.keys(formulaData[category]).forEach(unit => {
                 const levelStr = formulaData[category][unit].level;
-                
-                // 【修正1】選択されたレベルに厳密に一致するもの、または「全て」のときのみ抽出
                 const matchesLevel = (selectedLevel === "全て") || levelStr.includes(selectedLevel);
                 
                 if (matchesLevel) {
@@ -216,7 +567,10 @@
                 }
             });
         });
-        loadFormulaContent();
+
+        if (!skipLoad) {
+            loadFormulaContent();
+        }
     }
 
     function loadFormulaContent() {
@@ -225,11 +579,7 @@
         const unitVal = document.getElementById('unitSelect').value;
         
         if (!unitVal) {
-            document.getElementById('formulaTitle').textContent = "【公式】";
-            document.getElementById('displayFormula').textContent = "（該当する単元がありません）";
-            document.getElementById('displayProblem').textContent = "（該当する単元がありません）";
-            document.getElementById('displayAnswer').textContent = "（該当する単元がありません）";
-            document.getElementById('displayExplanation').textContent = "（該当する単元がありません）";
+            showEmptyState("単元を選択すると、公式・問題・答え・解説が表示されます。");
             return;
         }
 
@@ -251,16 +601,18 @@
         }
         
         if (formulaData[cat] && formulaData[cat][unit]) {
+            showLearningState();
             currentData = formulaData[cat][unit];
             currentData.actualCategory = cat; 
             currentData.actualUnit = unit;
             
             document.getElementById('displayFormula').innerHTML = currentData.formula;
             
+            let generated = null;
             let prob = "";
             let expl = "";
             if (currentData.generateRandom) {
-                let generated = currentData.generateRandom();
+                generated = currentData.generateRandom();
                 prob = generated.problem;
                 expl = generated.explanation;
             } else {
@@ -269,19 +621,16 @@
             }
 
             document.getElementById('displayProblem').innerHTML = prob;
-            document.getElementById('displayAnswer').innerHTML = extractAnswer(expl);
+            document.getElementById('displayAnswer').innerHTML = buildAnswerAndCheckHtml(currentData, generated, expl);
             document.getElementById('displayExplanation').innerHTML = expl;
             
             currentData.activeProblem = prob;
+            currentData.activeAnswer = (generated && generated.answer) ? generated.answer : extractAnswer(expl);
             currentData.activeExplanation = expl;
             
-            // 【修正2】数式エリアのクリア処理を挟んで安全に再描画
             renderMath('learningArea');
         } else {
-            document.getElementById('displayFormula').textContent = "（データ準備中）";
-            document.getElementById('displayProblem').textContent = "（データ準備中）";
-            document.getElementById('displayAnswer').textContent = "（データ準備中）";
-            document.getElementById('displayExplanation').textContent = "（データ準備中）";
+            showEmptyState("（データ準備中）");
         }
         document.getElementById('answerBox').classList.add('hidden');
         document.getElementById('explanationBox').classList.add('hidden');
@@ -291,10 +640,15 @@
         if (currentData && currentData.generateRandom) {
             let generated = currentData.generateRandom();
             currentData.activeProblem = generated.problem;
+            currentData.activeAnswer = generated.answer || extractAnswer(generated.explanation);
             currentData.activeExplanation = generated.explanation;
             
             document.getElementById('displayProblem').innerHTML = generated.problem;
-            document.getElementById('displayAnswer').innerHTML = extractAnswer(generated.explanation);
+            document.getElementById('displayAnswer').innerHTML = buildAnswerAndCheckHtml(
+                currentData,
+                generated,
+                generated.explanation
+            );
             document.getElementById('displayExplanation').innerHTML = generated.explanation;
             
             document.getElementById('answerBox').classList.add('hidden');
@@ -320,6 +674,75 @@
 
     let currentExData = {};
 
+    function renderExerciseProblem(targetCategory, randomSubKey, targetItem) {
+        let gen = null;
+        let prob = "";
+        let expl = "";
+
+        if (typeof targetItem.generateRandom === "function") {
+            gen = targetItem.generateRandom();
+            prob = gen.problem;
+            expl = gen.explanation;
+        } else {
+            prob = targetItem.problem;
+            expl = targetItem.explanation;
+        }
+
+        currentExData = {
+            category: targetCategory,
+            unit: randomSubKey,
+            level: targetItem.level,
+            formula: targetItem.formula,
+            problem: prob,
+            answer: (gen && gen.answer) ? gen.answer : extractAnswer(expl),
+            explanation: expl,
+            unitData: targetItem,
+            generated: gen
+        };
+        
+        document.getElementById('exUnitName').textContent = `${targetCategory} / ${randomSubKey}`;
+        document.getElementById('exLevelName').textContent = targetItem.level;
+        document.getElementById('exProblem').innerHTML = currentExData.problem;
+
+        syncDoneCheckbox();
+        
+        const formulaRes = document.getElementById('exFormulaResult');
+        formulaRes.innerHTML = "【公式】<br>" + currentExData.formula;
+        formulaRes.classList.add('hidden');
+
+        const ansRes = document.getElementById('exAnswerResult');
+        ansRes.innerHTML = "<h4>【答え】</h4>" + buildAnswerAndCheckHtml(
+            currentExData.unitData,
+            { ...(currentExData.generated || {}), answer: currentExData.answer },
+            currentExData.explanation
+        );
+        ansRes.classList.add('hidden');
+
+        const explRes = document.getElementById('exExplanationResult');
+        explRes.innerHTML = "【解説】<br>" + currentExData.explanation;
+        explRes.classList.add('hidden');
+
+        renderMath('exercisePopup');
+    }
+
+    function refreshSameUnitExercise() {
+        if (!currentExData || !currentExData.category || !currentExData.unit) {
+            nextExercise();
+            return;
+        }
+        const cat = currentExData.category;
+        const unit = currentExData.unit;
+        const targetItem = (formulaData[cat] && formulaData[cat][unit])
+            ? formulaData[cat][unit]
+            : currentExData.unitData;
+
+        if (!targetItem) {
+            nextExercise();
+            return;
+        }
+        renderExerciseProblem(cat, unit, targetItem);
+    }
+
     function startExercise() {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('exercisePopup').style.display = 'block';
@@ -342,70 +765,44 @@
             targetCategories = [selectedCategory];
         }
 
-        let availableUnits = [];
+        let matchedUnits = [];
         targetCategories.forEach(cat => {
             if (formulaData[cat]) {
                 Object.keys(formulaData[cat]).forEach(unit => {
                     const levelStr = formulaData[cat][unit].level;
-                    
-                    // 【修正1】演習ポップアップ側も同様に厳密なレベル一致に修正
                     const matchesLevel = (selectedLevel === "全て") || levelStr.includes(selectedLevel);
                     
                     if (matchesLevel) {
-                        availableUnits.push({ category: cat, unit: unit });
+                        matchedUnits.push({ category: cat, unit: unit });
                     }
                 });
             }
         });
 
-        if (availableUnits.length === 0) {
+        if (matchedUnits.length === 0) {
             alert("条件に一致する問題がありません。条件を変更してください。");
             return;
         }
 
-        const selectedPair = availableUnits[Math.floor(Math.random() * availableUnits.length)];
+        const remainingUnits = matchedUnits.filter(
+            pair => !completedUnitKeys.has(getUnitKey(pair.category, pair.unit))
+        );
+
+        if (remainingUnits.length === 0) {
+            const shouldReset = confirm("この条件の問題はすべて「できた」になっています。「できた」記録をリセットして最初から出題しますか？");
+            if (shouldReset) {
+                completedUnitKeys.clear();
+                nextExercise();
+            }
+            return;
+        }
+
+        const selectedPair = remainingUnits[Math.floor(Math.random() * remainingUnits.length)];
         const targetCategory = selectedPair.category;
         const randomSubKey = selectedPair.unit;
         const targetItem = formulaData[targetCategory][randomSubKey];
 
-        let prob = "";
-        let expl = "";
-
-        if (typeof targetItem.generateRandom === "function") {
-            let gen = targetItem.generateRandom();
-            prob = gen.problem;
-            expl = gen.explanation;
-        } else {
-            prob = targetItem.problem;
-            expl = targetItem.explanation;
-        }
-
-        currentExData = {
-            category: targetCategory,
-            unit: randomSubKey,
-            level: targetItem.level,
-            formula: targetItem.formula,
-            problem: prob,
-            explanation: expl
-        };
-        
-        document.getElementById('exUnitName').textContent = `${targetCategory} / ${randomSubKey}`;
-        document.getElementById('exLevelName').textContent = targetItem.level;
-        document.getElementById('exProblem').innerHTML = currentExData.problem;
-        
-        const formulaRes = document.getElementById('exFormulaResult');
-        formulaRes.innerHTML = "【公式】<br>" + currentExData.formula;
-        formulaRes.classList.add('hidden');
-
-        const ansRes = document.getElementById('exAnswerResult');
-        ansRes.innerHTML = "【答え】<br>" + extractAnswer(currentExData.explanation);
-        ansRes.classList.add('hidden');
-
-        const explRes = document.getElementById('exExplanationResult');
-        explRes.innerHTML = "【解説】<br>" + currentExData.explanation;
-        explRes.classList.add('hidden');
-
-        renderMath('exercisePopup');
+        renderExerciseProblem(targetCategory, randomSubKey, targetItem);
     }
 
     function togglePopupFormula() {
@@ -428,6 +825,7 @@
 
     window.onload = function() {
         updateUnits();
+        applyQueryParams();
     };
 </script>
 
