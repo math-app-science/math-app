@@ -9499,6 +9499,204 @@ const formulaData = {
         const pick = patterns[Math.floor(Math.random() * patterns.length)];
         return pick();
     }
+},
+// formulaData["平面図形"] の中に以下の単元を追加してください
+"三角形の重心": {
+    level: "公立",
+    formula: `
+        <div>三角形の1つの頂点から反対の辺の中点を結ぶ線分を<strong>中線</strong>と呼ぶ。中線同士の交点は1点で交わり、その点を<strong>重心</strong>という。</div>
+
+        <div style="margin: 10px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+            <svg viewBox="0 0 280 175" width="260" height="162" style="max-width: 100%; height: auto;">
+                <!-- △AGE を薄く赤く塗る -->
+                <polygon points="105,22 127,106 174.5,85" fill="#fecaca" fill-opacity="0.7" stroke="none"/>
+                <!-- 外枠 △ABC -->
+                <polygon points="105,22 32,148 244,148" fill="none" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                <!-- 3本の中線 AD, BE, CF -->
+                <line x1="105" y1="22" x2="138" y2="148" stroke="#2563eb" stroke-width="1.8"/>
+                <line x1="32" y1="148" x2="174.5" y2="85" stroke="#2563eb" stroke-width="1.8"/>
+                <line x1="244" y1="148" x2="68.5" y2="85" stroke="#2563eb" stroke-width="1.8"/>
+                <!-- 中点 D, E, F -->
+                <circle cx="138" cy="148" r="3.2" fill="#0f172a"/>
+                <circle cx="174.5" cy="85" r="3.2" fill="#0f172a"/>
+                <circle cx="68.5" cy="85" r="3.2" fill="#0f172a"/>
+                <!-- 重心 G -->
+                <circle cx="127" cy="106" r="4" fill="#dc2626"/>
+                <!-- 頂点・中点・重心ラベル -->
+                <text x="105" y="14" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">A</text>
+                <text x="21" y="156" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">B</text>
+                <text x="255" y="156" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">C</text>
+                <text x="138" y="163" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">D</text>
+                <text x="186" y="83" font-size="13" font-weight="bold" text-anchor="start" fill="#0f172a">E</text>
+                <text x="56" y="83" font-size="13" font-weight="bold" text-anchor="end" fill="#0f172a">F</text>
+                <text x="115" y="114" font-size="13" font-weight="bold" text-anchor="end" fill="#dc2626">G</text>
+            </svg>
+        </div>
+
+        <div style="margin-top: 6px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+            <div><strong>【重心の性質】</strong></div>
+            <div style="margin-top: 4px;">
+                <strong>① 重心 $\\mathrm{G}$ は中線を $2 : 1$ に内分する。</strong><br>
+                $$\\mathrm{AG} : \\mathrm{GD} = \\mathrm{BG} : \\mathrm{GE} = \\mathrm{CG} : \\mathrm{GF} = 2 : 1$$
+            </div>
+            <div style="margin-top: 4px;">
+                <strong>② 6つに分けた三角形は面積が全て等しい。</strong><br>
+                $$\\triangle \\mathrm{AGE} = \\frac{1}{6}\\triangle \\mathrm{ABC}$$
+            </div>
+            <div style="margin-top: 8px; font-weight: bold; color: #1e40af;">
+                ※問題の中に中点があったら重心が使えるかもしれない。
+            </div>
+        </div>
+    `,
+    selfCheck: [
+        "重心 $\\mathrm{G}$ が中線を分ける比 $2 : 1$ について、「頂点側が $2$、辺（中点）側が $1$」を逆にしていないか？（例：$\\mathrm{CG}$ は中線 $\\mathrm{CF}$ 全体の $\\frac{2}{3}$）",
+        "中点 $\\mathrm{D}$ が辺 $\\mathrm{AB}$ の中点であることから、$\\mathrm{AD} = \\frac{1}{2}\\mathrm{AB}$ と正しく半分にできているか？",
+        "面積比を求めるとき、重心と3つの中線で分けられた6個の小三角形の面積がすべて等しい（各 $\\frac{1}{6}\\triangle \\mathrm{ABC}$）ことを使えているか？（$\\triangle \\mathrm{GBD}$ は $1$ 個分、$\\triangle \\mathrm{ACD}$ は $3$ 個分なので $1 : 3$）"
+    ],
+    generateRandom: function () {
+        const CX = 160;
+        const CY = 130;
+        const getRandomAngle = () => Math.floor(Math.random() * 360);
+
+        const rotatePoint = (x, y, angleDeg) => {
+            const rad = (angleDeg * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            const dx = x - CX;
+            const dy = y - CY;
+            return {
+                x: Number((CX + dx * cos - dy * sin).toFixed(2)),
+                y: Number((CY + dx * sin + dy * cos).toFixed(2))
+            };
+        };
+
+        const normalLabel = (x, y, angleDeg, text, opts = {}) => {
+            const pt = rotatePoint(x, y, angleDeg);
+            const fill = opts.fill || "#0f172a";
+            const anchor = opts.anchor || "middle";
+            const fontSize = opts.fontSize || 13;
+            return `<text x="${pt.x}" y="${pt.y}" font-size="${fontSize}" font-weight="bold" text-anchor="${anchor}" dominant-baseline="central" fill="${fill}">${text}</text>`;
+        };
+
+        const computeDynamicViewBox = (basePoints, angleDeg, pad = 22) => {
+            const rotated = basePoints.map(([x, y]) => rotatePoint(x, y, angleDeg));
+            let minX = Infinity;
+            let maxX = -Infinity;
+            let minY = Infinity;
+            let maxY = -Infinity;
+            rotated.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            });
+            const x = Math.floor(minX - pad);
+            const y = Math.floor(minY - pad);
+            const w = Math.ceil((maxX - minX) + pad * 2);
+            const h = Math.ceil((maxY - minY) + pad * 2);
+            return `${x} ${y} ${w} ${h}`;
+        };
+
+        const buildSegmentTicks = (x1, y1, x2, y2, ratio, count, halfLen = 5, gap = 3.5) => {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const len = Math.hypot(dx, dy) || 1;
+            const tx = dx / len;
+            const ty = dy / len;
+            const nx = -ty;
+            const ny = tx;
+
+            const mx = x1 + dx * ratio;
+            const my = y1 + dy * ratio;
+
+            const lines = [];
+            for (let i = 0; i < count; i++) {
+                const shift = (i - (count - 1) / 2) * gap;
+                const cx = mx + tx * shift;
+                const cy = my + ty * shift;
+                const sx = (cx - nx * halfLen).toFixed(2);
+                const sy = (cy - ny * halfLen).toFixed(2);
+                const ex = (cx + nx * halfLen).toFixed(2);
+                const ey = (cy + ny * halfLen).toFixed(2);
+                lines.push(`<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="#475569" stroke-width="1.5"/>`);
+            }
+            return lines.join("");
+        };
+
+        const buildCentroidProblemSvg = () => {
+            const angle = getRandomAngle();
+            const viewBox = computeDynamicViewBox([
+                [105, 22], [32, 174], [274, 174], [61, 96], [153, 180], [143, 108]
+            ], angle, 22);
+
+            return `
+                <div style="margin: 10px 0 4px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 300px; height: auto;">
+                        <g transform="rotate(${angle} ${CX} ${CY})">
+                            <polygon points="105,34 44,166 262,166" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                            <line x1="262" y1="166" x2="74.5" y2="100" stroke="#2563eb" stroke-width="1.9"/>
+                            <line x1="105" y1="34" x2="153" y2="166" stroke="#64748b" stroke-width="1.6" stroke-dasharray="4,3"/>
+                            <line x1="137" y1="122" x2="44" y2="166" stroke="#059669" stroke-width="1.6" stroke-dasharray="4,3"/>
+                            ${buildSegmentTicks(105, 34, 44, 166, 0.25, 1)}
+                            ${buildSegmentTicks(105, 34, 44, 166, 0.75, 1)}
+                            ${buildSegmentTicks(44, 166, 262, 166, 0.25, 2)}
+                            ${buildSegmentTicks(44, 166, 262, 166, 0.75, 2)}
+                            <circle cx="74.5" cy="100" r="3.4" fill="#2563eb"/>
+                            <circle cx="153" cy="166" r="3.2" fill="#475569"/>
+                            <circle cx="137" cy="122" r="4" fill="#dc2626"/>
+                        </g>
+                        ${normalLabel(105, 22, angle, "A", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(32, 174, angle, "B", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(274, 174, angle, "C", { fill: "#0f172a", anchor: "middle" })}
+                        ${normalLabel(61, 96, angle, "D", { fill: "#2563eb", anchor: "end" })}
+                        ${normalLabel(153, 180, angle, "E", { fill: "#475569", anchor: "middle" })}
+                        ${normalLabel(143, 108, angle, "G", { fill: "#dc2626", anchor: "start" })}
+                    </svg>
+                </div>
+            `;
+        };
+
+        const cases = [
+            { ab: 8, cd: 7 },
+            { ab: 10, cd: 9 },
+            { ab: 12, cd: 8 },
+            { ab: 6, cd: 10 },
+            { ab: 14, cd: 11 }
+        ];
+
+        const chosen = cases[Math.floor(Math.random() * cases.length)];
+        const ab = chosen.ab;
+        const cd = chosen.cd;
+        const ad = ab / 2;
+        const cgNum = cd * 2;
+        const cgText = (cgNum % 3 === 0) ? `${cgNum / 3}` : `\\frac{${cgNum}}{3}`;
+
+        return {
+            problem: `
+                <div>$\\triangle \\mathrm{ABC}$ において，$\\mathrm{AB}=${ab}$，$\\mathrm{CD}=${cd}$，$\\mathrm{G}$ が重心であるとき，次の問いに答えなさい。</div>
+                <div style="margin-top: 4px;">
+                    (1) 次の線分の長さを求めなさい。<br>
+                    ① $\\mathrm{AD}$　　② $\\mathrm{CG}$<br>
+                    (2) 面積の比 $\\triangle \\mathrm{GBD} : \\triangle \\mathrm{ACD}$ を最も簡単な整数の比で表しなさい。
+                </div>
+                ${buildCentroidProblemSvg()}
+            `,
+            answer: `(1) ① $\\mathrm{AD} = ${ad}$　② $\\mathrm{CG} = ${cgText}$　　(2) $\\triangle \\mathrm{GBD} : \\triangle \\mathrm{ACD} = 1 : 3$`,
+            explanation: `
+                <strong>(1)</strong><br>
+                ① $\\mathrm{G}$ は $\\triangle \\mathrm{ABC}$ の重心なので，中線 $\\mathrm{CD}$ と辺 $\\mathrm{AB}$ の交点 $\\mathrm{D}$ は $\\mathrm{AB}$ の中点である。<br>
+                よって $$\\mathrm{AD} = \\frac{1}{2}\\mathrm{AB} = \\frac{1}{2} \\times ${ab} = ${ad}$$<br>
+                ② 重心 $\\mathrm{G}$ は中線 $\\mathrm{CD}$ を $2 : 1$ に内分するので，$\\mathrm{CG} : \\mathrm{GD} = 2 : 1$ より $\\mathrm{CG} = \\frac{2}{3}\\mathrm{CD}$。<br>
+                よって $$\\mathrm{CG} = \\frac{2}{3} \\times ${cd} = ${cgText}$$<br><br>
+                <strong>(2)</strong><br>
+                重心と3つの中線によって分けられる6つの三角形の面積はすべて等しく，それぞれ $\\frac{1}{6}\\triangle \\mathrm{ABC}$ である。<br>
+                ・$\\triangle \\mathrm{GBD}$ はそのうちの $1$ つ分なので $\\triangle \\mathrm{GBD} = \\frac{1}{6}\\triangle \\mathrm{ABC}$<br>
+                ・$\\triangle \\mathrm{ACD}$ は $\\triangle \\mathrm{ABC}$ の半分（$3$ つ分）なので $\\triangle \\mathrm{ACD} = \\frac{3}{6}\\triangle \\mathrm{ABC} = \\frac{1}{2}\\triangle \\mathrm{ABC}$<br>
+                したがって $$\\triangle \\mathrm{GBD} : \\triangle \\mathrm{ACD} = \\frac{1}{6} : \\frac{3}{6} = 1 : 3$$<br>
+                <strong>答え：(1) ① $${ad}$　② $${cgText}$　(2) $1 : 3$</strong>
+            `
+        };
+    }
 }
 
 
