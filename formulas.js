@@ -9697,6 +9697,745 @@ const formulaData = {
             `
         };
     }
+},
+"三角形の垂心": {
+    level: "難関私立",
+    formula: `
+        <div>三角形の頂点から引いた垂線は1点で交わり、その交点を<strong>垂心(点G)</strong>という。<br>
+        垂心があると<strong>パッタンパターンの相似</strong>ができるので長さや面積比を求めることができる。</div>
+
+        <div style="margin: 10px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+            <svg viewBox="0 0 280 184" width="280" height="184" style="max-width: 100%; height: auto;">
+                <!-- 垂心 G が少し下に来る三角形: A(95,22), B(35,154), C(245,154) -->
+                <!-- D(95,154), E(126.65,49.85), F(70.96,74.89), G(95,85.82) -->
+                <polygon points="95,22 35,154 245,154" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                <!-- 垂線 AD, BE, CF -->
+                <line x1="95" y1="22" x2="95" y2="154" stroke="#2563eb" stroke-width="1.8"/>
+                <line x1="35" y1="154" x2="126.65" y2="49.85" stroke="#2563eb" stroke-width="1.8"/>
+                <line x1="245" y1="154" x2="70.96" y2="74.89" stroke="#2563eb" stroke-width="1.8"/>
+                <!-- 直角マーク D, E, F -->
+                <polyline points="95,145.5 103.5,145.5 103.5,154" fill="none" stroke="#0f172a" stroke-width="1.3"/>
+                <polyline points="121.03,56.23 127.41,61.85 133.03,55.47" fill="none" stroke="#0f172a" stroke-width="1.3"/>
+                <polyline points="67.44,82.63 75.18,86.15 78.70,78.41" fill="none" stroke="#0f172a" stroke-width="1.3"/>
+
+                <!-- 等角マーク ○（角の二等分線上にフィット配置） -->
+                <!-- ∠AGE 付近 -->
+                <circle cx="99.1" cy="75.1" r="2.3" fill="none" stroke="#dc2626" stroke-width="1.35"/>
+                <!-- ∠BGD 付近 -->
+                <circle cx="90.9" cy="96.6" r="2.3" fill="none" stroke="#dc2626" stroke-width="1.35"/>
+                <!-- ∠BAD 付近 -->
+                <circle cx="92.3" cy="34.7" r="2.3" fill="none" stroke="#dc2626" stroke-width="1.35"/>
+                <!-- ∠BCG 付近（左へ移動して角の内側にフィット） -->
+                <circle cx="224.5" cy="148.0" r="2.3" fill="none" stroke="#dc2626" stroke-width="1.35"/>
+
+                <!-- 等角マーク ×（角の二等分線上にフィット配置） -->
+                <!-- ∠AGF 付近 -->
+                <g stroke="#2563eb" stroke-width="1.35">
+                    <line x1="87.0" y1="74.4" x2="90.6" y2="78.0"/>
+                    <line x1="90.6" y1="74.4" x2="87.0" y2="78.0"/>
+                </g>
+                <!-- ∠CGD 付近 -->
+                <g stroke="#2563eb" stroke-width="1.35">
+                    <line x1="105.0" y1="99.4" x2="108.6" y2="103.0"/>
+                    <line x1="108.6" y1="99.4" x2="105.0" y2="103.0"/>
+                </g>
+                <!-- ∠ABD 付近 -->
+                <g stroke="#2563eb" stroke-width="1.35">
+                    <line x1="45.8" y1="144.1" x2="49.4" y2="147.7"/>
+                    <line x1="49.4" y1="144.1" x2="45.8" y2="147.7"/>
+                </g>
+                <!-- ∠ACF 付近 -->
+                <g stroke="#2563eb" stroke-width="1.35">
+                    <line x1="224.7" y1="140.3" x2="228.3" y2="143.9"/>
+                    <line x1="228.3" y1="140.3" x2="224.7" y2="143.9"/>
+                </g>
+
+                <!-- 垂線の足 D, E, F -->
+                <circle cx="95" cy="154" r="3" fill="#0f172a"/>
+                <circle cx="126.65" cy="49.85" r="3" fill="#0f172a"/>
+                <circle cx="70.96" cy="74.89" r="3" fill="#0f172a"/>
+                <!-- 垂心 G -->
+                <circle cx="95" cy="85.82" r="4" fill="#dc2626"/>
+                <!-- ラベル -->
+                <text x="95" y="12" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">A</text>
+                <text x="24" y="164" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">B</text>
+                <text x="256" y="164" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">C</text>
+                <text x="95" y="170" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">D</text>
+                <text x="136" y="45" font-size="13" font-weight="bold" text-anchor="start" fill="#0f172a">E</text>
+                <text x="60" y="72" font-size="13" font-weight="bold" text-anchor="end" fill="#0f172a">F</text>
+                <text x="104" y="101" font-size="13" font-weight="bold" text-anchor="start" fill="#dc2626">G</text>
+            </svg>
+        </div>
+
+        <div style="margin-top: 6px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+            <div><strong>【垂心と相似のポイント】</strong></div>
+            <div style="margin-top: 4px;">
+                ・3本の垂線が交わる点（垂心 $\\mathrm{G}$）の周りには、直角三角形どうしの相似（パッタンパターンの相似）がいくつも生まれる。<br>
+                ・たとえば $\\triangle \\mathrm{BDG} \\sim \\triangle \\mathrm{ADC}$ や $\\triangle \\mathrm{AEG} \\sim \\triangle \\mathrm{ADC}$ などを利用して、線分の長さや面積比を求める。
+            </div>
+        </div>
+    `,
+    selfCheck: [
+        "「パッタンパターンの相似」で、対応する頂点・辺の順序を逆にしていないか？",
+        "垂心 $\\mathrm{G}$ は中線（$2 : 1$）ではなく「垂線の交点」であることに注意し、重心と混同していないか？",
+        "四角形の面積を求めるとき、全体の三角形から周りの直角三角形を引く（例：$\\text{四角形}\\mathrm{GDCE} = \\triangle \\mathrm{ADC} - \\triangle \\mathrm{AGE}$）工夫ができているか？",
+        "相似な三角形の面積比は「相似比の2乗」、高さや底辺が共通な三角形の面積比は「底辺や高さの比」と使い分けられているか？"
+    ],
+    generateRandom: function () {
+        const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+        const fmtFrac = (num, den) => {
+            if (num === 0) return "0";
+            const g = gcd(Math.abs(num), Math.abs(den));
+            const n = num / g;
+            const d = den / g;
+            return d === 1 ? `${n}` : `\\frac{${n}}{${d}}`;
+        };
+
+        const datasets = [
+            { bd: 3, dc: 6, ad: 6 },
+            { bd: 4, dc: 8, ad: 8 },
+            { bd: 2, dc: 6, ad: 4 },
+            { bd: 3, dc: 8, ad: 6 },
+            { bd: 6, dc: 12, ad: 12 }
+        ];
+
+        const { bd, dc, ad } = datasets[Math.floor(Math.random() * datasets.length)];
+
+        const buildExactOrthocenterSvg = (options = {}) => {
+            const { showCF = false, highlightPoly = null } = options;
+            const bc = bd + dc;
+            const gd = (bd * dc) / ad;
+
+            const acLen2 = dc * dc + ad * ad;
+            const tE = (-bd * dc + ad * ad) / acLen2;
+            const exMath = bd + tE * dc;
+            const eyMath = ad - tE * ad;
+
+            const abLen2 = bd * bd + ad * ad;
+            const tF = ((bc - bd) * (-bd) + (0 - ad) * (-ad)) / abLen2;
+            const fxMath = bd - tF * bd;
+            const fyMath = ad - tF * ad;
+
+            const scale = Math.min(210 / bc, 130 / ad);
+            const padX = (320 - bc * scale) / 2;
+            const padY = (260 - ad * scale) / 2 + ad * scale;
+
+            const toSvg = (mx, my) => ({
+                x: Number((padX + mx * scale).toFixed(2)),
+                y: Number((padY - my * scale).toFixed(2))
+            });
+
+            const pA = toSvg(bd, ad);
+            const pB = toSvg(0, 0);
+            const pC = toSvg(bc, 0);
+            const pD = toSvg(bd, 0);
+            const pE = toSvg(exMath, eyMath);
+            const pF = toSvg(fxMath, fyMath);
+            const pG = toSvg(bd, gd);
+
+            const rightAngleMark = (vertex, dir1Pt, dir2Pt, size = 8.5) => {
+                const v1x = dir1Pt.x - vertex.x;
+                const v1y = dir1Pt.y - vertex.y;
+                const l1 = Math.hypot(v1x, v1y) || 1;
+                const u1x = (v1x / l1) * size;
+                const u1y = (v1y / l1) * size;
+
+                const v2x = dir2Pt.x - vertex.x;
+                const v2y = dir2Pt.y - vertex.y;
+                const l2 = Math.hypot(v2x, v2y) || 1;
+                const u2x = (v2x / l2) * size;
+                const u2y = (v2y / l2) * size;
+
+                const q1 = `${(vertex.x + u1x).toFixed(2)},${(vertex.y + u1y).toFixed(2)}`;
+                const q2 = `${(vertex.x + u1x + u2x).toFixed(2)},${(vertex.y + u1y + u2y).toFixed(2)}`;
+                const q3 = `${(vertex.x + u2x).toFixed(2)},${(vertex.y + u2y).toFixed(2)}`;
+                return `<polyline points="${q1} ${q2} ${q3}" fill="none" stroke="#0f172a" stroke-width="1.3"/>`;
+            };
+
+            const CX = 160;
+            const CY = 130;
+            const angle = Math.floor(Math.random() * 360);
+
+            const rotatePt = (x, y) => {
+                const rad = (angle * Math.PI) / 180;
+                const cos = Math.cos(rad);
+                const sin = Math.sin(rad);
+                const dx = x - CX;
+                const dy = y - CY;
+                return {
+                    x: Number((CX + dx * cos - dy * sin).toFixed(2)),
+                    y: Number((CY + dx * sin + dy * cos).toFixed(2))
+                };
+            };
+
+            const triCenter = {
+                x: (pA.x + pB.x + pC.x) / 3,
+                y: (pA.y + pB.y + pC.y) / 3
+            };
+            const pushOut = (pt, dist) => {
+                const vx = pt.x - triCenter.x;
+                const vy = pt.y - triCenter.y;
+                const l = Math.hypot(vx, vy) || 1;
+                return { x: pt.x + (vx / l) * dist, y: pt.y + (vy / l) * dist };
+            };
+
+            const lblA = pushOut(pA, 15);
+            const lblB = pushOut(pB, 16);
+            const lblC = pushOut(pC, 16);
+            const lblD = { x: pD.x, y: pD.y + 15 };
+            const lblE = pushOut(pE, 14);
+            const lblF = pushOut(pF, 14);
+            const lblG = { x: pG.x + 11, y: pG.y + 12 };
+
+            const allPoints = [lblA, lblB, lblC, lblD, lblE, lblG];
+            if (showCF) allPoints.push(lblF);
+
+            const rotatedAll = allPoints.map(p => rotatePt(p.x, p.y));
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            rotatedAll.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            });
+            const pad = 20;
+            const viewBox = `${Math.floor(minX - pad)} ${Math.floor(minY - pad)} ${Math.ceil(maxX - minX + pad * 2)} ${Math.ceil(maxY - minY + pad * 2)}`;
+
+            const makeLabel = (pt, text, color = "#0f172a") => {
+                const r = rotatePt(pt.x, pt.y);
+                return `<text x="${r.x}" y="${r.y}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="${color}">${text}</text>`;
+            };
+
+            let highlightSvg = "";
+            if (highlightPoly === "GBD_ACD") {
+                highlightSvg = `
+                    <polygon points="${pG.x},${pG.y} ${pB.x},${pB.y} ${pD.x},${pD.y}" fill="#bbf7d0" fill-opacity="0.65"/>
+                    <polygon points="${pA.x},${pA.y} ${pC.x},${pC.y} ${pD.x},${pD.y}" fill="#dbeafe" fill-opacity="0.5"/>
+                `;
+            } else if (highlightPoly === "GDCE") {
+                highlightSvg = `
+                    <polygon points="${pG.x},${pG.y} ${pD.x},${pD.y} ${pC.x},${pC.y} ${pE.x},${pE.y}" fill="#fde68a" fill-opacity="0.6"/>
+                `;
+            } else if (highlightPoly === "AGE_BGD") {
+                highlightSvg = `
+                    <polygon points="${pA.x},${pA.y} ${pG.x},${pG.y} ${pE.x},${pE.y}" fill="#fecaca" fill-opacity="0.65"/>
+                    <polygon points="${pG.x},${pG.y} ${pB.x},${pB.y} ${pD.x},${pD.y}" fill="#bbf7d0" fill-opacity="0.65"/>
+                `;
+            } else if (highlightPoly === "AGF_ABC") {
+                highlightSvg = `
+                    <polygon points="${pA.x},${pA.y} ${pG.x},${pG.y} ${pF.x},${pF.y}" fill="#ddd6fe" fill-opacity="0.7"/>
+                `;
+            }
+
+            return `
+                <div style="margin: 10px 0 4px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 300px; height: auto;">
+                        <g transform="rotate(${angle} ${CX} ${CY})">
+                            ${highlightSvg}
+                            <polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="none" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                            <line x1="${pA.x}" y1="${pA.y}" x2="${pD.x}" y2="${pD.y}" stroke="#2563eb" stroke-width="1.8"/>
+                            <line x1="${pB.x}" y1="${pB.y}" x2="${pE.x}" y2="${pE.y}" stroke="#2563eb" stroke-width="1.8"/>
+                            ${showCF ? `<line x1="${pC.x}" y1="${pC.y}" x2="${pF.x}" y2="${pF.y}" stroke="#2563eb" stroke-width="1.8"/>` : ""}
+                            ${rightAngleMark(pD, pA, pC)}
+                            ${rightAngleMark(pE, pB, pC)}
+                            ${showCF ? rightAngleMark(pF, pC, pB) : ""}
+                            <circle cx="${pD.x}" cy="${pD.y}" r="3" fill="#0f172a"/>
+                            <circle cx="${pE.x}" cy="${pE.y}" r="3" fill="#0f172a"/>
+                            ${showCF ? `<circle cx="${pF.x}" cy="${pF.y}" r="3" fill="#0f172a"/>` : ""}
+                            <circle cx="${pG.x}" cy="${pG.y}" r="4" fill="#dc2626"/>
+                        </g>
+                        ${makeLabel(lblA, "A")}
+                        ${makeLabel(lblB, "B")}
+                        ${makeLabel(lblC, "C")}
+                        ${makeLabel(lblD, "D")}
+                        ${makeLabel(lblE, "E")}
+                        ${showCF ? makeLabel(lblF, "F") : ""}
+                        ${makeLabel(lblG, "G", "#dc2626")}
+                    </svg>
+                </div>
+            `;
+        };
+
+        const questionPatterns = [
+            () => {
+                const gdLatex = fmtFrac(bd * dc, ad);
+                const rLeft = bd * bd;
+                const rRight = ad * ad;
+                const gR = gcd(rLeft, rRight);
+                return {
+                    problem: `
+                        <div>不等辺三角形 $\\triangle \\mathrm{ABC}$ において、頂点 $\\mathrm{A}$ から辺 $\\mathrm{BC}$ に引いた垂線を $\\mathrm{AD}$、頂点 $\\mathrm{B}$ から辺 $\\mathrm{AC}$ に引いた垂線を $\\mathrm{BE}$ とし、$\\mathrm{AD}$ と $\\mathrm{BE}$ の交点を垂心 $\\mathrm{G}$ とする。<br>
+                        $\\mathrm{BD} = ${bd}$、$\\mathrm{DC} = ${dc}$、$\\mathrm{AD} = ${ad}$ のとき、次の問いに答えなさい。</div>
+                        <div style="margin-top: 4px;">
+                            (1) 線分 $\\mathrm{GD}$ の長さを求めなさい。<br>
+                            (2) 面積の比 $\\triangle \\mathrm{GBD} : \\triangle \\mathrm{ACD}$ を最も簡単な整数の比で表しなさい。
+                        </div>
+                        ${buildExactOrthocenterSvg({ showCF: false, highlightPoly: "GBD_ACD" })}
+                    `,
+                    answer: `(1) $\\mathrm{GD} = ${gdLatex}$<br>(2) $\\triangle \\mathrm{GBD} : \\triangle \\mathrm{ACD} = ${rLeft / gR} : ${rRight / gR}$`,
+                    explanation: `
+                        <strong>(1)</strong><br>
+                        $\\triangle \\mathrm{BDG} \\sim \\triangle \\mathrm{ADC}$ より $\\mathrm{BD} : \\mathrm{AD} = \\mathrm{GD} : \\mathrm{CD}$ なので、<br>
+                        $$${bd} : ${ad} = \\mathrm{GD} : ${dc} \\implies \\mathrm{GD} = ${gdLatex}$$<br>
+                        <strong>(2)</strong><br>
+                        $\\triangle \\mathrm{GBD} = \\frac{1}{2} \\times \\mathrm{BD} \\times \\mathrm{GD} = \\frac{1}{2} \\times ${bd} \\times ${gdLatex}$、$\\triangle \\mathrm{ACD} = \\frac{1}{2} \\times ${dc} \\times ${ad}$。<br>
+                        比をとると $\\mathrm{BD}^2 : \\mathrm{AD}^2 = ${bd}^2 : ${ad}^2 = ${rLeft / gR} : ${rRight / gR}$ です。<br>
+                        <strong>答え：(1) $${gdLatex}$<br>(2) $${rLeft / gR} : ${rRight / gR}$</strong>
+                    `
+                };
+            },
+
+            () => {
+                const agNum = ad * ad - bd * dc;
+                const agLatex = fmtFrac(agNum, ad);
+                const ac2 = dc * dc + ad * ad;
+                const qNum = dc * (ad * ad * ac2 - agNum * agNum);
+                const tDen = (bd + dc) * ad * ad * ac2;
+                const gQ = gcd(qNum, tDen);
+                return {
+                    problem: `
+                        <div>不等辺三角形 $\\triangle \\mathrm{ABC}$ において、頂点 $\\mathrm{A}$ から辺 $\\mathrm{BC}$ に引いた垂線を $\\mathrm{AD}$、頂点 $\\mathrm{B}$ から辺 $\\mathrm{AC}$ に引いた垂線を $\\mathrm{BE}$ とし、$\\mathrm{AD}$ と $\\mathrm{BE}$ の交点を垂心 $\\mathrm{G}$ とする。<br>
+                        $\\mathrm{BD} = ${bd}$、$\\mathrm{DC} = ${dc}$、$\\mathrm{AD} = ${ad}$ のとき、次の問いに答えなさい。</div>
+                        <div style="margin-top: 4px;">
+                            (1) 線分 $\\mathrm{AG}$ の長さを求めなさい。<br>
+                            (2) 四角形 $\\mathrm{GDCE}$ と $\\triangle \\mathrm{ABC}$ の面積の比 $\\text{四角形}\\mathrm{GDCE} : \\triangle \\mathrm{ABC}$ を最も簡単な整数の比で表しなさい。
+                        </div>
+                        ${buildExactOrthocenterSvg({ showCF: false, highlightPoly: "GDCE" })}
+                    `,
+                    answer: `(1) $\\mathrm{AG} = ${agLatex}$<br>(2) $\\text{四角形}\\mathrm{GDCE} : \\triangle \\mathrm{ABC} = ${qNum / gQ} : ${tDen / gQ}$`,
+                    explanation: `
+                        <strong>(1)</strong><br>
+                        $\\triangle \\mathrm{BDG} \\sim \\triangle \\mathrm{ADC}$ より $\\mathrm{GD} = \\frac{${bd} \\times ${dc}}{${ad}} = ${fmtFrac(bd * dc, ad)}$。<br>
+                        よって $\\mathrm{AG} = \\mathrm{AD} - \\mathrm{GD} = ${ad} - ${fmtFrac(bd * dc, ad)} = ${agLatex}$。<br><br>
+                        <strong>(2)</strong><br>
+                        $\\triangle \\mathrm{AEG} \\sim \\triangle \\mathrm{ADC}$ より、面積比は $\\triangle \\mathrm{AEG} : \\triangle \\mathrm{ADC} = \\mathrm{AG}^2 : \\mathrm{AC}^2$。<br>
+                        三平方の定理より $\\mathrm{AC}^2 = ${dc}^2 + ${ad}^2 = ${ac2}$ なので、$\\text{四角形}\\mathrm{GDCE} = \\triangle \\mathrm{ADC} - \\triangle \\mathrm{AEG}$ と $\\triangle \\mathrm{ABC} = \\frac{${bd + dc}}{${dc}}\\triangle \\mathrm{ADC}$ を比較すると、<br>
+                        $$\\text{四角形}\\mathrm{GDCE} : \\triangle \\mathrm{ABC} = ${qNum / gQ} : ${tDen / gQ}$$<br>
+                        <strong>答え：(1) $${agLatex}$<br>(2) $${qNum / gQ} : ${tDen / gQ}$</strong>
+                    `
+                };
+            },
+
+            () => {
+                const gdLatex = fmtFrac(bd * dc, ad);
+                const agNum = ad * ad - bd * dc;
+                const ac2 = ad * ad + dc * dc;
+                const left = agNum * agNum;
+                const right = bd * bd * ac2;
+                const gR = gcd(left, right);
+                return {
+                    problem: `
+                        <div>不等辺三角形 $\\triangle \\mathrm{ABC}$ において、3つの頂点 $\\mathrm{A}$、$\\mathrm{B}$、$\\mathrm{C}$ から対辺に引いた垂線の足をそれぞれ $\\mathrm{D}$、$\\mathrm{E}$、$\\mathrm{F}$ とし、垂心を $\\mathrm{G}$ とする。<br>
+                        $\\mathrm{BD} = ${bd}$、$\\mathrm{DC} = ${dc}$、$\\mathrm{AD} = ${ad}$ のとき、次の問いに答えなさい。</div>
+                        <div style="margin-top: 4px;">
+                            (1) 線分 $\\mathrm{GD}$ の長さを求めなさい。<br>
+                            (2) 面積の比 $\\triangle \\mathrm{AGE} : \\triangle \\mathrm{BGD}$ を最も簡単な整数の比で表しなさい。
+                        </div>
+                        ${buildExactOrthocenterSvg({ showCF: true, highlightPoly: "AGE_BGD" })}
+                    `,
+                    answer: `(1) $\\mathrm{GD} = ${gdLatex}$<br>(2) $\\triangle \\mathrm{AGE} : \\triangle \\mathrm{BGD} = ${left / gR} : ${right / gR}$`,
+                    explanation: `
+                        <strong>(1)</strong><br>
+                        $\\triangle \\mathrm{BDG} \\sim \\triangle \\mathrm{ADC}$ より $\\mathrm{BD} : \\mathrm{AD} = \\mathrm{GD} : \\mathrm{CD}$ なので $\\mathrm{GD} = \\frac{${bd} \\times ${dc}}{${ad}} = ${gdLatex}$。<br><br>
+                        <strong>(2)</strong><br>
+                        対頂角と直角が等しいので $\\triangle \\mathrm{AGE} \\sim \\triangle \\mathrm{BGD}$。相似比は斜辺の比 $\\mathrm{AG} : \\mathrm{BG}$ に等しい。<br>
+                        $\\mathrm{AG} = ${ad} - ${gdLatex} = ${fmtFrac(agNum, ad)}$、三平方の定理より $\\mathrm{BG}^2 = ${bd}^2 + \\left(${gdLatex}\\right)^2 = ${fmtFrac(right, ad * ad)}$。<br>
+                        面積比は相似比の2乗なので $\\mathrm{AG}^2 : \\mathrm{BG}^2 = ${left / gR} : ${right / gR}$ です。<br>
+                        <strong>答え：(1) $${gdLatex}$<br>(2) $${left / gR} : ${right / gR}$</strong>
+                    `
+                };
+            },
+
+            () => {
+                const agNum = ad * ad - bd * dc;
+                const agLatex = fmtFrac(agNum, ad);
+                const ab2 = bd * bd + ad * ad;
+                const left = bd * agNum * agNum;
+                const right = (bd + dc) * ad * ad * ab2;
+                const gR = gcd(left, right);
+                return {
+                    problem: `
+                        <div>不等辺三角形 $\\triangle \\mathrm{ABC}$ において、3つの頂点 $\\mathrm{A}$、$\\mathrm{B}$、$\\mathrm{C}$ から対辺に引いた垂線の足をそれぞれ $\\mathrm{D}$、$\\mathrm{E}$、$\\mathrm{F}$ とし、垂心を $\\mathrm{G}$ とする。<br>
+                        $\\mathrm{BD} = ${bd}$、$\\mathrm{DC} = ${dc}$、$\\mathrm{AD} = ${ad}$ のとき、次の問いに答えなさい。</div>
+                        <div style="margin-top: 4px;">
+                            (1) 線分 $\\mathrm{AG}$ の長さを求めなさい。<br>
+                            (2) 面積の比 $\\triangle \\mathrm{AGF} : \\triangle \\mathrm{ABC}$ を最も簡単な整数の比で表しなさい。
+                        </div>
+                        ${buildExactOrthocenterSvg({ showCF: true, highlightPoly: "AGF_ABC" })}
+                    `,
+                    answer: `(1) $\\mathrm{AG} = ${agLatex}$<br>(2) $\\triangle \\mathrm{AGF} : \\triangle \\mathrm{ABC} = ${left / gR} : ${right / gR}$`,
+                    explanation: `
+                        <strong>(1)</strong><br>
+                        $\\triangle \\mathrm{BDG} \\sim \\triangle \\mathrm{ADC}$ より $\\mathrm{GD} = ${fmtFrac(bd * dc, ad)}$ なので、$\\mathrm{AG} = ${ad} - ${fmtFrac(bd * dc, ad)} = ${agLatex}$。<br><br>
+                        <strong>(2)</strong><br>
+                        $\\triangle \\mathrm{AGF} \\sim \\triangle \\mathrm{ABD}$ より、面積比は $\\triangle \\mathrm{AGF} : \\triangle \\mathrm{ABD} = \\mathrm{AG}^2 : \\mathrm{AB}^2$。<br>
+                        三平方の定理より $\\mathrm{AB}^2 = ${bd}^2 + ${ad}^2 = ${ab2}$ なので、$\\triangle \\mathrm{ABD} : \\triangle \\mathrm{ABC} = ${bd} : ${bd + dc}$ と合わせると、<br>
+                        $$\\triangle \\mathrm{AGF} : \\triangle \\mathrm{ABC} = ${left / gR} : ${right / gR}$$<br>
+                        <strong>答え：(1) $${agLatex}$<br>(2) $${left / gR} : ${right / gR}$</strong>
+                    `
+                };
+            }
+        ];
+
+        const pick = questionPatterns[Math.floor(Math.random() * questionPatterns.length)];
+        return pick();
+    }
+},
+"三角形の内心": {
+    level: "公立",
+    formula: `
+        <div>三角形のそれぞれの頂点から引いた角の二等分線は1点に交わる。その点を<strong>内心</strong>と呼ぶ。<br>
+        内心はその三角形の<strong>内接円の中心</strong>である。</div>
+
+        <div style="margin: 10px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+            <svg viewBox="0 0 280 202" width="280" height="202" style="max-width: 100%; height: auto;">
+                <!-- 座標: A(118,22), B(36,154), C(244,154), 内心 I(126.46,103.70), 内接円半径 r=50.30 -->
+                <!-- 交点: D(80.36,82.59) on AB, E(131.66,154) on BC, F(171.88,78.45) on AC -->
+                <!-- ADの中点: (99.18, 52.30) -->
+                <polygon points="118,22 36,154 244,154" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                <!-- 内接円 -->
+                <circle cx="126.46" cy="103.70" r="50.30" fill="#ecfdf5" fill-opacity="0.45" stroke="#059669" stroke-width="1.4" stroke-dasharray="4,3"/>
+
+                <!-- 3本の角の二等分線（AE, BF, CD） -->
+                <line x1="118" y1="22" x2="131.66" y2="154" stroke="#2563eb" stroke-width="1.5"/>
+                <line x1="36" y1="154" x2="171.88" y2="78.45" stroke="#2563eb" stroke-width="1.5"/>
+                <line x1="244" y1="154" x2="80.36" y2="82.59" stroke="#2563eb" stroke-width="1.5"/>
+
+                <!-- 内心 I から辺 BC への垂線と直角マーク -->
+                <line x1="126.46" y1="103.70" x2="126.46" y2="154" stroke="#059669" stroke-width="1.3" stroke-dasharray="2,2"/>
+                <polyline points="126.46,146.5 133.96,146.5 133.96,154" fill="none" stroke="#0f172a" stroke-width="1.2"/>
+
+                <!-- 等角マーク ○（∠A の二等分線の両側の半角にフィット） -->
+                <circle cx="114.4" cy="37.6" r="2.2" fill="none" stroke="#dc2626" stroke-width="1.35"/>
+                <circle cx="124.7" cy="36.5" r="2.2" fill="none" stroke="#dc2626" stroke-width="1.35"/>
+
+                <!-- 等角マーク ×（∠B の二等分線の両側の半角にフィット） -->
+                <g stroke="#2563eb" stroke-width="1.35">
+                    <line x1="51.7" y1="147.8" x2="55.1" y2="151.2"/>
+                    <line x1="55.1" y1="147.8" x2="51.7" y2="151.2"/>
+                    <line x1="47.3" y1="139.9" x2="50.7" y2="143.3"/>
+                    <line x1="50.7" y1="139.9" x2="47.3" y2="143.3"/>
+                </g>
+
+                <!-- 等角マーク △（∠C の各半角の二等分線上にフィット配置） -->
+                <polygon points="211.7,145.6 209.9,148.8 213.5,148.8" fill="none" stroke="#d97706" stroke-width="1.3" stroke-linejoin="round"/>
+                <polygon points="216.3,134.7 214.5,137.9 218.1,137.9" fill="none" stroke="#d97706" stroke-width="1.3" stroke-linejoin="round"/>
+
+                <!-- 交点 D, E, F -->
+                <circle cx="80.36" cy="82.59" r="3" fill="#0f172a"/>
+                <circle cx="131.66" cy="154" r="3" fill="#0f172a"/>
+                <circle cx="171.88" cy="78.45" r="3" fill="#0f172a"/>
+
+                <!-- 内心 I -->
+                <circle cx="126.46" cy="103.70" r="4" fill="#dc2626"/>
+
+                <!-- 頂点・交点・内心ラベル -->
+                <text x="118" y="11" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">A</text>
+                <text x="25" y="164" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">B</text>
+                <text x="255" y="164" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">C</text>
+                <text x="69" y="78" font-size="13" font-weight="bold" text-anchor="end" fill="#0f172a">D</text>
+                <text x="131" y="169" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">E</text>
+                <text x="182" y="74" font-size="13" font-weight="bold" text-anchor="start" fill="#0f172a">F</text>
+                <text x="137" y="101" font-size="13" font-weight="bold" text-anchor="start" fill="#dc2626">I</text>
+
+                <!-- 辺の中央からさらに外側に a, b, c、ADの中点の左上に x -->
+                <text x="52" y="92" font-size="13" font-style="italic" font-weight="bold" text-anchor="end" fill="#0f172a">a</text>
+                <text x="204" y="88" font-size="13" font-style="italic" font-weight="bold" text-anchor="start" fill="#0f172a">b</text>
+                <text x="140" y="182" font-size="13" font-style="italic" font-weight="bold" text-anchor="middle" fill="#0f172a">c</text>
+                <text x="91" y="45" font-size="13" font-style="italic" font-weight="bold" text-anchor="end" fill="#2563eb">x</text>
+            </svg>
+        </div>
+
+        <div style="margin-top: 6px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+            <div><strong>【内心の性質のポイント】</strong></div>
+            <div style="margin-top: 4px;">
+                ・3つの<strong>角の二等分線</strong>が交わる点なので、内心から三角形の3辺までの距離はすべて等しい（内接円の半径になる）。<br>
+                ・$\\triangle \\mathrm{ABC}$ の内心を $\\mathrm{I}$ とすると、$\\angle \\mathrm{BIC} = 90^\\circ + \\frac{1}{2}\\angle \\mathrm{A}$ が成り立つ。<br>
+                ・接線の長さ $x = \\frac{a + b - c}{2}$<br>
+                ・三角形 $\\mathrm{ABC}$ の面積を $S$ とすると、次が成り立つ。<br>
+                $$\\frac{1}{2}r(a + b + c) = S$$<br>
+                ※各辺を底辺、内接円の半径が高さとした三角形を3つ合わせると $\\triangle \\mathrm{ABC}$ になる。
+            </div>
+        </div>
+    `,
+    selfCheck: [
+        "内心は「角の二等分線の交点（内接円の中心）」であり、垂直二等分線の交点（外心）や中線の交点（重心）と混同していないか？",
+        "角の二等分線によって角が半分になっていることを正しく使い、$\\angle \\mathrm{BIC} = 90^\\circ + \\frac{1}{2}\\angle \\mathrm{A}$ や内角の和（$180^\\circ$）から正確に角度を求められているか？",
+        "円の外部の1点から引いた2本の接線の長さは等しいことを使い、頂点から接点までの長さを $x, y, z$ とおいて連立・整理できているか？",
+        "直角三角形の直角の頂点付近では、2本の接線と2本の半径が作る四角形が「正方形」になるため、接線の長さがそのまま内接円の半径 $r$ に一致することを活かせているか？",
+        "$\\frac{1}{2}r(a + b + c) = S$ で、3辺の和 $(a + b + c)$ と面積 $S$ の関係から内接円の半径 $r$ を正確に計算できているか？"
+    ],
+    generateRandom: function () {
+        const CX = 160;
+        const CY = 130;
+        const angle = Math.floor(Math.random() * 360);
+
+        const rotatePt = (x, y) => {
+            const rad = (angle * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            const dx = x - CX;
+            const dy = y - CY;
+            return {
+                x: Number((CX + dx * cos - dy * sin).toFixed(2)),
+                y: Number((CY + dx * sin + dy * cos).toFixed(2))
+            };
+        };
+
+        const makeLabel = (pt, text, color = "#0f172a") => {
+            const r = rotatePt(pt.x, pt.y);
+            return `<text x="${r.x}" y="${r.y}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="${color}">${text}</text>`;
+        };
+
+        const rightAngleMark = (vertex, dir1Pt, dir2Pt, size = 7.5) => {
+            const v1x = dir1Pt.x - vertex.x;
+            const v1y = dir1Pt.y - vertex.y;
+            const l1 = Math.hypot(v1x, v1y) || 1;
+            const u1x = (v1x / l1) * size;
+            const u1y = (v1y / l1) * size;
+
+            const v2x = dir2Pt.x - vertex.x;
+            const v2y = dir2Pt.y - vertex.y;
+            const l2 = Math.hypot(v2x, v2y) || 1;
+            const u2x = (v2x / l2) * size;
+            const u2y = (v2y / l2) * size;
+
+            const q1 = `${(vertex.x + u1x).toFixed(2)},${(vertex.y + u1y).toFixed(2)}`;
+            const q2 = `${(vertex.x + u1x + u2x).toFixed(2)},${(vertex.y + u1y + u2y).toFixed(2)}`;
+            const q3 = `${(vertex.x + u2x).toFixed(2)},${(vertex.y + u2y).toFixed(2)}`;
+            return `<polyline points="${q1} ${q2} ${q3}" fill="none" stroke="#0f172a" stroke-width="1.2"/>`;
+        };
+
+        const buildTriangleSvg = (bcLen, caLen, abLen, sNum, isRightC) => {
+            const cosC = (bcLen * bcLen + caLen * caLen - abLen * abLen) / (2 * bcLen * caLen);
+            const sinC = Math.sqrt(Math.max(0, 1 - cosC * cosC));
+            const axMath = caLen * cosC;
+            const ayMath = caLen * sinC;
+
+            const perim = bcLen + caLen + abLen;
+            const rMath = (2 * sNum) / perim;
+
+            const ixMath = (bcLen * axMath + caLen * bcLen + abLen * 0) / perim;
+            const iyMath = (bcLen * ayMath + caLen * 0 + abLen * 0) / perim;
+
+            const zLen = (caLen + bcLen - abLen) / 2;
+            const pMath = { x: zLen, y: 0 };
+            const qMath = { x: zLen * cosC, y: zLen * sinC };
+
+            const xLen = (abLen + caLen - bcLen) / 2;
+            const abDx = (bcLen - axMath) / abLen;
+            const abDy = (0 - ayMath) / abLen;
+            const rMathPt = {
+                x: axMath + xLen * abDx,
+                y: ayMath + xLen * abDy
+            };
+
+            const minXMath = Math.min(0, axMath, bcLen);
+            const maxXMath = Math.max(0, axMath, bcLen);
+            const minYMath = Math.min(0, ayMath);
+            const maxYMath = Math.max(0, ayMath);
+            const wMath = Math.max(maxXMath - minXMath, 1);
+            const hMath = Math.max(maxYMath - minYMath, 1);
+
+            const scale = Math.min(180 / wMath, 130 / hMath);
+            const drawW = wMath * scale;
+            const drawH = hMath * scale;
+            const padX = (320 - drawW) / 2 - minXMath * scale;
+            const padY = (260 - drawH) / 2 + maxYMath * scale;
+
+            const toSvg = (mx, my) => ({
+                x: Number((padX + mx * scale).toFixed(2)),
+                y: Number((padY - my * scale).toFixed(2))
+            });
+
+            const pC = toSvg(0, 0);
+            const pB = toSvg(bcLen, 0);
+            const pA = toSvg(axMath, ayMath);
+            const pI = toSvg(ixMath, iyMath);
+            const pP = toSvg(pMath.x, pMath.y);
+            const pQ = toSvg(qMath.x, qMath.y);
+            const pR = toSvg(rMathPt.x, rMathPt.y);
+            const rSvg = Number((rMath * scale).toFixed(2));
+
+            const triCenter = { x: (pA.x + pB.x + pC.x) / 3, y: (pA.y + pB.y + pC.y) / 3 };
+            const pushOut = (pt, dist) => {
+                const vx = pt.x - triCenter.x;
+                const vy = pt.y - triCenter.y;
+                const l = Math.hypot(vx, vy) || 1;
+                return { x: pt.x + (vx / l) * dist, y: pt.y + (vy / l) * dist };
+            };
+
+            const lblA = pushOut(pA, 15);
+            const lblB = pushOut(pB, 16);
+            const lblC = pushOut(pC, 16);
+            const lblP = pushOut(pP, 12);
+            const lblQ = pushOut(pQ, 12);
+            const lblR = pushOut(pR, 12);
+            const lblI = { x: pI.x + 10, y: pI.y - 8 };
+
+            const rotatedAll = [lblA, lblB, lblC, lblP, lblQ, lblR, lblI].map(p => rotatePt(p.x, p.y));
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            rotatedAll.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            });
+            const pad = 22;
+            const viewBox = `${Math.floor(minX - pad)} ${Math.floor(minY - pad)} ${Math.ceil(maxX - minX + pad * 2)} ${Math.ceil(maxY - minY + pad * 2)}`;
+
+            return `
+                <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 300px; height: auto;">
+                        <g transform="rotate(${angle} ${CX} ${CY})">
+                            <polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                            <circle cx="${pI.x}" cy="${pI.y}" r="${rSvg}" fill="#ecfdf5" fill-opacity="0.5" stroke="#059669" stroke-width="1.4"/>
+                            <line x1="${pA.x}" y1="${pA.y}" x2="${pI.x}" y2="${pI.y}" stroke="#2563eb" stroke-width="1.35"/>
+                            <line x1="${pB.x}" y1="${pB.y}" x2="${pI.x}" y2="${pI.y}" stroke="#2563eb" stroke-width="1.35"/>
+                            <line x1="${pC.x}" y1="${pC.y}" x2="${pI.x}" y2="${pI.y}" stroke="#2563eb" stroke-width="1.35"/>
+                            <line x1="${pI.x}" y1="${pI.y}" x2="${pP.x}" y2="${pP.y}" stroke="#059669" stroke-width="1.2" stroke-dasharray="3,2"/>
+                            <line x1="${pI.x}" y1="${pI.y}" x2="${pQ.x}" y2="${pQ.y}" stroke="#059669" stroke-width="1.2" stroke-dasharray="3,2"/>
+                            <line x1="${pI.x}" y1="${pI.y}" x2="${pR.x}" y2="${pR.y}" stroke="#059669" stroke-width="1.2" stroke-dasharray="3,2"/>
+                            ${isRightC ? rightAngleMark(pC, pA, pB, 7) : ""}
+                            ${rightAngleMark(pP, pI, pB, 6.5)}
+                            ${rightAngleMark(pQ, pI, pA, 6.5)}
+                            ${rightAngleMark(pR, pI, pB, 6.5)}
+                            <circle cx="${pP.x}" cy="${pP.y}" r="2.8" fill="#0f172a"/>
+                            <circle cx="${pQ.x}" cy="${pQ.y}" r="2.8" fill="#0f172a"/>
+                            <circle cx="${pR.x}" cy="${pR.y}" r="2.8" fill="#0f172a"/>
+                            <circle cx="${pI.x}" cy="${pI.y}" r="3.8" fill="#dc2626"/>
+                        </g>
+                        ${makeLabel(lblA, "A")}
+                        ${makeLabel(lblB, "B")}
+                        ${makeLabel(lblC, "C")}
+                        ${makeLabel(lblP, "P")}
+                        ${makeLabel(lblQ, "Q")}
+                        ${makeLabel(lblR, "R")}
+                        ${makeLabel(lblI, "I", "#dc2626")}
+                    </svg>
+                </div>
+            `;
+        };
+
+        const rightTriCases = [
+            { bc: 3, ca: 4, ab: 5 },
+            { bc: 6, ca: 8, ab: 10 },
+            { bc: 5, ca: 12, ab: 13 },
+            { bc: 9, ca: 12, ab: 15 }
+        ];
+
+        const nonRightTriCases = [
+            { bc: 13, ca: 14, ab: 15, sNum: 84, areaTex: "84", rTex: "4" },
+            { bc: 7, ca: 15, ab: 20, sNum: 42, areaTex: "42", rTex: "2" },
+            { bc: 11, ca: 13, ab: 20, sNum: 66, areaTex: "66", rTex: "3" },
+            { bc: 25, ca: 29, ab: 36, sNum: 360, areaTex: "360", rTex: "8" }
+        ];
+
+        const angleCases = [
+            { angA: 50, angB: 70 },
+            { angA: 60, angB: 68 },
+            { angA: 40, angB: 80 },
+            { angA: 70, angB: 54 },
+            { angA: 80, angB: 50 }
+        ];
+
+        const { angA, angB } = angleCases[Math.floor(Math.random() * angleCases.length)];
+        const angC = 180 - angA - angB;
+        const angIBC = angB / 2;
+        const angICB = angC / 2;
+        const angBIC = 90 + angA / 2;
+
+        const useNonRight = Math.random() < 0.5;
+
+        if (!useNonRight) {
+            const { bc, ca, ab } = rightTriCases[Math.floor(Math.random() * rightTriCases.length)];
+            const s = (bc + ca + ab) / 2;
+            const lenA = s - bc;
+            const rVal = s - ab;
+            const areaS = (bc * ca) / 2;
+
+            return {
+                problem: `
+                    <div>
+                        図は $\\angle \\mathrm{C} = 90^\\circ$ の三角形 $\\triangle \\mathrm{ABC}$ であり、$\\angle \\mathrm{A} = ${angA}^\\circ$、$\\angle \\mathrm{B} = ${angB}^\\circ$、$\\mathrm{BC} = ${bc}$、$\\mathrm{CA} = ${ca}$、$\\mathrm{AB} = ${ab}$ とする。$\\triangle \\mathrm{ABC}$ の内心を $\\mathrm{I}$、内接円と辺 $\\mathrm{BC}$、$\\mathrm{CA}$、$\\mathrm{AB}$ との接点をそれぞれ $\\mathrm{P}$、$\\mathrm{Q}$、$\\mathrm{R}$ とするとき、次の問いに答えなさい。
+                    </div>
+                    ${buildTriangleSvg(bc, ca, ab, areaS, true)}
+                    <div style="margin-top: 4px;">
+                        (1) $\\angle \\mathrm{IBC}$ の大きさを求めなさい。<br>
+                        (2) $\\angle \\mathrm{BIC}$ の大きさを求めなさい。<br>
+                        (3) 頂点 $\\mathrm{A}$ から接点までの長さ（$\\mathrm{AQ}$、$\\mathrm{AR}$ の長さ）を求めなさい。<br>
+                        (4) 内接円の半径を求めなさい。
+                    </div>
+                `,
+                answer: `(1) $\\angle \\mathrm{IBC} = ${angIBC}^\\circ$<br>(2) $\\angle \\mathrm{BIC} = ${angBIC}^\\circ$<br>(3) $\\mathrm{AQ} = \\mathrm{AR} = ${lenA}$<br>(4) 内接円の半径 $= ${rVal}$`,
+                explanation: `
+                    <strong>(1)</strong><br>
+                    内心 $\\mathrm{I}$ は $\\angle \\mathrm{B}$ の二等分線上にあるので、<br>
+                    $$\\angle \\mathrm{IBC} = \\frac{1}{2}\\angle \\mathrm{B} = \\frac{1}{2} \\times ${angB}^\\circ = ${angIBC}^\\circ$$<br><br>
+
+                    <strong>(2)</strong><br>
+                    $\\angle \\mathrm{C} = 180^\\circ - (${angA}^\\circ + ${angB}^\\circ) = ${angC}^\\circ$ より、$\\angle \\mathrm{ICB} = \\frac{1}{2}\\angle \\mathrm{C} = ${angICB}^\\circ$。<br>
+                    $\\triangle \\mathrm{IBC}$ の内角の和は $180^\\circ$ なので、<br>
+                    $$\\angle \\mathrm{BIC} = 180^\\circ - (${angIBC}^\\circ + ${angICB}^\\circ) = ${angBIC}^\\circ$$<br><br>
+
+                    <strong>(3)</strong><br>
+                    頂点 $\\mathrm{A}$、$\\mathrm{B}$、$\\mathrm{C}$ から内接円に引いた接線の長さをそれぞれ $x = \\mathrm{AQ} = \\mathrm{AR}$、$y = \\mathrm{BP} = \\mathrm{BR}$、$z = \\mathrm{CP} = \\mathrm{CQ}$ とすると、<br>
+                    $x + y = ${ab}$、$y + z = ${bc}$、$z + x = ${ca}$。<br>
+                    3式をたすと $2(x + y + z) = ${ab + bc + ca}$ より $x + y + z = ${s}$。<br>
+                    よって $x = ${s} - ${bc} = ${lenA}$ なので、$\\mathrm{AQ} = \\mathrm{AR} = ${lenA}$ です。<br><br>
+
+                    <strong>(4)</strong><br>
+                    $\\triangle \\mathrm{ABC}$ の面積は $S = \\frac{1}{2} \\times ${bc} \\times ${ca} = ${areaS}$。<br>
+                    $\\frac{1}{2}r(${bc} + ${ca} + ${ab}) = ${areaS}$ より、$\\frac{1}{2}r \\times ${bc + ca + ab} = ${areaS}$ なので、<br>
+                    $$r = ${rVal}$$<br>
+                    <strong>答え：(1) $${angIBC}^\\circ$　(2) $${angBIC}^\\circ$　(3) $${lenA}$　(4) ${rVal}</strong>
+                `
+            };
+        }
+
+        const { bc, ca, ab, sNum, areaTex, rTex } = nonRightTriCases[Math.floor(Math.random() * nonRightTriCases.length)];
+        const s = (bc + ca + ab) / 2;
+        const lenA = s - bc;
+        const perim = bc + ca + ab;
+
+        return {
+            problem: `
+                <div>
+                    図は三角形 $\\triangle \\mathrm{ABC}$ であり、$\\angle \\mathrm{A} = ${angA}^\\circ$、$\\angle \\mathrm{B} = ${angB}^\\circ$、$\\mathrm{BC} = ${bc}$、$\\mathrm{CA} = ${ca}$、$\\mathrm{AB} = ${ab}$、面積 $S = ${areaTex}$ とする。$\\triangle \\mathrm{ABC}$ の内心を $\\mathrm{I}$、内接円と辺 $\\mathrm{BC}$、$\\mathrm{CA}$、$\\mathrm{AB}$ との接点をそれぞれ $\\mathrm{P}$、$\\mathrm{Q}$、$\\mathrm{R}$ とするとき、次の問いに答えなさい。
+                </div>
+                ${buildTriangleSvg(bc, ca, ab, sNum, false)}
+                <div style="margin-top: 4px;">
+                    (1) $\\angle \\mathrm{IBC}$ の大きさを求めなさい。<br>
+                    (2) $\\angle \\mathrm{BIC}$ の大きさを求めなさい。<br>
+                    (3) 頂点 $\\mathrm{A}$ から接点までの長さ（$\\mathrm{AQ}$、$\\mathrm{AR}$ の長さ）を求めなさい。<br>
+                    (4) 内接円の半径を求めなさい。
+                </div>
+            `,
+            answer: `(1) $\\angle \\mathrm{IBC} = ${angIBC}^\\circ$<br>(2) $\\angle \\mathrm{BIC} = ${angBIC}^\\circ$<br>(3) $\\mathrm{AQ} = \\mathrm{AR} = ${lenA}$<br>(4) 内接円の半径 $= ${rTex}$`,
+            explanation: `
+                <strong>(1)</strong><br>
+                内心 $\\mathrm{I}$ は $\\angle \\mathrm{B}$ の二等分線上にあるので、<br>
+                $$\\angle \\mathrm{IBC} = \\frac{1}{2}\\angle \\mathrm{B} = \\frac{1}{2} \\times ${angB}^\\circ = ${angIBC}^\\circ$$<br><br>
+
+                <strong>(2)</strong><br>
+                $\\angle \\mathrm{C} = 180^\\circ - (${angA}^\\circ + ${angB}^\\circ) = ${angC}^\\circ$ より、$\\angle \\mathrm{ICB} = \\frac{1}{2}\\angle \\mathrm{C} = ${angICB}^\\circ$。<br>
+                $\\triangle \\mathrm{IBC}$ の内角の和は $180^\\circ$ なので、<br>
+                $$\\angle \\mathrm{BIC} = 180^\\circ - (${angIBC}^\\circ + ${angICB}^\\circ) = ${angBIC}^\\circ$$<br><br>
+
+                <strong>(3)</strong><br>
+                頂点 $\\mathrm{A}$、$\\mathrm{B}$、$\\mathrm{C}$ から内接円に引いた接線の長さをそれぞれ $x = \\mathrm{AQ} = \\mathrm{AR}$、$y = \\mathrm{BP} = \\mathrm{BR}$、$z = \\mathrm{CP} = \\mathrm{CQ}$ とすると、<br>
+                $x + y = ${ab}$、$y + z = ${bc}$、$z + x = ${ca}$。<br>
+                3式をたすと $2(x + y + z) = ${perim}$ より $x + y + z = ${s}$。<br>
+                よって $x = ${s} - ${bc} = ${lenA}$ なので、$\\mathrm{AQ} = \\mathrm{AR} = ${lenA}$ です。<br><br>
+
+                <strong>(4)</strong><br>
+                $\\triangle \\mathrm{ABC}$ の面積は $S = ${areaTex}$ であり、$\\frac{1}{2}r(${bc} + ${ca} + ${ab}) = S$ が成り立つので、<br>
+                $$\\frac{1}{2}r \\times ${perim} = ${areaTex}$$<br>
+                よって $r = ${rTex}$ です。<br>
+                <strong>答え：(1) $${angIBC}^\\circ$　(2) $${angBIC}^\\circ$　(3) $${lenA}$　(4) ${rTex}</strong>
+            `
+        };
+    }
 }
 
 
