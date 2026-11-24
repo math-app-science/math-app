@@ -10436,6 +10436,793 @@ const formulaData = {
             `
         };
     }
+},
+"三角形の外心": {
+    level: "公立",
+    formula: `
+        <div>三角形の3つの辺の<strong>垂直二等分線</strong>は1点に交わる。その点を<strong>外心</strong>と呼ぶ。<br>
+        外心はその三角形の<strong>外接円の中心</strong>であり、3つの頂点までの距離がすべて等しい。</div>
+
+        <div style="margin: 10px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+            <svg viewBox="0 0 280 206" width="280" height="206" style="max-width: 100%; height: auto;">
+                <!--
+                    厳密座標（O=(140, 106), 外接円半径 R=82）:
+                    A = (111.95, 28.95)
+                    B = (65.68, 140.65)
+                    C = (214.32, 140.65)
+                    中点:
+                    D (BC中点) = (140.00, 140.65)
+                    E (AC中点) = (163.14, 84.80)
+                    F (AB中点) = (88.82, 84.80)
+                -->
+                <circle cx="140" cy="106" r="82" fill="#eff6ff" fill-opacity="0.35" stroke="#2563eb" stroke-width="1.4" stroke-dasharray="4,3"/>
+                <polygon points="111.95,28.95 65.68,140.65 214.32,140.65" fill="#f8fafc" fill-opacity="0.85" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+
+                <!-- 外心 O から各頂点 A, B, C への線分（外接円の半径 R） -->
+                <line x1="140" y1="106" x2="111.95" y2="28.95" stroke="#059669" stroke-width="1.3" stroke-dasharray="3,2"/>
+                <line x1="140" y1="106" x2="65.68" y2="140.65" stroke="#059669" stroke-width="1.3" stroke-dasharray="3,2"/>
+                <line x1="140" y1="106" x2="214.32" y2="140.65" stroke="#059669" stroke-width="1.3" stroke-dasharray="3,2"/>
+
+                <!-- 3本の垂直二等分線（各辺の中点 D, E, F を通り、各辺に直交して外心 O で交わる） -->
+                <line x1="140" y1="162" x2="140" y2="82" stroke="#2563eb" stroke-width="1.5"/>
+                <line x1="181.65" y1="67.84" x2="121.48" y2="122.96" stroke="#2563eb" stroke-width="1.5"/>
+                <line x1="68.34" y1="76.32" x2="160.47" y2="114.48" stroke="#2563eb" stroke-width="1.5"/>
+
+                <!-- 中点 D, E, F での直角マーク -->
+                <polyline points="140,133.65 147,133.65 147,140.65" fill="none" stroke="#0f172a" stroke-width="1.2"/>
+                <polyline points="158.41,79.64 153.25,84.37 157.98,89.53" fill="none" stroke="#0f172a" stroke-width="1.2"/>
+                <polyline points="95.29,87.48 97.97,81.01 91.50,78.33" fill="none" stroke="#0f172a" stroke-width="1.2"/>
+
+                <!-- 外心 O -->
+                <circle cx="140" cy="106" r="4" fill="#dc2626"/>
+
+                <!-- ラベル -->
+                <text x="109" y="18" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">A</text>
+                <text x="53" y="147" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">B</text>
+                <text x="227" y="147" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">C</text>
+                <text x="148" y="103" font-size="13" font-weight="bold" text-anchor="start" fill="#dc2626">O</text>
+                <text x="119" y="68" font-size="12" font-style="italic" font-weight="bold" text-anchor="end" fill="#059669">R</text>
+            </svg>
+        </div>
+
+        <div style="margin-top: 6px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+            <div><strong>【外心の性質のポイント】</strong></div>
+            <div style="margin-top: 4px;">
+                ・外心 $\\mathrm{O}$ から3つの頂点までの距離はすべて等しい（$\\mathrm{OA} = \\mathrm{OB} = \\mathrm{OC} = R$：外接円の半径）。<br>
+                ・$\\triangle \\mathrm{OAB}$、$\\triangle \\mathrm{OBC}$、$\\triangle \\mathrm{OCA}$ はすべて<strong>二等辺三角形</strong>になる。<br>
+                ・外接円の中心角と円周角の関係より、鋭角三角形では $\\angle \\mathrm{BOC} = 2\\angle \\mathrm{BAC}$ が成り立つ（$\\angle \\mathrm{BAC}$ が鈍角のときは、小さい方の $\\angle \\mathrm{BOC}$ を求め、$360^\\circ$ から引いた大きい方の中心角の $\\frac{1}{2}$ が $\\angle \\mathrm{BAC}$ になる）。<br>
+                ・<strong>三角形の種類と外心の位置</strong>：<br>
+                　鋭角三角形：三角形の<strong>内部</strong> ／ 直角三角形：<strong>斜辺の中点</strong> ／ 鈍角三角形：三角形の<strong>外部</strong><br>
+                ・外接円の半径 $R$ の求め方：$R = \\frac{a \\times b}{2h}$（※$h$ は三角形の高さ、$a, b$ は高さを挟む2辺の長さ）
+            </div>
+        </div>
+    `,
+    selfCheck: [
+        "外心は「辺の垂直二等分線の交点（外接円の中心）」であり、角の二等分線の交点（内心）や中線の交点（重心）と混同していないか？",
+        "OB = OC（外接円の半径）から、△OBC が二等辺三角形になることを使って ∠OCB = ∠OBC とできているか？",
+        "△OBC の内角の和から中心角 ∠BOC を求め、円周角の定理（∠A が鋭角なら ∠BAC = 1/2∠BOC、鈍角なら 360° から小さい方の ∠BOC を引いた大きい方の中心角の 1/2）を正しく適用できているか？",
+        "外接円の半径 R = (a × b) / 2h を計算するとき、2辺の積を高さ h の2倍（2h）で正しく割れているか？",
+        "直角三角形の外心は「斜辺の中点」にあり、外接円の半径 R が斜辺の半分になることを理解しているか？"
+    ],
+    generateRandom: function () {
+        const CX = 160;
+        const CY = 130;
+        const angle = Math.floor(Math.random() * 360);
+
+        const rotatePt = (x, y) => {
+            const rad = (angle * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+            const dx = x - CX;
+            const dy = y - CY;
+            return {
+                x: Number((CX + dx * cos - dy * sin).toFixed(2)),
+                y: Number((CY + dx * sin + dy * cos).toFixed(2))
+            };
+        };
+
+        const makeLabel = (pt, text, color = "#0f172a", italic = false) => {
+            const r = rotatePt(pt.x, pt.y);
+            const styleAttr = italic ? 'font-style="italic"' : "";
+            return `<text x="${r.x}" y="${r.y}" font-size="13" ${styleAttr} font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="${color}">${text}</text>`;
+        };
+
+        const rightAngleMark = (vertex, dir1Pt, dir2Pt, size = 6.5) => {
+            const v1x = dir1Pt.x - vertex.x;
+            const v1y = dir1Pt.y - vertex.y;
+            const l1 = Math.hypot(v1x, v1y) || 1;
+            const u1x = (v1x / l1) * size;
+            const u1y = (v1y / l1) * size;
+
+            const v2x = dir2Pt.x - vertex.x;
+            const v2y = dir2Pt.y - vertex.y;
+            const l2 = Math.hypot(v2x, v2y) || 1;
+            const u2x = (v2x / l2) * size;
+            const u2y = (v2y / l2) * size;
+
+            const q1 = `${(vertex.x + u1x).toFixed(2)},${(vertex.y + u1y).toFixed(2)}`;
+            const q2 = `${(vertex.x + u1x + u2x).toFixed(2)},${(vertex.y + u1y + u2y).toFixed(2)}`;
+            const q3 = `${(vertex.x + u2x).toFixed(2)},${(vertex.y + u2y).toFixed(2)}`;
+            return `<polyline points="${q1} ${q2} ${q3}" fill="none" stroke="#0f172a" stroke-width="1.2"/>`;
+        };
+
+        // 小さい方の ∠BOC < 150°（angOBC > 15°）、1〜2辺が整数・残りが √ の単項式、BC が直径にならない条件
+        // 外心 O が辺 BC に近づきすぎてほぼ直線（180°）に見えすぎないケースを収録
+        const cases = [
+            {
+                isObtuseA: false,
+                angOBC: 28,
+                sideATex: "2\\sqrt{10}",
+                sideBTex: "6\\sqrt{2}",
+                bcTex: "8",
+                sideANum: 2 * Math.sqrt(10),
+                sideBNum: 6 * Math.sqrt(2),
+                bcNum: 8,
+                xTex: "6",
+                chTex: "2",
+                chExprTex: "8 - x",
+                bSqTex: "(6\\sqrt{2})^2",
+                aSqTex: "(2\\sqrt{10})^2",
+                chSqTex: "2^2",
+                hSqValTex: "36",
+                hTex: "6",
+                rCalc: "\\frac{2\\sqrt{10} \\times 6\\sqrt{2}}{2 \\times 6} = \\frac{12\\sqrt{20}}{12} = 2\\sqrt{5}",
+                rTex: "2\\sqrt{5}"
+            },
+            {
+                isObtuseA: false,
+                angOBC: 35,
+                sideATex: "10",
+                sideBTex: "4\\sqrt{5}",
+                bcTex: "10",
+                sideANum: 10,
+                sideBNum: 4 * Math.sqrt(5),
+                bcNum: 10,
+                xTex: "4",
+                chTex: "6",
+                chExprTex: "10 - x",
+                bSqTex: "(4\\sqrt{5})^2",
+                aSqTex: "10^2",
+                chSqTex: "6^2",
+                hSqValTex: "64",
+                hTex: "8",
+                rCalc: "\\frac{10 \\times 4\\sqrt{5}}{2 \\times 8} = \\frac{40\\sqrt{5}}{16} = \\frac{5\\sqrt{5}}{2}",
+                rTex: "\\frac{5\\sqrt{5}}{2}"
+            },
+            {
+                isObtuseA: false,
+                angOBC: 30,
+                sideATex: "2\\sqrt{13}",
+                sideBTex: "2\\sqrt{10}",
+                bcTex: "6",
+                sideANum: 2 * Math.sqrt(13),
+                sideBNum: 2 * Math.sqrt(10),
+                bcNum: 6,
+                xTex: "2",
+                chTex: "4",
+                chExprTex: "6 - x",
+                bSqTex: "(2\\sqrt{10})^2",
+                aSqTex: "(2\\sqrt{13})^2",
+                chSqTex: "4^2",
+                hSqValTex: "36",
+                hTex: "6",
+                rCalc: "\\frac{2\\sqrt{13} \\times 2\\sqrt{10}}{2 \\times 6} = \\frac{4\\sqrt{130}}{12} = \\frac{\\sqrt{130}}{3}",
+                rTex: "\\frac{\\sqrt{130}}{3}"
+            },
+            {
+                // 角Aが鈍角（∠BAC > 90°）: C=(0,0), B=(6,0), A=(2,1) -> AC=√5, AB=√17, BC=6
+                isObtuseA: true,
+                angOBC: 20,
+                sideATex: "\\sqrt{5}",
+                sideBTex: "\\sqrt{17}",
+                bcTex: "6",
+                sideANum: Math.sqrt(5),
+                sideBNum: Math.sqrt(17),
+                bcNum: 6,
+                xTex: "4",
+                chTex: "2",
+                chExprTex: "6 - x",
+                bSqTex: "(\\sqrt{17})^2",
+                aSqTex: "(\\sqrt{5})^2",
+                chSqTex: "2^2",
+                hSqValTex: "1",
+                hTex: "1",
+                rCalc: "\\frac{\\sqrt{5} \\times \\sqrt{17}}{2 \\times 1} = \\frac{\\sqrt{85}}{2}",
+                rTex: "\\frac{\\sqrt{85}}{2}"
+            },
+            {
+                // 角Aが鈍角（∠BAC > 90°）: C=(0,0), B=(8,0), A=(2,2) -> AC=2√2, AB=2√10, BC=8
+                isObtuseA: true,
+                angOBC: 25,
+                sideATex: "2\\sqrt{2}",
+                sideBTex: "2\\sqrt{10}",
+                bcTex: "8",
+                sideANum: 2 * Math.sqrt(2),
+                sideBNum: 2 * Math.sqrt(10),
+                bcNum: 8,
+                xTex: "6",
+                chTex: "2",
+                chExprTex: "8 - x",
+                bSqTex: "(2\\sqrt{10})^2",
+                aSqTex: "(2\\sqrt{2})^2",
+                chSqTex: "2^2",
+                hSqValTex: "4",
+                hTex: "2",
+                rCalc: "\\frac{2\\sqrt{2} \\times 2\\sqrt{10}}{2 \\times 2} = \\frac{4\\sqrt{20}}{4} = 2\\sqrt{5}",
+                rTex: "2\\sqrt{5}"
+            }
+        ].filter(c => (180 - 2 * c.angOBC) < 150);
+
+        const chosen = cases[Math.floor(Math.random() * cases.length)];
+        const {
+            isObtuseA, angOBC, sideATex, sideBTex, bcTex,
+            sideANum, sideBNum, bcNum,
+            xTex, chTex, chExprTex, bSqTex, aSqTex, chSqTex, hSqValTex, hTex,
+            rCalc, rTex
+        } = chosen;
+
+        const smallBOC = 180 - 2 * angOBC;
+        const largeBOC = 360 - smallBOC;
+        const angBAC = isObtuseA ? (largeBOC / 2) : (smallBOC / 2);
+
+        const cosC = (bcNum * bcNum + sideANum * sideANum - sideBNum * sideBNum) / (2 * bcNum * sideANum);
+        const clampedCosC = Math.max(-0.99, Math.min(0.99, cosC));
+        const sinC = Math.sqrt(Math.max(0.01, 1 - clampedCosC * clampedCosC));
+        const axMath = sideANum * clampedCosC;
+        const ayMath = sideANum * sinC;
+
+        const oxMath = bcNum / 2;
+        const oyMath = (axMath * axMath + ayMath * ayMath - bcNum * axMath) / (2 * ayMath);
+        const rMath = Math.hypot(oxMath - axMath, oyMath - ayMath);
+
+        const rSvg = 74;
+        const scale = rSvg / (rMath || 1);
+        const toSvg = (mx, my) => ({
+            x: Number((CX + (mx - oxMath) * scale).toFixed(2)),
+            y: Number((CY - (my - oyMath) * scale).toFixed(2))
+        });
+
+        const pO = { x: CX, y: CY };
+        const pC = toSvg(0, 0);
+        const pB = toSvg(bcNum, 0);
+        const pA = toSvg(axMath, ayMath);
+        const pH = toSvg(axMath, 0);
+
+        const dirSidePt = axMath >= bcNum / 2 ? pB : pC;
+
+        const pushOut = (pt, dist) => {
+            const vx = pt.x - CX;
+            const vy = pt.y - CY;
+            const l = Math.hypot(vx, vy) || 1;
+            return { x: pt.x + (vx / l) * dist, y: pt.y + (vy / l) * dist };
+        };
+
+        const lblA = pushOut(pA, 16);
+        const lblB = pushOut(pB, 17);
+        const lblC = pushOut(pC, 17);
+        const lblO = { x: pO.x + 12, y: pO.y + (isObtuseA ? 8 : -6) };
+        const lblH = { x: (pA.x + pH.x) / 2 - 10, y: (pA.y + pH.y) / 2 };
+
+        const circleSamplePts = [];
+        for (let deg = 0; deg < 360; deg += 22.5) {
+            const rad = (deg * Math.PI) / 180;
+            circleSamplePts.push({
+                x: Number((CX + rSvg * Math.cos(rad)).toFixed(2)),
+                y: Number((CY + rSvg * Math.sin(rad)).toFixed(2))
+            });
+        }
+
+        const rotatedAll = [lblA, lblB, lblC, lblO, lblH, pH, ...circleSamplePts].map(p => rotatePt(p.x, p.y));
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        rotatedAll.forEach(p => {
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            if (p.y < minY) minY = p.y;
+            if (p.y > maxY) maxY = p.y;
+        });
+        const pad = 24;
+        const viewBox = `${Math.floor(minX - pad)} ${Math.floor(minY - pad)} ${Math.ceil(maxX - minX + pad * 2)} ${Math.ceil(maxY - minY + pad * 2)}`;
+
+        const extLineSvg = (axMath < 0 || axMath > bcNum)
+            ? `<line x1="${axMath < 0 ? pH.x : pB.x}" y1="${axMath < 0 ? pH.y : pB.y}" x2="${axMath < 0 ? pC.x : pH.x}" y2="${axMath < 0 ? pC.y : pH.y}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2,2"/>`
+            : "";
+
+        const step1Html = isObtuseA
+            ? `
+                <strong>(1)</strong><br>
+                $\\mathrm{OB} = \\mathrm{OC}$（外接円の半径）より、$\\triangle \\mathrm{OBC}$ は $\\mathrm{OB} = \\mathrm{OC}$ の二等辺三角形なので $\\angle \\mathrm{OCB} = \\angle \\mathrm{OBC} = ${angOBC}^\\circ$。<br>
+                よって、$\\triangle \\mathrm{OBC}$ の内角の和より、小さい方の $\\angle \\mathrm{BOC}$ は、<br>
+                $$180^\\circ - 2 \\times ${angOBC}^\\circ = ${smallBOC}^\\circ$$<br>
+                したがって、大きい方の $\\angle \\mathrm{BOC}$ は $360^\\circ$ から引いて、<br>
+                $$360^\\circ - ${smallBOC}^\\circ = ${largeBOC}^\\circ$$<br>
+                円周角の定理より、円周角 $\\angle \\mathrm{BAC}$ は中心角（大きい方の $\\angle \\mathrm{BOC} = ${largeBOC}^\\circ$）の $\\frac{1}{2}$ なので、<br>
+                $$\\angle \\mathrm{BAC} = \\frac{1}{2} \\times ${largeBOC}^\\circ = ${angBAC}^\\circ$$<br><br>
+            `
+            : `
+                <strong>(1)</strong><br>
+                $\\mathrm{OB} = \\mathrm{OC}$（外接円の半径）より、$\\triangle \\mathrm{OBC}$ は $\\mathrm{OB} = \\mathrm{OC}$ の二等辺三角形なので $\\angle \\mathrm{OCB} = \\angle \\mathrm{OBC} = ${angOBC}^\\circ$。<br>
+                よって、$\\triangle \\mathrm{OBC}$ の内角の和より、<br>
+                $$\\angle \\mathrm{BOC} = 180^\\circ - 2 \\times ${angOBC}^\\circ = ${smallBOC}^\\circ$$<br>
+                外接円の中心角と円周角の関係（円周角の定理）より $\\angle \\mathrm{BOC} = 2\\angle \\mathrm{BAC}$ なので、<br>
+                $$\\angle \\mathrm{BAC} = \\frac{1}{2}\\angle \\mathrm{BOC} = \\frac{1}{2} \\times ${smallBOC}^\\circ = ${angBAC}^\\circ$$<br><br>
+            `;
+
+        return {
+            problem: `
+                <div>
+                    図は三角形 $\\triangle \\mathrm{ABC}$ とその外心 $\\mathrm{O}$ であり、$\\angle \\mathrm{OBC} = ${angOBC}^\\circ$、$\\mathrm{AB} = ${sideBTex}$、$\\mathrm{AC} = ${sideATex}$、$\\mathrm{BC} = ${bcTex}$ とする。このとき、次の問いに答えなさい。
+                </div>
+                <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 300px; height: auto;">
+                        <g transform="rotate(${angle} ${CX} ${CY})">
+                            <circle cx="${pO.x}" cy="${pO.y}" r="${rSvg}" fill="#eff6ff" fill-opacity="0.35" stroke="#2563eb" stroke-width="1.3" stroke-dasharray="4,3"/>
+                            ${extLineSvg}
+                            <polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="#f8fafc" fill-opacity="0.85" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                            <line x1="${pA.x}" y1="${pA.y}" x2="${pH.x}" y2="${pH.y}" stroke="#d97706" stroke-width="1.3" stroke-dasharray="3,2"/>
+                            ${rightAngleMark(pH, pA, dirSidePt, 6.5)}
+                            <line x1="${pO.x}" y1="${pO.y}" x2="${pB.x}" y2="${pB.y}" stroke="#059669" stroke-width="1.3" stroke-dasharray="3,2"/>
+                            <line x1="${pO.x}" y1="${pO.y}" x2="${pC.x}" y2="${pC.y}" stroke="#059669" stroke-width="1.3" stroke-dasharray="3,2"/>
+                            <circle cx="${pO.x}" cy="${pO.y}" r="3.8" fill="#dc2626"/>
+                        </g>
+                        ${makeLabel(lblA, "A")}
+                        ${makeLabel(lblB, "B")}
+                        ${makeLabel(lblC, "C")}
+                        ${makeLabel(lblO, "O", "#dc2626")}
+                        ${makeLabel(lblH, "h", "#d97706", true)}
+                    </svg>
+                </div>
+                <div style="margin-top: 4px;">
+                    (1) $\\angle \\mathrm{BAC}$ の大きさを求めなさい。<br>
+                    (2) $\\triangle \\mathrm{ABC}$ の外接円の半径 $R$ を求めなさい。
+                </div>
+            `,
+            answer: `(1) $\\angle \\mathrm{BAC} = ${angBAC}^\\circ$<br>(2) $R = ${rTex}$`,
+            explanation: `
+                ${step1Html}
+
+                <strong>(2)</strong><br>
+                頂点 $\\mathrm{A}$ から辺 $\\mathrm{BC}$ に下ろした垂線の足を $\\mathrm{H}$、高さを $h = \\mathrm{AH}$ とする。<br>
+                $\\mathrm{BH} = x$ とおくと $\\mathrm{CH} = ${chExprTex}$。<br>
+                左側の直角三角形と右側の直角三角形それぞれで三平方の定理より $h^2$ を表すと、<br>
+                ・左側：$h^2 = ${bSqTex} - x^2$<br>
+                ・右側：$h^2 = ${aSqTex} - (${chExprTex})^2$<br>
+                $h^2$ が等しいので、<br>
+                $$${bSqTex} - x^2 = ${aSqTex} - (${chExprTex})^2$$<br>
+                これを解くと $x = ${xTex}$。よって、$\\mathrm{BH} = ${xTex}$、$\\mathrm{CH} = ${chTex}$ となり、<br>
+                $$h^2 = ${aSqTex} - ${chSqTex} = ${hSqValTex}$$<br>
+                $h > 0$ より $h = ${hTex}$。<br><br>
+                したがって、外接円の半径の公式 $R = \\frac{a \\times b}{2h}$（$a = \\mathrm{AC} = ${sideATex}$、$b = \\mathrm{AB} = ${sideBTex}$、$h = ${hTex}$）に代入すると、<br>
+                $$R = ${rCalc}$$<br>
+                <strong>答え：(1) $${angBAC}^\\circ$　(2) $${rTex}$</strong>
+            `
+        };
+    }
+},
+"三角形の傍心": {
+    level: "公立",
+    formula: `
+        <div>三角形の1つの<strong>内角の二等分線</strong>と、他の2つの<strong>外角の二等分線</strong>は1点に交わる。その点を<strong>傍心</strong>と呼ぶ。<br>
+        傍心はその三角形の1辺と他の2辺の延長線に接する<strong>傍接円の中心</strong>である。</div>
+
+        <div style="margin: 10px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+            <svg viewBox="0 -116 385 296" width="385" height="296" style="max-width: 100%; height: auto;">
+                <!--
+                    厳密SVG座標（y軸下向き正）:
+                    A = (100, 36), B = (50, 146), C = (182, 146)
+                    内接円: 中心 I = (107.81, 108.77), 半径 r = 37.23, BC上の垂線の足 P = (107.81, 146)
+                    辺 AC に接する傍接円: 中心 Ib = (245.03, 20.43), 半径 rb = 125.57, BC延長線上の垂線の足 Q = (245.03, 146)
+                -->
+                <!-- 辺 BC とその延長線 -->
+                <line x1="28" y1="146" x2="360" y2="146" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,2"/>
+
+                <!-- 辺 BA の延長線 -->
+                <line x1="50" y1="146" x2="155" y2="-85" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2,2"/>
+
+                <!-- 角の二等分線（すべて黒の破線；角 A の外角の二等分線は頂点 A からの半直線） -->
+                <line x1="50" y1="146" x2="270" y2="4.35" stroke="#0f172a" stroke-width="1.2" stroke-dasharray="4,3"/>
+                <line x1="100" y1="36" x2="275" y2="17.21" stroke="#0f172a" stroke-width="1.2" stroke-dasharray="4,3"/>
+                <line x1="182" y1="146" x2="260" y2="-9.38" stroke="#0f172a" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+                <!-- 内接円（濃い青の実線） -->
+                <circle cx="107.81" cy="108.77" r="37.23" fill="#dbeafe" fill-opacity="0.35" stroke="#1e3a8a" stroke-width="2.2"/>
+
+                <!-- 傍接円（赤の実線） -->
+                <circle cx="245.03" cy="20.43" r="125.57" fill="#fef2f2" fill-opacity="0.35" stroke="#dc2626" stroke-width="1.4"/>
+
+                <!-- 不等辺三角形 ABC -->
+                <polygon points="100,36 50,146 182,146" fill="#f8fafc" fill-opacity="0.7" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+
+                <!-- 垂線 IP（足 P）と垂線 IbQ（足 Q） -->
+                <line x1="107.81" y1="108.77" x2="107.81" y2="146" stroke="#1e3a8a" stroke-width="1.4"/>
+                <polyline points="107.81,139.5 114.31,139.5 114.31,146" fill="none" stroke="#1e3a8a" stroke-width="1.2"/>
+
+                <line x1="245.03" y1="20.43" x2="245.03" y2="146" stroke="#dc2626" stroke-width="1.3"/>
+                <polyline points="245.03,139.5 251.53,139.5 251.53,146" fill="none" stroke="#dc2626" stroke-width="1.1"/>
+
+                <!-- 等角マーク：角 B の二等分線（・マーク） -->
+                <circle cx="61.77" cy="132.38" r="2" fill="#0f172a"/>
+                <circle cx="67.27" cy="140.92" r="2" fill="#0f172a"/>
+
+                <!-- 等角マーク：角 A の外角の二等分線（×マーク：上下それぞれの角の二等分線上に配置） -->
+                <g transform="translate(117.83, 23.12)" stroke="#0f172a" stroke-width="1.2">
+                    <line x1="-2.2" y1="-2.2" x2="2.2" y2="2.2"/>
+                    <line x1="2.2" y1="-2.2" x2="-2.2" y2="2.2"/>
+                </g>
+                <g transform="translate(120.16, 44.81)" stroke="#0f172a" stroke-width="1.2">
+                    <line x1="-2.2" y1="-2.2" x2="2.2" y2="2.2"/>
+                    <line x1="2.2" y1="-2.2" x2="-2.2" y2="2.2"/>
+                </g>
+
+                <!-- 等角マーク：角 C の外角の二等分線（△マーク） -->
+                <polygon points="195.62,135.35 193.02,139.85 198.22,139.85" fill="none" stroke="#0f172a" stroke-width="1.1"/>
+                <polygon points="180.60,127.81 178.00,132.31 183.20,132.31" fill="none" stroke="#0f172a" stroke-width="1.1"/>
+
+                <!-- 点 I, Ib, P, Q -->
+                <circle cx="107.81" cy="108.77" r="3" fill="#1e3a8a"/>
+                <circle cx="245.03" cy="20.43" r="3.5" fill="#dc2626"/>
+                <circle cx="107.81" cy="146" r="2.6" fill="#1e3a8a"/>
+                <circle cx="245.03" cy="146" r="2.6" fill="#dc2626"/>
+
+                <!-- ラベル -->
+                <text x="88" y="32" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">A</text>
+                <text x="38" y="142" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">B</text>
+                <text x="182" y="162" font-size="13" font-weight="bold" text-anchor="middle" fill="#0f172a">C</text>
+                <text x="99" y="106" font-size="12" font-weight="bold" text-anchor="end" fill="#1e3a8a">I</text>
+                <text x="107.81" y="159" font-size="12" font-weight="bold" text-anchor="middle" fill="#1e3a8a">P</text>
+                <text x="254" y="18" font-size="12" font-weight="bold" text-anchor="start" fill="#dc2626">I<tspan dy="3" font-size="9">b</tspan></text>
+                <text x="245.03" y="159" font-size="12" font-weight="bold" text-anchor="middle" fill="#dc2626">Q</text>
+            </svg>
+        </div>
+
+        <div style="margin-top: 6px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+            <div><strong>【傍心の性質と半径の求め方のポイント】</strong></div>
+            <div style="margin-top: 4px;">
+                ・円の外部の1点から円に引いた<strong>2本の接線の長さは等しい</strong>。<br>
+                ・$\\triangle \\mathrm{ABC}$ の3辺を $a = \\mathrm{BC},\\, b = \\mathrm{AC},\\, c = \\mathrm{AB}$、$s = \\frac{a+b+c}{2}$ とすると、<br>
+                　内接円までの接線の長さはそれぞれ $s - a,\\, s - b,\\, s - c$ となる。<br>
+                ・辺 $\\mathrm{AC}$ に接する傍接円（中心 $\\mathrm{I}_b$、半径 $r_b$）について、頂点 $\\mathrm{B}$ から傍接円に引いた接線の長さは $s = \\frac{a+b+c}{2}$ となる（なお、辺 $\\mathrm{BC}$ に接する傍接円の場合は頂点 $\\mathrm{A}$ からの接線の長さが $s$ になる）。<br>
+                ・内接円の中心 $\\mathrm{I}$ から下ろした垂線と傍接円の中心から下ろした垂線との<strong>相似</strong>から、内接円半径 $r$ と傍接円半径を結びつけられる。
+            </div>
+        </div>
+    `,
+    selfCheck: [
+        "円の外部の1点から円に引いた2本の接線の長さが等しいことを使って、各接線の長さを正しく求められているか？",
+        "内接円までの接線の長さの和から、周の長さ a + b + c と対応していることを確かめられているか？",
+        "傍接円（辺 BC に接する円）の頂点 A からの接線の長さが、半周長 s = (a + b + c)/2 と一致することを理解しているか？",
+        "相似な直角三角形（△AIF ∽ △AIaQ など）の相似比から、内接円半径 r をもとに傍接円半径 ra を正しく計算できているか？"
+    ],
+    generateRandom: function () {
+        const cases = [
+            {
+                // a=5, b=12, c=13 -> s=15, S=30, r=2, AF=AE=10, BF=BD=3, CD=CE=2, AQ=AR=15, BQ=BP=2, CR=CP=3, ra=3
+                aTex: "5", bTex: "12", cTex: "13",
+                aNum: 5, bNum: 12, cNum: 13,
+                sVal: 15, sMinusA: 10, sMinusB: 3, sMinusC: 2,
+                areaTex: "30",
+                rTex: "2",
+                raCalc: "2 \\times \\frac{15}{10} = 3",
+                raTex: "3"
+            },
+            {
+                // a=8, b=15, c=17 -> s=20, S=60, r=3, AF=AE=12, BF=BD=5, CD=CE=3, AQ=AR=20, BQ=BP=3, CR=CP=5, ra=5
+                aTex: "8", bTex: "15", cTex: "17",
+                aNum: 8, bNum: 15, cNum: 17,
+                sVal: 20, sMinusA: 12, sMinusB: 5, sMinusC: 3,
+                areaTex: "60",
+                rTex: "3",
+                raCalc: "3 \\times \\frac{20}{12} = 5",
+                raTex: "5"
+            },
+            {
+                // a=10, b=17, c=21 -> s=24, S=168, r=7, AF=AE=14, BF=BD=7, CD=CE=3, AQ=AR=24, BQ=BP=3, CR=CP=7, ra=12
+                aTex: "10", bTex: "17", cTex: "21",
+                aNum: 10, bNum: 17, cNum: 21,
+                sVal: 24, sMinusA: 14, sMinusB: 7, sMinusC: 3,
+                areaTex: "168",
+                rTex: "7",
+                raCalc: "7 \\times \\frac{24}{14} = 12",
+                raTex: "12"
+            },
+            {
+                // a=6, b=25, c=29 -> s=30, S=60, r=2, AF=AE=24, BF=BD=5, CD=CE=1, AQ=AR=30, BQ=BP=1, CR=CP=5, ra=5/2
+                aTex: "6", bTex: "25", cTex: "29",
+                aNum: 6, bNum: 25, cNum: 29,
+                sVal: 30, sMinusA: 24, sMinusB: 5, sMinusC: 1,
+                areaTex: "60",
+                rTex: "2",
+                raCalc: "2 \\times \\frac{30}{24} = 2 \\times \\frac{5}{4} = \\frac{5}{2}",
+                raTex: "\\frac{5}{2}"
+            },
+            {
+                // a=7, b=8, c=9 -> s=12, S=12√5, r=√5, AF=AE=5, BF=BD=4, CD=CE=3, AQ=AR=12, BQ=BP=3, CR=CP=4, ra=12√5/5
+                aTex: "7", bTex: "8", cTex: "9",
+                aNum: 7, bNum: 8, cNum: 9,
+                sVal: 12, sMinusA: 5, sMinusB: 4, sMinusC: 3,
+                areaTex: "12\\sqrt{5}",
+                rTex: "\\sqrt{5}",
+                raCalc: "\\sqrt{5} \\times \\frac{12}{5} = \\frac{12\\sqrt{5}}{5}",
+                raTex: "\\frac{12\\sqrt{5}}{5}"
+            }
+        ];
+
+        const chosen = cases[Math.floor(Math.random() * cases.length)];
+        const {
+            aTex, bTex, cTex,
+            aNum, bNum, cNum,
+            sVal, sMinusA, sMinusB, sMinusC,
+            areaTex, rTex, raCalc, raTex
+        } = chosen;
+
+        // 数学座標: C=(0,0), B=(aNum,0)
+        // 頂点 A の座標（y > 0）
+        const cosC = (aNum * aNum + bNum * bNum - cNum * cNum) / (2 * aNum * bNum);
+        const clampedCosC = Math.max(-0.95, Math.min(0.95, cosC));
+        const sinC = Math.sqrt(Math.max(0.05, 1 - clampedCosC * clampedCosC));
+        const axMath = bNum * clampedCosC;
+        const ayMath = bNum * sinC;
+
+        const pAMath = { x: axMath, y: ayMath };
+        const pBMath = { x: aNum, y: 0 };
+        const pCMath = { x: 0, y: 0 };
+
+        // 内心 I の数学座標と内接円半径 r
+        const perimeter = aNum + bNum + cNum;
+        const ixMath = (aNum * axMath + bNum * aNum + cNum * 0) / perimeter;
+        const iyMath = (aNum * ayMath) / perimeter;
+        const rMath = iyMath;
+
+        // 辺 BC に接する傍心 Ia の数学座標と傍接円半径 ra
+        const denomEx = -aNum + bNum + cNum;
+        const iaxMath = (-aNum * axMath + bNum * aNum + cNum * 0) / denomEx;
+        const iayMath = (-aNum * ayMath) / denomEx;
+        const raMath = Math.abs(iayMath);
+
+        // 点から直線への正射影（垂線の足）
+        const projectOntoLine = (pt, lineP1, lineP2) => {
+            const dx = lineP2.x - lineP1.x;
+            const dy = lineP2.y - lineP1.y;
+            const lenSq = dx * dx + dy * dy || 1;
+            const t = ((pt.x - lineP1.x) * dx + (pt.y - lineP1.y) * dy) / lenSq;
+            return {
+                x: lineP1.x + t * dx,
+                y: lineP1.y + t * dy
+            };
+        };
+
+        // 接点・垂線の足の数学座標
+        const fMath = projectOntoLine({ x: ixMath, y: iyMath }, pAMath, pBMath);
+        const pContactMath = { x: iaxMath, y: 0 };
+        const qContactMath = projectOntoLine({ x: iaxMath, y: iayMath }, pAMath, pBMath);
+        const rContactMath = projectOntoLine({ x: iaxMath, y: iayMath }, pAMath, pCMath);
+
+        // 描画領域に収めるスケール計算
+        const allPtsMath = [
+            pAMath, pBMath, pCMath,
+            fMath, pContactMath, qContactMath, rContactMath,
+            { x: ixMath - rMath, y: iyMath - rMath },
+            { x: ixMath + rMath, y: iyMath + rMath },
+            { x: iaxMath - raMath, y: iayMath - raMath },
+            { x: iaxMath + raMath, y: iayMath + raMath }
+        ];
+        let minMX = Infinity, maxMX = -Infinity, minMY = Infinity, maxMY = -Infinity;
+        allPtsMath.forEach(p => {
+            if (p.x < minMX) minMX = p.x;
+            if (p.x > maxMX) maxMX = p.x;
+            if (p.y < minMY) minMY = p.y;
+            if (p.y > maxMY) maxMY = p.y;
+        });
+
+        const spanX = Math.max(1, maxMX - minMX);
+        const spanY = Math.max(1, maxMY - minMY);
+        const scale = Math.min(220 / spanX, 165 / spanY);
+
+        const centerMX = (minMX + maxMX) / 2;
+        const centerMY = (minMY + maxMY) / 2;
+        const SVG_CX = 170;
+        const SVG_CY = 132;
+
+        const toSvg = (mx, my) => ({
+            x: Number((SVG_CX + (mx - centerMX) * scale).toFixed(2)),
+            y: Number((SVG_CY - (my - centerMY) * scale).toFixed(2))
+        });
+
+        const pA = toSvg(axMath, ayMath);
+        const pB = toSvg(aNum, 0);
+        const pC = toSvg(0, 0);
+        const pI = toSvg(ixMath, iyMath);
+        const pIa = toSvg(iaxMath, iayMath);
+        const pF = toSvg(fMath.x, fMath.y);
+        const pP = toSvg(pContactMath.x, pContactMath.y);
+        const pQ = toSvg(qContactMath.x, qContactMath.y);
+        const pR = toSvg(rContactMath.x, rContactMath.y);
+
+        const rSvg = Number((rMath * scale).toFixed(2));
+        const raSvg = Number((raMath * scale).toFixed(2));
+
+        // 延長線の終点（A から Q, R を少し超える位置まで延長）
+        const extendThrough = (fromPt, throughPt, extraPx = 14) => {
+            const dx = throughPt.x - fromPt.x;
+            const dy = throughPt.y - fromPt.y;
+            const len = Math.hypot(dx, dy) || 1;
+            return {
+                x: Number((throughPt.x + (dx / len) * extraPx).toFixed(2)),
+                y: Number((throughPt.y + (dy / len) * extraPx).toFixed(2))
+            };
+        };
+        const extQ = extendThrough(pA, pQ, 12);
+        const extR = extendThrough(pA, pR, 12);
+
+        const minBcX = Math.min(pB.x, pC.x, pP.x) - 16;
+        const maxBcX = Math.max(pB.x, pC.x, pP.x) + 16;
+
+        // 直角マーク生成ヘルパー
+        const rightAngleMark = (vertex, pt1, pt2, size = 5.5, color = "#0f172a") => {
+            const v1x = pt1.x - vertex.x;
+            const v1y = pt1.y - vertex.y;
+            const l1 = Math.hypot(v1x, v1y) || 1;
+            const u1x = (v1x / l1) * size;
+            const u1y = (v1y / l1) * size;
+
+            const v2x = pt2.x - vertex.x;
+            const v2y = pt2.y - vertex.y;
+            const l2 = Math.hypot(v2x, v2y) || 1;
+            const u2x = (v2x / l2) * size;
+            const u2y = (v2y / l2) * size;
+
+            const q1 = `${(vertex.x + u1x).toFixed(2)},${(vertex.y + u1y).toFixed(2)}`;
+            const q2 = `${(vertex.x + u1x + u2x).toFixed(2)},${(vertex.y + u1y + u2y).toFixed(2)}`;
+            const q3 = `${(vertex.x + u2x).toFixed(2)},${(vertex.y + u2y).toFixed(2)}`;
+            return `<polyline points="${q1} ${q2} ${q3}" fill="none" stroke="${color}" stroke-width="1.1"/>`;
+        };
+
+        // ラベルを直線 AB / AC / BC の外側にずらすヘルパー
+        const offsetFromLine = (pt, lineStart, lineEnd, dist = 11) => {
+            const lx = lineEnd.x - lineStart.x;
+            const ly = lineEnd.y - lineStart.y;
+            const llen = Math.hypot(lx, ly) || 1;
+            let nx = -ly / llen;
+            let ny = lx / llen;
+            const gx = (pA.x + pB.x + pC.x) / 3;
+            const gy = (pA.y + pB.y + pC.y) / 3;
+            const dotToG = (pt.x + nx * 5 - gx) * nx + (pt.y + ny * 5 - gy) * ny;
+            if (dotToG > 0) {
+                nx = -nx;
+                ny = -ny;
+            }
+            return {
+                x: Number((pt.x + nx * dist).toFixed(2)),
+                y: Number((pt.y + ny * dist).toFixed(2))
+            };
+        };
+
+        const lblF = offsetFromLine(pF, pA, pB, 10);
+        const lblQ = offsetFromLine(pQ, pA, pB, 11);
+        const lblR = offsetFromLine(pR, pA, pC, 11);
+        const lblP = { x: pP.x, y: Number((pP.y - 11).toFixed(2)) };
+
+        // viewBox を全描画要素・ラベルから動的に算出
+        const viewBoxPts = [
+            { x: minBcX, y: pB.y },
+            { x: maxBcX, y: pB.y },
+            pA, pB, pC, pI, pIa, pF, pP, pQ, pR, extQ, extR,
+            lblF, lblQ, lblR, lblP,
+            { x: pA.x, y: pA.y - 16 },
+            { x: pB.x + 16, y: pB.y - 14 },
+            { x: pC.x - 16, y: pC.y - 14 },
+            { x: pIa.x, y: pIa.y + 18 }
+        ];
+        let minVX = Infinity, maxVX = -Infinity, minVY = Infinity, maxVY = -Infinity;
+        viewBoxPts.forEach(p => {
+            if (p.x < minVX) minVX = p.x;
+            if (p.x > maxVX) maxVX = p.x;
+            if (p.y < minVY) minVY = p.y;
+            if (p.y > maxVY) maxVY = p.y;
+        });
+        const pad = 12;
+        const viewBox = `${Math.floor(minVX - pad)} ${Math.floor(minVY - pad)} ${Math.ceil(maxVX - minVX + pad * 2)} ${Math.ceil(maxVY - minVY + pad * 2)}`;
+
+        return {
+            problem: `
+                <div>
+                    図は $\\triangle \\mathrm{ABC}$ と、その内接円（中心 $\\mathrm{I}$、半径 $r$）および辺 $\\mathrm{BC}$ に接する傍接円（中心 $\\mathrm{I}_a$、半径 $r_a$）である。<br>
+                    $\\mathrm{BC} = ${aTex}$、$\\mathrm{AC} = ${bTex}$、$\\mathrm{AB} = ${cTex}$ とするとき、次の問いに答えなさい。
+                </div>
+                <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 340px; height: auto;">
+                        <!-- 辺 BC とその延長線 -->
+                        <line x1="${minBcX}" y1="${pB.y}" x2="${maxBcX}" y2="${pB.y}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,2"/>
+
+                        <!-- AB, AC の延長線（接点 Q, R まで延長） -->
+                        <line x1="${pA.x}" y1="${pA.y}" x2="${extQ.x}" y2="${extQ.y}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2,2"/>
+                        <line x1="${pA.x}" y1="${pA.y}" x2="${extR.x}" y2="${extR.y}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2,2"/>
+
+                        <!-- 内接円 -->
+                        <circle cx="${pI.x}" cy="${pI.y}" r="${rSvg}" fill="#eff6ff" fill-opacity="0.4" stroke="#2563eb" stroke-width="1.4"/>
+
+                        <!-- 傍接円 -->
+                        <circle cx="${pIa.x}" cy="${pIa.y}" r="${raSvg}" fill="#fef2f2" fill-opacity="0.35" stroke="#dc2626" stroke-width="1.4" stroke-dasharray="4,3"/>
+
+                        <!-- 相似三角形 △AIF ∽ △AIaQ の補助線（半径 IF, IaQ と中心を結ぶ線分 AI, AIa） -->
+                        <line x1="${pA.x}" y1="${pA.y}" x2="${pI.x}" y2="${pI.y}" stroke="#2563eb" stroke-width="1.1" stroke-dasharray="2,2"/>
+                        <line x1="${pA.x}" y1="${pA.y}" x2="${pIa.x}" y2="${pIa.y}" stroke="#dc2626" stroke-width="1.1" stroke-dasharray="2,2"/>
+                        <line x1="${pI.x}" y1="${pI.y}" x2="${pF.x}" y2="${pF.y}" stroke="#2563eb" stroke-width="1.3"/>
+                        <line x1="${pIa.x}" y1="${pIa.y}" x2="${pQ.x}" y2="${pQ.y}" stroke="#dc2626" stroke-width="1.3"/>
+                        <line x1="${pIa.x}" y1="${pIa.y}" x2="${pP.x}" y2="${pP.y}" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="2,2"/>
+                        <line x1="${pIa.x}" y1="${pIa.y}" x2="${pR.x}" y2="${pR.y}" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="2,2"/>
+
+                        <!-- 直角マーク（F, Q, P） -->
+                        ${rightAngleMark(pF, pI, pA, 5, "#2563eb")}
+                        ${rightAngleMark(pQ, pIa, pA, 5.5, "#dc2626")}
+                        ${rightAngleMark(pP, pIa, pB, 5, "#dc2626")}
+
+                        <!-- 三角形 ABC -->
+                        <polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="#f8fafc" fill-opacity="0.75" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+
+                        <!-- 接点 P, Q, R, F と中心 I, Ia -->
+                        <circle cx="${pF.x}" cy="${pF.y}" r="2.8" fill="#2563eb"/>
+                        <circle cx="${pP.x}" cy="${pP.y}" r="2.8" fill="#dc2626"/>
+                        <circle cx="${pQ.x}" cy="${pQ.y}" r="2.8" fill="#dc2626"/>
+                        <circle cx="${pR.x}" cy="${pR.y}" r="2.8" fill="#dc2626"/>
+                        <circle cx="${pI.x}" cy="${pI.y}" r="3.2" fill="#2563eb"/>
+                        <circle cx="${pIa.x}" cy="${pIa.y}" r="3.5" fill="#dc2626"/>
+
+                        <!-- 頂点・中心ラベル -->
+                        <text x="${pA.x}" y="${pA.y - 11}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                        <text x="${pB.x + 10}" y="${pB.y - 9}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                        <text x="${pC.x - 10}" y="${pC.y - 9}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                        <text x="${pI.x - 7}" y="${pI.y - 6}" font-size="12" font-weight="bold" text-anchor="end" dominant-baseline="central" fill="#2563eb">I</text>
+                        <text x="${pIa.x}" y="${pIa.y + 13}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">I<tspan dy="3" font-size="9">a</tspan></text>
+
+                        <!-- 接点ラベル F, P, Q, R -->
+                        <text x="${lblF.x}" y="${lblF.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">F</text>
+                        <text x="${lblP.x}" y="${lblP.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">P</text>
+                        <text x="${lblQ.x}" y="${lblQ.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">Q</text>
+                        <text x="${lblR.x}" y="${lblR.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">R</text>
+                    </svg>
+                </div>
+                <div style="margin-top: 4px;">
+                    (1) 内接円までの接線の長さを求めなさい。<br>
+                    (2) 内接円の半径 $r$ を求めなさい。<br>
+                    (3) 辺 $\\mathrm{BC}$ に接する傍接円までの接線の長さを求めなさい。<br>
+                    (4) 辺 $\\mathrm{BC}$ に接する傍接円の半径 $r_a$ を求めなさい。
+                </div>
+            `,
+            answer: `(1) 頂点 $\\mathrm{A}$ から：${sMinusA}、頂点 $\\mathrm{B}$ から：${sMinusB}、頂点 $\\mathrm{C}$ から：${sMinusC}<br>(2) $r = ${rTex}$<br>(3) 頂点 $\\mathrm{A}$ から：${sVal}、辺 $\\mathrm{BC}$ 上の接点で分けた長さ：${sMinusC} と ${sMinusB}（AB, AC の延長線上の余分：${sMinusC}、${sMinusB}）<br>(4) $r_a = ${raTex}$`,
+            explanation: `
+                <strong>(1)</strong><br>
+                円の外部の1点から円に引いた2本の接線の長さは等しいので、内接円と辺 $\\mathrm{AB},\\, \\mathrm{BC},\\, \\mathrm{CA}$ の接点をそれぞれ $\\mathrm{F},\\, \\mathrm{D},\\, \\mathrm{E}$ とすると、<br>
+                $\\mathrm{AF} = \\mathrm{AE} = x$、$\\mathrm{BF} = \\mathrm{BD} = y$、$\\mathrm{CD} = \\mathrm{CE} = z$ とおける。<br>
+                各辺の長さより、<br>
+                $x + y = ${cTex}$、$y + z = ${aTex}$、$z + x = ${bTex}$。<br>
+                3つを足すと $2(x + y + z) = ${aTex} + ${bTex} + ${cTex} = ${2 * sVal}$ より $x + y + z = ${sVal}$。<br>
+                よって、<br>
+                ・頂点 $\\mathrm{A}$ から：$x = ${sVal} - ${aTex} = ${sMinusA}$<br>
+                ・頂点 $\\mathrm{B}$ から：$y = ${sVal} - ${bTex} = ${sMinusB}$<br>
+                ・頂点 $\\mathrm{C}$ から：$z = ${sVal} - ${cTex} = ${sMinusC}$<br><br>
+
+                <strong>(2)</strong><br>
+                $\\triangle \\mathrm{ABC}$ の面積を $S$ とすると、内接円の半径 $r$ を用いて<br>
+                $$S = \\frac{1}{2}r(${aTex} + ${bTex} + ${cTex}) = ${sVal}r$$<br>
+                一方、$S = ${areaTex}$ なので、${sVal}r = ${areaTex}$ より $r = ${rTex}$。<br><br>
+
+                <strong>(3)</strong><br>
+                辺 $\\mathrm{BC}$ に接する傍接円と辺 $\\mathrm{BC}$ の接点を $\\mathrm{P}$、辺 $\\mathrm{AB},\\, \\mathrm{AC}$ の延長線との接点をそれぞれ $\\mathrm{Q},\\, \\mathrm{R}$ とする。<br>
+                接線の長さが等しいことから $\\mathrm{AQ} = \\mathrm{AR}$、$\\mathrm{BQ} = \\mathrm{BP}$、$\\mathrm{CR} = \\mathrm{CP}$。<br>
+                $\\mathrm{AQ} + \\mathrm{AR} = (\\mathrm{AB} + \\mathrm{BP}) + (\\mathrm{AC} + \\mathrm{CP}) = ${cTex} + ${bTex} + ${aTex} = ${2 * sVal}$ より、<br>
+                頂点 $\\mathrm{A}$ からの接線の長さは $\\mathrm{AQ} = \\mathrm{AR} = ${sVal}$。<br>
+                また、$\\mathrm{BP} = \\mathrm{BQ} = ${sVal} - ${cTex} = ${sMinusC}$、$\\mathrm{CP} = \\mathrm{CR} = ${sVal} - ${bTex} = ${sMinusB}$。<br><br>
+
+                <strong>(4)</strong><br>
+                内接円の中心 $\\mathrm{I}$ から $\\mathrm{AB}$ に下ろした垂線の足を $\\mathrm{F}$（$\\mathrm{IF} = r = ${rTex}$）、傍接円の中心 $\\mathrm{I}_a$ から $\\mathrm{AB}$ の延長線に下ろした垂線の足を $\\mathrm{Q}$（$\\mathrm{I}_a\\mathrm{Q} = r_a$）とする。<br>
+                $\\triangle \\mathrm{AIF}$ と $\\triangle \\mathrm{AI}_a\\mathrm{Q}$ はともに直角三角形で $\\angle \\mathrm{A}$ を共有（$\\angle \\mathrm{FAI} = \\angle \\mathrm{QAI}_a$）しているので、<strong>$\\triangle \\mathrm{AIF} \\sim \\triangle \\mathrm{AI}_a\\mathrm{Q}$</strong>。<br>
+                相似比は $\\mathrm{AF} : \\mathrm{AQ} = ${sMinusA} : ${sVal}$ なので、<br>
+                $$\\frac{r_a}{r} = \\frac{\\mathrm{AQ}}{\\mathrm{AF}} = \\frac{${sVal}}{${sMinusA}}$$<br>
+                よって、<br>
+                $$r_a = ${raCalc}$$<br>
+                <strong>答え：(1) Aから ${sMinusA}、Bから ${sMinusB}、Cから ${sMinusC}　(2) $r = ${rTex}$　(3) Aから ${sVal}（BC上 ${sMinusC} と ${sMinusB}）　(4) $r_a = ${raTex}$</strong>
+            `
+        };
+    }
 }
 
 
