@@ -7022,6 +7022,294 @@ const formulaData = {
                 };
             }
         },
+        "相似比の求め方": {
+    level: "難関私立",
+    formula: `
+        <div>相似比は対応する辺の長さや比から求めることが多いが、それ以外にも求める方法がある。</div>
+        <div style="margin-top: 6px;">
+            ① <strong>対応する辺の長さや比</strong><br>
+            ② <strong>周りの長さなど複数の辺の和の比</strong>（相似な図形では、対応する複数の辺の和の比も相似比と等しくなる）<br>
+            ③ <strong>面積比の平方根</strong>（相似比が $m : n$ のとき、面積比は $m^2 : n^2$ となるため、面積比 $S_1 : S_2$ の正の平方根 $\\sqrt{S_1} : \\sqrt{S_2}$ が相似比になる）
+        </div>
+    `,
+    selfCheck: [
+        '角の二等分線と DE // BC の錯角から、△DBI と △ECI が二等辺三角形（BD = DI、CE = EI）になることを見抜けているか？',
+        '折れ線折り返しによって、△ADE の周りの長さ（AD + DE + EA）が 2辺の和 AB + AC と等しくなることに気づけているか？',
+        '対応する1辺ずつの長さが分からなくても、△ADE と △ABC の周りの長さの比から相似比を求めて DE の長さを計算できているか？'
+    ],
+    generateRandom: function () {
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
+
+        const gcd = (x, y) => {
+            x = Math.abs(x);
+            y = Math.abs(y);
+            while (y) {
+                const t = y;
+                y = x % y;
+                x = t;
+            }
+            return x || 1;
+        };
+
+        const formatReducedFraction = (num, den) => {
+            const g = gcd(num, den);
+            const n = num / g;
+            const d = den / g;
+            if (d === 1) return `${n}`;
+            return fracHtml(`${n}`, `${d}`);
+        };
+
+        // 不等辺三角形の3辺 (AB, AC, BC) の出題パターン
+        const cases = [
+            { ab: 7, ac: 8, bc: 9 },
+            { ab: 6, ac: 8, bc: 7 },
+            { ab: 8, ac: 10, bc: 9 },
+            { ab: 9, ac: 11, bc: 10 },
+            { ab: 7, ac: 9, bc: 8 },
+            { ab: 10, ac: 12, bc: 11 }
+        ];
+        const { ab, ac, bc } = cases[Math.floor(Math.random() * cases.length)];
+
+        const sumAbAc = ab + ac;
+        const perimeterAbc = ab + ac + bc;
+        const gRatio = gcd(sumAbAc, perimeterAbc);
+        const simM = sumAbAc / gRatio;
+        const simN = perimeterAbc / gRatio;
+        const ratioStepStr = gRatio > 1
+            ? `${sumAbAc} : ${perimeterAbc} = ${simM} : ${simN}`
+            : `${sumAbAc} : ${perimeterAbc}`;
+
+        const deNum = bc * simM;
+        const deDen = simN;
+        const deAnsHtml = formatReducedFraction(deNum, deDen);
+        const deCalcHtml = `${bc} × ${fracHtml(`${simM}`, `${simN}`)} = <strong>${deAnsHtml}</strong>`;
+
+        // 厳密SVG座標計算: B=(0,0), C=(bc,0), A=(axMath, ayMath)
+        const cosB = (ab * ab + bc * bc - ac * ac) / (2 * ab * bc);
+        const clampedCosB = Math.max(-0.9, Math.min(0.9, cosB));
+        const sinB = Math.sqrt(Math.max(0.1, 1 - clampedCosB * clampedCosB));
+        const axMath = ab * clampedCosB;
+        const ayMath = ab * sinB;
+
+        // 内心 I の座標（角B, 角Cの二等分線の交点）
+        const ixMath = (bc * axMath + ac * 0 + ab * bc) / perimeterAbc;
+        const iyMath = (bc * ayMath) / perimeterAbc;
+
+        // DE // BC かつ I を通る線分と AB, AC の交点 D, E
+        const tRatio = (ayMath - iyMath) / ayMath;
+        const dxMath = axMath + (0 - axMath) * tRatio;
+        const dyMath = iyMath;
+        const exMath = axMath + (bc - axMath) * tRatio;
+        const eyMath = iyMath;
+
+        // 基準スケールでSVG座標へ変換
+        const minMX = Math.min(0, axMath);
+        const maxMX = Math.max(bc, axMath);
+        const spanX = Math.max(1, maxMX - minMX);
+        const spanY = Math.max(1, ayMath);
+        const scale = Math.min(220 / spanX, 150 / spanY);
+
+        const baseToSvg = (mx, my) => ({
+            x: mx * scale,
+            y: -my * scale
+        });
+
+        const rawA = baseToSvg(axMath, ayMath);
+        const rawB = baseToSvg(0, 0);
+        const rawC = baseToSvg(bc, 0);
+        const rawI = baseToSvg(ixMath, iyMath);
+        const rawD = baseToSvg(dxMath, dyMath);
+        const rawE = baseToSvg(exMath, eyMath);
+
+        // 三角形の重心を中心に 0°〜359°（1°単位）でランダム回転
+        const rotDeg = Math.floor(Math.random() * 360);
+        const rotRad = (rotDeg * Math.PI) / 180;
+        const cosR = Math.cos(rotRad);
+        const sinR = Math.sin(rotRad);
+        const pivotX = (rawA.x + rawB.x + rawC.x) / 3;
+        const pivotY = (rawA.y + rawB.y + rawC.y) / 3;
+
+        const rotatePt = (pt) => {
+            const dx = pt.x - pivotX;
+            const dy = pt.y - pivotY;
+            return {
+                x: Number((pivotX + dx * cosR - dy * sinR).toFixed(2)),
+                y: Number((pivotY + dx * sinR + dy * cosR).toFixed(2))
+            };
+        };
+
+        const pA = rotatePt(rawA);
+        const pB = rotatePt(rawB);
+        const pC = rotatePt(rawC);
+        const pI = rotatePt(rawI);
+        const pD = rotatePt(rawD);
+        const pE = rotatePt(rawE);
+
+        // 平行マーク（DE と BC の中点に矢印記号）
+        const drawParallelArrows = (p1, p2) => {
+            const mx = (p1.x + p2.x) / 2;
+            const my = (p1.y + p2.y) / 2;
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const len = Math.hypot(dx, dy) || 1;
+            const ux = dx / len;
+            const uy = dy / len;
+            const nx = -uy;
+            const ny = ux;
+            const s = 4.2;
+            const tipX = mx + ux * 2;
+            const tipY = my + uy * 2;
+            const p1x = (tipX - ux * s + nx * (s * 0.7)).toFixed(2);
+            const p1y = (tipY - uy * s + ny * (s * 0.7)).toFixed(2);
+            const p2x = (tipX - ux * s - nx * (s * 0.7)).toFixed(2);
+            const p2y = (tipY - uy * s - ny * (s * 0.7)).toFixed(2);
+            return `<polyline points="${p1x},${p1y} ${tipX.toFixed(2)},${tipY.toFixed(2)} ${p2x},${p2y}" fill="none" stroke="#0f172a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>`;
+        };
+
+        // 角の二等分線の等角マーク（・マーク / △マーク）
+        const unitVec = (from, to) => {
+            const dx = to.x - from.x;
+            const dy = to.y - from.y;
+            const l = Math.hypot(dx, dy) || 1;
+            return { x: dx / l, y: dy / l };
+        };
+
+        const uBA = unitVec(pB, pA);
+        const uBI = unitVec(pB, pI);
+        const uBC = unitVec(pB, pC);
+        const bMark1 = {
+            x: (pB.x + (uBA.x + uBI.x) * 11).toFixed(2),
+            y: (pB.y + (uBA.y + uBI.y) * 11).toFixed(2)
+        };
+        const bMark2 = {
+            x: (pB.x + (uBI.x + uBC.x) * 11).toFixed(2),
+            y: (pB.y + (uBI.y + uBC.y) * 11).toFixed(2)
+        };
+
+        const uCA = unitVec(pC, pA);
+        const uCI = unitVec(pC, pI);
+        const uCB = unitVec(pC, pB);
+        const cMark1 = {
+            x: pC.x + (uCA.x + uCI.x) * 11,
+            y: pC.y + (uCA.y + uCI.y) * 11
+        };
+        const cMark2 = {
+            x: pC.x + (uCI.x + uCB.x) * 11,
+            y: pC.y + (uCI.y + uCB.y) * 11
+        };
+        const triMark = (pt) => {
+            const r = 2.3;
+            return `<polygon points="${pt.x.toFixed(2)},${(pt.y - r).toFixed(2)} ${(pt.x - r * 0.87).toFixed(2)},${(pt.y + r * 0.6).toFixed(2)} ${(pt.x + r * 0.87).toFixed(2)},${(pt.y + r * 0.6).toFixed(2)}" fill="none" stroke="#0f172a" stroke-width="1.1"/>`;
+        };
+
+        // ラベルを回転後の図形の外側方向へ配置（文字自体は回転させず正立表示）
+        const offsetOutward = (pt, refCenter, dist) => {
+            const dx = pt.x - refCenter.x;
+            const dy = pt.y - refCenter.y;
+            const l = Math.hypot(dx, dy) || 1;
+            return {
+                x: Number((pt.x + (dx / l) * dist).toFixed(2)),
+                y: Number((pt.y + (dy / l) * dist).toFixed(2))
+            };
+        };
+
+        // 点 I のラベルは線分 DE から離れる方向（BC側）へオフセット
+        const midDE = { x: (pD.x + pE.x) / 2, y: (pD.y + pE.y) / 2 };
+        const nDE = unitVec(midDE, pA);
+        const lblA = offsetOutward(pA, { x: pivotX, y: pivotY }, 14);
+        const lblB = offsetOutward(pB, { x: pivotX, y: pivotY }, 14);
+        const lblC = offsetOutward(pC, { x: pivotX, y: pivotY }, 14);
+        const lblD = offsetOutward(pD, { x: pivotX, y: pivotY }, 13);
+        const lblE = offsetOutward(pE, { x: pivotX, y: pivotY }, 13);
+        const lblI = {
+            x: Number((pI.x - nDE.x * 13).toFixed(2)),
+            y: Number((pI.y - nDE.y * 13).toFixed(2))
+        };
+
+        // 回転後の全要素・ラベルを含む viewBox を動的に算出
+        const allPts = [pA, pB, pC, pD, pE, pI, lblA, lblB, lblC, lblD, lblE, lblI];
+        let minVX = Infinity, maxVX = -Infinity, minVY = Infinity, maxVY = -Infinity;
+        allPts.forEach(pt => {
+            if (pt.x < minVX) minVX = pt.x;
+            if (pt.x > maxVX) maxVX = pt.x;
+            if (pt.y < minVY) minVY = pt.y;
+            if (pt.y > maxVY) maxVY = pt.y;
+        });
+        const pad = 16;
+        const viewBox = `${Math.floor(minVX - pad)} ${Math.floor(minVY - pad)} ${Math.ceil(maxVX - minVX + pad * 2)} ${Math.ceil(maxVY - minVY + pad * 2)}`;
+
+        const svgHtml = `
+            <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="${viewBox}" style="width: 100%; max-width: 310px; height: auto;">
+                    <!-- 不等辺三角形 ABC -->
+                    <polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="#f8fafc" fill-opacity="0.75" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+
+                    <!-- 線分 DE -->
+                    <line x1="${pD.x}" y1="${pD.y}" x2="${pE.x}" y2="${pE.y}" stroke="#2563eb" stroke-width="2"/>
+
+                    <!-- 角B, 角C の二等分線 BI, CI -->
+                    <line x1="${pB.x}" y1="${pB.y}" x2="${pI.x}" y2="${pI.y}" stroke="#dc2626" stroke-width="1.4" stroke-dasharray="4,3"/>
+                    <line x1="${pC.x}" y1="${pC.y}" x2="${pI.x}" y2="${pI.y}" stroke="#dc2626" stroke-width="1.4" stroke-dasharray="4,3"/>
+
+                    <!-- 平行マーク -->
+                    ${drawParallelArrows(pD, pE)}
+                    ${drawParallelArrows(pB, pC)}
+
+                    <!-- 等角マーク -->
+                    <circle cx="${bMark1.x}" cy="${bMark1.y}" r="1.9" fill="#0f172a"/>
+                    <circle cx="${bMark2.x}" cy="${bMark2.y}" r="1.9" fill="#0f172a"/>
+                    ${triMark(cMark1)}
+                    ${triMark(cMark2)}
+
+                    <!-- 点 D, E, I -->
+                    <circle cx="${pD.x}" cy="${pD.y}" r="2.8" fill="#2563eb"/>
+                    <circle cx="${pE.x}" cy="${pE.y}" r="2.8" fill="#2563eb"/>
+                    <circle cx="${pI.x}" cy="${pI.y}" r="3" fill="#dc2626"/>
+
+                    <!-- 頂点・点ラベル（正立表示） -->
+                    <text x="${lblA.x}" y="${lblA.y}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                    <text x="${lblB.x}" y="${lblB.y}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                    <text x="${lblC.x}" y="${lblC.y}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                    <text x="${lblD.x}" y="${lblD.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">D</text>
+                    <text x="${lblE.x}" y="${lblE.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">E</text>
+                    <text x="${lblI.x}" y="${lblI.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">I</text>
+                </svg>
+            </div>
+        `;
+
+        return {
+            problem: `
+                <div>
+                    不等辺三角形 $\\mathrm{ABC}$ がある。$\\angle\\mathrm{B}$、$\\angle\\mathrm{C}$ の二等分線の交点を $\\mathrm{I}$ とし、点 $\\mathrm{I}$ を通り辺 $\\mathrm{BC}$ に平行な直線と辺 $\\mathrm{AB}$、$\\mathrm{AC}$ との交点をそれぞれ $\\mathrm{D}$、$\\mathrm{E}$ とする。<br>
+                    $\\mathrm{AB} = ${ab}$、$\\mathrm{AC} = ${ac}$、$\\mathrm{BC} = ${bc}$、$\\mathrm{DE} // \\mathrm{BC}$ のとき、$\\mathrm{DE}$ の長さを求めなさい。
+                </div>
+                ${svgHtml}
+            `,
+            answer: `DE = ${deAnsHtml}`,
+            explanation: `
+                <strong>1. 二等辺三角形を見つける</strong><br>
+                $\\mathrm{BI}$ は $\\angle\\mathrm{B}$ の二等分線なので $\\angle\\mathrm{DBI} = \\angle\\mathrm{IBC}$。<br>
+                また、$\\mathrm{DE} // \\mathrm{BC}$ より平行線の錯角は等しいので $\\angle\\mathrm{DIB} = \\angle\\mathrm{IBC}$。<br>
+                よって $\\angle\\mathrm{DBI} = \\angle\\mathrm{DIB}$ となり、2つの底角が等しいので $\\triangle\\mathrm{DBI}$ は $\\mathrm{DB} = \\mathrm{DI}$ の<strong>二等辺三角形</strong>である。<br>
+                同様に、$\\mathrm{CI}$ は $\\angle\\mathrm{C}$ の二等分線であり、錯角より $\\angle\\mathrm{ECI} = \\angle\\mathrm{ICB} = \\angle\\mathrm{EIC}$ となるため、$\\triangle\\mathrm{ECI}$ も $\\mathrm{EC} = \\mathrm{EI}$ の<strong>二等辺三角形</strong>である。<br><br>
+
+                <strong>2. $\\triangle\\mathrm{ADE}$ の周りの長さを求める</strong><br>
+                $\\mathrm{DI} = \\mathrm{DB}$、$\\mathrm{EI} = \\mathrm{EC}$ を利用すると、$\\triangle\\mathrm{ADE}$ の周りの長さは<br>
+                $\\mathrm{AD} + \\mathrm{DE} + \\mathrm{EA} = \\mathrm{AD} + (\\mathrm{DI} + \\mathrm{EI}) + \\mathrm{EA} = (\\mathrm{AD} + \\mathrm{DB}) + (\\mathrm{AE} + \\mathrm{EC}) = \\mathrm{AB} + \\mathrm{AC}$<br>
+                よって、$\\triangle\\mathrm{ADE}$ の周りの長さは ${ab} + ${ac} = <strong>${sumAbAc}</strong>。<br><br>
+
+                <strong>3. 周りの長さの比から相似比を求めて DE を出す</strong><br>
+                $\\triangle\\mathrm{ABC}$ の周りの長さは ${ab} + ${ac} + ${bc} = <strong>${perimeterAbc}</strong>。<br>
+                $\\mathrm{DE} // \\mathrm{BC}$ より $\\triangle\\mathrm{ADE} \\sim \\triangle\\mathrm{ABC}$ であり、相似比は周りの長さの比と等しいので、<br>
+                $\\triangle\\mathrm{ADE}$ と $\\triangle\\mathrm{ABC}$ の相似比は ${ratioStepStr}。<br>
+                対応する辺の比 $\\mathrm{DE} : \\mathrm{BC} = ${simM} : ${simN}$ より、<br>
+                DE = ${deCalcHtml}
+            `
+        };
+    }
+},
+
         "台形の内分線": {
             category: "平面図形",
             level: "公立",
@@ -10438,7 +10726,7 @@ const formulaData = {
     }
 },
 "三角形の外心": {
-    level: "公立",
+    level: "難関私立",
     formula: `
         <div>三角形の3つの辺の<strong>垂直二等分線</strong>は1点に交わる。その点を<strong>外心</strong>と呼ぶ。<br>
         外心はその三角形の<strong>外接円の中心</strong>であり、3つの頂点までの距離がすべて等しい。</div>
@@ -10799,7 +11087,7 @@ const formulaData = {
     }
 },
 "三角形の傍心": {
-    level: "公立",
+    level: "難関私立",
     formula: `
         <div>三角形の1つの<strong>内角の二等分線</strong>と、他の2つの<strong>外角の二等分線</strong>は1点に交わる。その点を<strong>傍心</strong>と呼ぶ。<br>
         傍心はその三角形の1辺と他の2辺の延長線に接する<strong>傍接円の中心</strong>である。</div>
@@ -10877,84 +11165,97 @@ const formulaData = {
         <div style="margin-top: 6px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
             <div><strong>【傍心の性質と半径の求め方のポイント】</strong></div>
             <div style="margin-top: 4px;">
-                ・円の外部の1点から円に引いた<strong>2本の接線の長さは等しい</strong>。<br>
-                ・$\\triangle \\mathrm{ABC}$ の3辺を $a = \\mathrm{BC},\\, b = \\mathrm{AC},\\, c = \\mathrm{AB}$、$s = \\frac{a+b+c}{2}$ とすると、<br>
-                　内接円までの接線の長さはそれぞれ $s - a,\\, s - b,\\, s - c$ となる。<br>
-                ・辺 $\\mathrm{AC}$ に接する傍接円（中心 $\\mathrm{I}_b$、半径 $r_b$）について、頂点 $\\mathrm{B}$ から傍接円に引いた接線の長さは $s = \\frac{a+b+c}{2}$ となる（なお、辺 $\\mathrm{BC}$ に接する傍接円の場合は頂点 $\\mathrm{A}$ からの接線の長さが $s$ になる）。<br>
-                ・内接円の中心 $\\mathrm{I}$ から下ろした垂線と傍接円の中心から下ろした垂線との<strong>相似</strong>から、内接円半径 $r$ と傍接円半径を結びつけられる。
+                ・円の外部の1点から円に引いた2本の接線の長さは等しいので $\\mathrm{AB}=a$、$\\mathrm{BC}=b$、$\\mathrm{AC}=c$ とすると $\\mathrm{BQ}=\\frac{a+b+c}{2}$ となる。<br>
+                ・傍接円半径 $R$ は $\\triangle \\mathrm{ABC}+\\triangle \\mathrm{I}_b\\mathrm{AC}=\\triangle \\mathrm{I}_b\\mathrm{AB}+\\triangle \\mathrm{I}_b\\mathrm{BC}$ より<br>
+                　$\\frac{1}{2}R(a+b-c)=\\triangle \\mathrm{ABC}$ で求めることができる。<br>
+                また内接円の中心 $\\mathrm{I}$ から下ろした垂線と傍接円の中心 $\\mathrm{I}_b$ から下ろした垂線との相似から、内接円半径 $r$ と傍接円半径 $R$ を結びつけられる。<br>
+                よって内接円半径を $r$ とすると $\\triangle \\mathrm{BIP}\\sim\\triangle \\mathrm{BI}_b\\mathrm{Q}$ と接線の公式より $r:R=\\mathrm{BP}:\\mathrm{BQ}=\\frac{a+b-c}{2}:\\frac{a+b+c}{2}$
             </div>
         </div>
     `,
     selfCheck: [
-        "円の外部の1点から円に引いた2本の接線の長さが等しいことを使って、各接線の長さを正しく求められているか？",
-        "内接円までの接線の長さの和から、周の長さ a + b + c と対応していることを確かめられているか？",
-        "傍接円（辺 BC に接する円）の頂点 A からの接線の長さが、半周長 s = (a + b + c)/2 と一致することを理解しているか？",
-        "相似な直角三角形（△AIF ∽ △AIaQ など）の相似比から、内接円半径 r をもとに傍接円半径 ra を正しく計算できているか？"
+        '内接円の接線の公式 AF = (AB + AC - BC) / 2 を使って、頂点 A からの接線の長さ AF を素早く求められているか？',
+        '内接円までの接線の長さの公式において、頂点 A をはさむ2辺を足して向かい合う対辺 BC を引く対応を正しく覚えられているか？',
+        '傍接円の接線の公式（傍接円と接しない頂点から傍接円の接点までの長さ AQ / BP / CP が半周長 (AB + BC + CA) / 2 と一致すること）を使えているか？',
+        '相似な直角三角形（△AIF ∽ △AI_aQ、△BIF ∽ △BI_bP、△CID ∽ △CI_cP）の相似比を最も簡単な整数の比にして、内接円半径 r から傍接円半径 R を計算できているか？'
     ],
     generateRandom: function () {
-        const cases = [
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
+
+        // 最大公約数と分数の約分ヘルパー
+        const gcd = (x, y) => {
+            x = Math.abs(x);
+            y = Math.abs(y);
+            while (y) {
+                const t = y;
+                y = x % y;
+                x = t;
+            }
+            return x || 1;
+        };
+
+        const formatReducedFraction = (coeffNum, radPart, denNum) => {
+            const g = gcd(coeffNum, denNum);
+            const n = coeffNum / g;
+            const d = denNum / g;
+            const numStr = radPart ? (n === 1 ? radPart : `${n}${radPart}`) : `${n}`;
+            if (d === 1) return numStr;
+            return fracHtml(numStr, `${d}`);
+        };
+
+        // 相似比を最も簡単な整数の比で表すヘルパー
+        const formatRatioSteps = (leftVal, rightVal) => {
+            const g = gcd(leftVal, rightVal);
+            const simpLeft = leftVal / g;
+            const simpRight = rightVal / g;
+            const text = g > 1
+                ? `${leftVal} : ${rightVal} = ${simpLeft} : ${simpRight}`
+                : `${leftVal} : ${rightVal}`;
+            return { simpLeft, simpRight, text };
+        };
+
+        const triCases = [
             {
-                // a=5, b=12, c=13 -> s=15, S=30, r=2, AF=AE=10, BF=BD=3, CD=CE=2, AQ=AR=15, BQ=BP=2, CR=CP=3, ra=3
-                aTex: "5", bTex: "12", cTex: "13",
-                aNum: 5, bNum: 12, cNum: 13,
-                sVal: 15, sMinusA: 10, sMinusB: 3, sMinusC: 2,
-                areaTex: "30",
-                rTex: "2",
-                raCalc: "2 \\times \\frac{15}{10} = 3",
-                raTex: "3"
+                aNum: 5, bNum: 12, cNum: 13, sVal: 15, areaStr: "30",
+                rCoeff: 2, rDen: 1, radStr: "",
+                areaCalcHtml: `5² + 12² = 13² より ∠C = 90° の直角三角形なので、辺 BC を底辺、辺 AC を高さとして<br>S = 5 × 12 × ${fracHtml("1", "2")} = <strong>30</strong>`
             },
             {
-                // a=8, b=15, c=17 -> s=20, S=60, r=3, AF=AE=12, BF=BD=5, CD=CE=3, AQ=AR=20, BQ=BP=3, CR=CP=5, ra=5
-                aTex: "8", bTex: "15", cTex: "17",
-                aNum: 8, bNum: 15, cNum: 17,
-                sVal: 20, sMinusA: 12, sMinusB: 5, sMinusC: 3,
-                areaTex: "60",
-                rTex: "3",
-                raCalc: "3 \\times \\frac{20}{12} = 5",
-                raTex: "5"
+                aNum: 8, bNum: 15, cNum: 17, sVal: 20, areaStr: "60",
+                rCoeff: 3, rDen: 1, radStr: "",
+                areaCalcHtml: `8² + 15² = 17² より ∠C = 90° の直角三角形なので、辺 BC を底辺、辺 AC を高さとして<br>S = 8 × 15 × ${fracHtml("1", "2")} = <strong>60</strong>`
             },
             {
-                // a=10, b=17, c=21 -> s=24, S=168, r=7, AF=AE=14, BF=BD=7, CD=CE=3, AQ=AR=24, BQ=BP=3, CR=CP=7, ra=12
-                aTex: "10", bTex: "17", cTex: "21",
-                aNum: 10, bNum: 17, cNum: 21,
-                sVal: 24, sMinusA: 14, sMinusB: 7, sMinusC: 3,
-                areaTex: "168",
-                rTex: "7",
-                raCalc: "7 \\times \\frac{24}{14} = 12",
-                raTex: "12"
+                aNum: 10, bNum: 17, cNum: 21, sVal: 24, areaStr: "84",
+                rCoeff: 7, rDen: 2, radStr: "",
+                areaCalcHtml: `頂点 A から辺 BC に垂線 AH を下ろし、BH = x とすると CH = 10 - x。<br>21² - x² = 17² - (10 - x)² より 441 - x² = 289 - (100 - 20x + x²) → 20x = 252 → x = ${fracHtml("63", "5")}<br>直角三角形 ABH において BH : AB = ${fracHtml("63", "5")} : 21 = 3 : 5 なので、三平方の定理より AH の比は √(5² - 3²) = 4（BH : AH : AB = 3 : 4 : 5）。<br>よって、AH = 21 × ${fracHtml("4", "5")} = ${fracHtml("84", "5")} となり、S = 10 × ${fracHtml("84", "5")} × ${fracHtml("1", "2")} = <strong>84</strong>`
             },
             {
-                // a=6, b=25, c=29 -> s=30, S=60, r=2, AF=AE=24, BF=BD=5, CD=CE=1, AQ=AR=30, BQ=BP=1, CR=CP=5, ra=5/2
-                aTex: "6", bTex: "25", cTex: "29",
-                aNum: 6, bNum: 25, cNum: 29,
-                sVal: 30, sMinusA: 24, sMinusB: 5, sMinusC: 1,
-                areaTex: "60",
-                rTex: "2",
-                raCalc: "2 \\times \\frac{30}{24} = 2 \\times \\frac{5}{4} = \\frac{5}{2}",
-                raTex: "\\frac{5}{2}"
+                aNum: 6, bNum: 25, cNum: 29, sVal: 30, areaStr: "60",
+                rCoeff: 2, rDen: 1, radStr: "",
+                areaCalcHtml: `頂点 A から辺 BC の延長線上に垂線 AH を下ろし、CH = x とすると BH = 6 + x。<br>25² - x² = 29² - (6 + x)² より 625 - x² = 841 - (36 + 12x + x²) → 12x = 180 → x = 15<br>直角三角形 ACH において CH : AC = 15 : 25 = 3 : 5 なので、三平方の定理より AH の比は √(5² - 3²) = 4（CH : AH : AC = 3 : 4 : 5）。<br>よって、AH = 25 × ${fracHtml("4", "5")} = 20 となり、S = 6 × 20 × ${fracHtml("1", "2")} = <strong>60</strong>`
             },
             {
-                // a=7, b=8, c=9 -> s=12, S=12√5, r=√5, AF=AE=5, BF=BD=4, CD=CE=3, AQ=AR=12, BQ=BP=3, CR=CP=4, ra=12√5/5
-                aTex: "7", bTex: "8", cTex: "9",
-                aNum: 7, bNum: 8, cNum: 9,
-                sVal: 12, sMinusA: 5, sMinusB: 4, sMinusC: 3,
-                areaTex: "12\\sqrt{5}",
-                rTex: "\\sqrt{5}",
-                raCalc: "\\sqrt{5} \\times \\frac{12}{5} = \\frac{12\\sqrt{5}}{5}",
-                raTex: "\\frac{12\\sqrt{5}}{5}"
+                aNum: 7, bNum: 8, cNum: 9, sVal: 12, areaStr: "12√5",
+                rCoeff: 1, rDen: 1, radStr: "√5",
+                areaCalcHtml: `頂点 A から辺 BC に垂線 AH を下ろし、BH = x とすると CH = 7 - x。<br>9² - x² = 8² - (7 - x)² より 81 - x² = 64 - (49 - 14x + x²) → 14x = 66 → x = ${fracHtml("33", "7")}<br>直角三角形 ABH において BH : AB = ${fracHtml("33", "7")} : 9 = 11 : 21 なので、三平方の定理より AH の比は √(21² - 11²) = √(441 - 121) = 8√5（BH : AH : AB = 11 : 8√5 : 21）。<br>よって、AH = 9 × ${fracHtml("8√5", "21")} = ${fracHtml("24√5", "7")} となり、S = 7 × ${fracHtml("24√5", "7")} × ${fracHtml("1", "2")} = <strong>12√5</strong>`
             }
         ];
 
-        const chosen = cases[Math.floor(Math.random() * cases.length)];
-        const {
-            aTex, bTex, cTex,
-            aNum, bNum, cNum,
-            sVal, sMinusA, sMinusB, sMinusC,
-            areaTex, rTex, raCalc, raTex
-        } = chosen;
+        // 傍接円が接する辺の3パターン（BC / AC / AB）
+        // それぞれ「傍接円と接しない頂点（A / B / C）から傍接円の接点（Q / P / P）までの長さ」を求める
+        const touchModes = ["BC", "AC", "AB"];
+        const touchSide = touchModes[Math.floor(Math.random() * touchModes.length)];
+        const tri = triCases[Math.floor(Math.random() * triCases.length)];
+        const { aNum, bNum, cNum, sVal, areaStr, rCoeff, rDen, radStr, areaCalcHtml } = tri;
 
-        // 数学座標: C=(0,0), B=(aNum,0)
-        // 頂点 A の座標（y > 0）
+        const aTex = `${aNum}`;
+        const bTex = `${bNum}`;
+        const cTex = `${cNum}`;
+        const rStr = formatReducedFraction(rCoeff, radStr, rDen);
+
+        // 数学座標: C=(0,0), B=(aNum,0), A=(axMath, ayMath) (ayMath > 0)
         const cosC = (aNum * aNum + bNum * bNum - cNum * cNum) / (2 * aNum * bNum);
         const clampedCosC = Math.max(-0.95, Math.min(0.95, cosC));
         const sinC = Math.sqrt(Math.max(0.05, 1 - clampedCosC * clampedCosC));
@@ -10965,17 +11266,11 @@ const formulaData = {
         const pBMath = { x: aNum, y: 0 };
         const pCMath = { x: 0, y: 0 };
 
-        // 内心 I の数学座標と内接円半径 r
+        // 内心 I と半径 r
         const perimeter = aNum + bNum + cNum;
         const ixMath = (aNum * axMath + bNum * aNum + cNum * 0) / perimeter;
         const iyMath = (aNum * ayMath) / perimeter;
         const rMath = iyMath;
-
-        // 辺 BC に接する傍心 Ia の数学座標と傍接円半径 ra
-        const denomEx = -aNum + bNum + cNum;
-        const iaxMath = (-aNum * axMath + bNum * aNum + cNum * 0) / denomEx;
-        const iayMath = (-aNum * ayMath) / denomEx;
-        const raMath = Math.abs(iayMath);
 
         // 点から直線への正射影（垂線の足）
         const projectOntoLine = (pt, lineP1, lineP2) => {
@@ -10989,37 +11284,167 @@ const formulaData = {
             };
         };
 
-        // 接点・垂線の足の数学座標
+        // 内接円と辺 AB の接点 F、および辺 BC の接点 D
         const fMath = projectOntoLine({ x: ixMath, y: iyMath }, pAMath, pBMath);
-        const pContactMath = { x: iaxMath, y: 0 };
+        const dMath = projectOntoLine({ x: ixMath, y: iyMath }, pBMath, pCMath);
+        const afVal = sVal - aNum; // (AB + AC - BC) / 2
+        const bfVal = sVal - bNum; // (AB + BC - AC) / 2
+        const cdVal = sVal - cNum; // (BC + CA - AB) / 2
+
+        // 傍接円ごとの中心・半径・接点設定
+        let exSub = "a";
+        let rExSymbol = "r_a";
+        let iExSubHtml = `I<tspan dy="3" font-size="9">a</tspan>`;
+        let iExTextHtml = `I<sub>a</sub>`;
+        let rExTextHtml = `r<sub>a</sub>`;
+        let iaxMath = 0;
+        let iayMath = 0;
+        let raMath = 0;
+
+        // (3) で求める接線名（AQ / BP / CP）とその値（いずれも半周長 sVal）
+        let targetSegName = "AQ";
+        const targetSegVal = sVal;
+        let q3QuestionHtml = "";
+        let q3ExplainHtml = "";
+        let q4ExplainHtml = "";
+        let raFinalStr = "";
+        let raCalcHtml = "";
+        let showIncenterD = false;
+
+        if (touchSide === "BC") {
+            exSub = "a";
+            rExSymbol = "r_a";
+            iExSubHtml = `I<tspan dy="3" font-size="9">a</tspan>`;
+            iExTextHtml = `I<sub>a</sub>`;
+            rExTextHtml = `r<sub>a</sub>`;
+
+            const denom = -aNum + bNum + cNum;
+            iaxMath = (-aNum * axMath + bNum * aNum + cNum * 0) / denom;
+            iayMath = (-aNum * ayMath) / denom;
+            raMath = Math.abs(iayMath);
+
+            targetSegName = "AQ";
+            const ratioInfo = formatRatioSteps(afVal, targetSegVal);
+            raFinalStr = formatReducedFraction(rCoeff * ratioInfo.simpRight, radStr, rDen * ratioInfo.simpLeft);
+            const simpFrac = fracHtml(`${ratioInfo.simpRight}`, `${ratioInfo.simpLeft}`);
+            raCalcHtml = `${rStr} × ${simpFrac} = ${raFinalStr}`;
+
+            q3QuestionHtml = `(3) 辺 $\\mathrm{BC}$ に接する傍接円と辺 $\\mathrm{AB}$ の延長線との接点を $\\mathrm{Q}$ とするとき、$\\mathrm{AQ}$ の長さを求めなさい。`;
+            q3ExplainHtml = `
+                傍接円の接線の公式より、辺 BC に接する傍接円において、傍接円と接しない頂点 A から接点 Q までの長さ AQ は半周長と等しくなる。<br>
+                AQ = ${fracHtml("AB + BC + CA", "2")} = ${fracHtml(`${cTex} + ${aTex} + ${bTex}`, "2")} = ${fracHtml(`${2 * sVal}`, "2")} = <strong>${targetSegVal}</strong>。
+            `;
+            q4ExplainHtml = `
+                内接円の中心 I から辺 AB に下ろした垂線の足を F（IF = r = ${rStr}）、傍接円の中心 ${iExTextHtml} から辺 AB の延長線に下ろした垂線の足を Q（${iExTextHtml}Q = ${rExTextHtml}）とすると、<br>
+                △AIF ∽ △A${iExTextHtml}Q であり、相似比は接線の長さより<br>
+                AF : AQ = ${ratioInfo.text}<br>
+                よって、r : ${rExTextHtml} = ${ratioInfo.simpLeft} : ${ratioInfo.simpRight} となるので、<br>
+                ${rExTextHtml} = ${raCalcHtml}
+            `;
+        } else if (touchSide === "AC") {
+            exSub = "b";
+            rExSymbol = "r_b";
+            iExSubHtml = `I<tspan dy="3" font-size="9">b</tspan>`;
+            iExTextHtml = `I<sub>b</sub>`;
+            rExTextHtml = `r<sub>b</sub>`;
+
+            const denom = aNum - bNum + cNum;
+            iaxMath = (aNum * axMath - bNum * aNum + cNum * 0) / denom;
+            iayMath = (aNum * ayMath) / denom;
+            raMath = Math.abs(iayMath);
+
+            targetSegName = "BP";
+            showIncenterD = true;
+            const ratioInfo = formatRatioSteps(bfVal, targetSegVal);
+            raFinalStr = formatReducedFraction(rCoeff * ratioInfo.simpRight, radStr, rDen * ratioInfo.simpLeft);
+            const simpFrac = fracHtml(`${ratioInfo.simpRight}`, `${ratioInfo.simpLeft}`);
+            raCalcHtml = `${rStr} × ${simpFrac} = ${raFinalStr}`;
+
+            q3QuestionHtml = `(3) 辺 $\\mathrm{AC}$ に接する傍接円と辺 $\\mathrm{BC}$ の延長線との接点を $\\mathrm{P}$ とするとき、$\\mathrm{BP}$ の長さを求めなさい。`;
+            q3ExplainHtml = `
+                傍接円の接線の公式より、辺 AC に接する傍接円において、傍接円と接しない頂点 B から接点 P までの長さ BP は半周長と等しくなる。<br>
+                BP = ${fracHtml("AB + BC + CA", "2")} = ${fracHtml(`${cTex} + ${aTex} + ${bTex}`, "2")} = ${fracHtml(`${2 * sVal}`, "2")} = <strong>${targetSegVal}</strong>。
+            `;
+            q4ExplainHtml = `
+                内接円の接線の公式より、頂点 B から辺 BC 上の接点 D までの長さは BD = ${fracHtml("AB + BC - AC", "2")} = ${fracHtml(`${cTex} + ${aTex} - ${bTex}`, "2")} = ${bfVal}（または BD = BF = AB - AF = ${cTex} - ${afVal} = ${bfVal}）。<br>
+                内接円の中心 I から辺 BC に下ろした垂線の足を D（ID = r = ${rStr}）、傍接円の中心 ${iExTextHtml} から辺 BC の延長線に下ろした垂線の足を P（${iExTextHtml}P = ${rExTextHtml}）とすると、<br>
+                △BID ∽ △B${iExTextHtml}P であり、相似比は接線の長さより<br>
+                BD : BP = ${ratioInfo.text}<br>
+                よって、r : ${rExTextHtml} = ${ratioInfo.simpLeft} : ${ratioInfo.simpRight} となるので、<br>
+                ${rExTextHtml} = ${raCalcHtml}
+            `;
+        } else {
+            exSub = "c";
+            rExSymbol = "r_c";
+            iExSubHtml = `I<tspan dy="3" font-size="9">c</tspan>`;
+            iExTextHtml = `I<sub>c</sub>`;
+            rExTextHtml = `r<sub>c</sub>`;
+
+            const denom = aNum + bNum - cNum;
+            iaxMath = (aNum * axMath + bNum * aNum - cNum * 0) / denom;
+            iayMath = (aNum * ayMath) / denom;
+            raMath = Math.abs(iayMath);
+
+            targetSegName = "CP";
+            showIncenterD = true;
+            const ratioInfo = formatRatioSteps(cdVal, targetSegVal);
+            raFinalStr = formatReducedFraction(rCoeff * ratioInfo.simpRight, radStr, rDen * ratioInfo.simpLeft);
+            const simpFrac = fracHtml(`${ratioInfo.simpRight}`, `${ratioInfo.simpLeft}`);
+            raCalcHtml = `${rStr} × ${simpFrac} = ${raFinalStr}`;
+
+            q3QuestionHtml = `(3) 辺 $\\mathrm{AB}$ に接する傍接円と辺 $\\mathrm{BC}$ の延長線との接点を $\\mathrm{P}$ とするとき、$\\mathrm{CP}$ の長さを求めなさい。`;
+            q3ExplainHtml = `
+                傍接円の接線の公式より、辺 AB に接する傍接円において、傍接円と接しない頂点 C から接点 P までの長さ CP は半周長と等しくなる。<br>
+                CP = ${fracHtml("AB + BC + CA", "2")} = ${fracHtml(`${cTex} + ${aTex} + ${bTex}`, "2")} = ${fracHtml(`${2 * sVal}`, "2")} = <strong>${targetSegVal}</strong>。
+            `;
+            q4ExplainHtml = `
+                内接円の接線の公式より、頂点 C から辺 BC 上の接点 D までの長さは CD = ${fracHtml("BC + CA - AB", "2")} = ${fracHtml(`${aTex} + ${bTex} - ${cTex}`, "2")} = ${cdVal}。<br>
+                内接円の中心 I から辺 BC に下ろした垂線の足を D（ID = r = ${rStr}）、傍接円の中心 ${iExTextHtml} から辺 BC の延長線に下ろした垂線の足を P（${iExTextHtml}P = ${rExTextHtml}）とすると、<br>
+                △CID ∽ △C${iExTextHtml}P であり、相似比は接線の長さより<br>
+                CD : CP = ${ratioInfo.text}<br>
+                よって、r : ${rExTextHtml} = ${ratioInfo.simpLeft} : ${ratioInfo.simpRight} となるので、<br>
+                ${rExTextHtml} = ${raCalcHtml}
+            `;
+        }
+
+        // 傍接円の各辺（またはその延長）との接点
+        const pContactMath = projectOntoLine({ x: iaxMath, y: iayMath }, pBMath, pCMath);
         const qContactMath = projectOntoLine({ x: iaxMath, y: iayMath }, pAMath, pBMath);
         const rContactMath = projectOntoLine({ x: iaxMath, y: iayMath }, pAMath, pCMath);
 
-        // 描画領域に収めるスケール計算
-        const allPtsMath = [
+        // 三角形 ABC をしっかり大きく表示するため、スケールは三角形＋接点・傍心を中心に算出
+        const focusPtsMath = [
             pAMath, pBMath, pCMath,
-            fMath, pContactMath, qContactMath, rContactMath,
-            { x: ixMath - rMath, y: iyMath - rMath },
-            { x: ixMath + rMath, y: iyMath + rMath },
-            { x: iaxMath - raMath, y: iayMath - raMath },
-            { x: iaxMath + raMath, y: iayMath + raMath }
+            fMath, dMath, pContactMath, qContactMath, rContactMath,
+            { x: ixMath, y: iyMath },
+            { x: iaxMath, y: iayMath }
         ];
         let minMX = Infinity, maxMX = -Infinity, minMY = Infinity, maxMY = -Infinity;
-        allPtsMath.forEach(p => {
+        focusPtsMath.forEach(p => {
             if (p.x < minMX) minMX = p.x;
             if (p.x > maxMX) maxMX = p.x;
             if (p.y < minMY) minMY = p.y;
             if (p.y > maxMY) maxMY = p.y;
         });
 
+        const triMinX = Math.min(pAMath.x, pBMath.x, pCMath.x);
+        const triMaxX = Math.max(pAMath.x, pBMath.x, pCMath.x);
+        const triMinY = Math.min(pAMath.y, pBMath.y, pCMath.y);
+        const triMaxY = Math.max(pAMath.y, pBMath.y, pCMath.y);
+        const triSpanX = Math.max(1, triMaxX - triMinX);
+        const triSpanY = Math.max(1, triMaxY - triMinY);
+
         const spanX = Math.max(1, maxMX - minMX);
         const spanY = Math.max(1, maxMY - minMY);
-        const scale = Math.min(220 / spanX, 165 / spanY);
+
+        const scaleFromTri = Math.min(220 / triSpanX, 165 / triSpanY);
+        const scaleFromAll = Math.min(280 / spanX, 200 / spanY);
+        const scale = Math.max(scaleFromAll, scaleFromTri * 0.85);
 
         const centerMX = (minMX + maxMX) / 2;
         const centerMY = (minMY + maxMY) / 2;
-        const SVG_CX = 170;
-        const SVG_CY = 132;
+        const SVG_CX = 190;
+        const SVG_CY = 140;
 
         const toSvg = (mx, my) => ({
             x: Number((SVG_CX + (mx - centerMX) * scale).toFixed(2)),
@@ -11032,6 +11457,7 @@ const formulaData = {
         const pI = toSvg(ixMath, iyMath);
         const pIa = toSvg(iaxMath, iayMath);
         const pF = toSvg(fMath.x, fMath.y);
+        const pD = toSvg(dMath.x, dMath.y);
         const pP = toSvg(pContactMath.x, pContactMath.y);
         const pQ = toSvg(qContactMath.x, qContactMath.y);
         const pR = toSvg(rContactMath.x, rContactMath.y);
@@ -11039,19 +11465,34 @@ const formulaData = {
         const rSvg = Number((rMath * scale).toFixed(2));
         const raSvg = Number((raMath * scale).toFixed(2));
 
-        // 延長線の終点（A から Q, R を少し超える位置まで延長）
-        const extendThrough = (fromPt, throughPt, extraPx = 14) => {
-            const dx = throughPt.x - fromPt.x;
-            const dy = throughPt.y - fromPt.y;
+        // 直線 AB・直線 AC の延長線
+        const buildLineSegment = (ptsOnLine, extraPx = 14) => {
+            let pMin = ptsOnLine[0];
+            let pMax = ptsOnLine[0];
+            let maxDist = -1;
+            for (let i = 0; i < ptsOnLine.length; i++) {
+                for (let j = i + 1; j < ptsOnLine.length; j++) {
+                    const d = Math.hypot(ptsOnLine[j].x - ptsOnLine[i].x, ptsOnLine[j].y - ptsOnLine[i].y);
+                    if (d > maxDist) {
+                        maxDist = d;
+                        pMin = ptsOnLine[i];
+                        pMax = ptsOnLine[j];
+                    }
+                }
+            }
+            const dx = pMax.x - pMin.x;
+            const dy = pMax.y - pMin.y;
             const len = Math.hypot(dx, dy) || 1;
             return {
-                x: Number((throughPt.x + (dx / len) * extraPx).toFixed(2)),
-                y: Number((throughPt.y + (dy / len) * extraPx).toFixed(2))
+                x1: Number((pMin.x - (dx / len) * extraPx).toFixed(2)),
+                y1: Number((pMin.y - (dy / len) * extraPx).toFixed(2)),
+                x2: Number((pMax.x + (dx / len) * extraPx).toFixed(2)),
+                y2: Number((pMax.y + (dy / len) * extraPx).toFixed(2))
             };
         };
-        const extQ = extendThrough(pA, pQ, 12);
-        const extR = extendThrough(pA, pR, 12);
 
+        const lineABSeg = buildLineSegment([pA, pB, pQ], 14);
+        const lineACSeg = buildLineSegment([pA, pC, pR], 14);
         const minBcX = Math.min(pB.x, pC.x, pP.x) - 16;
         const maxBcX = Math.max(pB.x, pC.x, pP.x) + 16;
 
@@ -11096,20 +11537,34 @@ const formulaData = {
         };
 
         const lblF = offsetFromLine(pF, pA, pB, 10);
+        const lblD = { x: pD.x, y: Number((pD.y + 11).toFixed(2)) };
         const lblQ = offsetFromLine(pQ, pA, pB, 11);
         const lblR = offsetFromLine(pR, pA, pC, 11);
-        const lblP = { x: pP.x, y: Number((pP.y - 11).toFixed(2)) };
+        const lblP = { x: pP.x, y: Number((pP.y + (touchSide === "BC" ? -11 : 12)).toFixed(2)) };
 
-        // viewBox を全描画要素・ラベルから動的に算出
+        // 傍心ラベル位置（円の中心から外側寄り）
+        const lblIa = {
+            x: pIa.x,
+            y: Number((pIa.y + (touchSide === "BC" ? 13 : -12)).toFixed(2))
+        };
+
+        // viewBox を全描画要素・円周・ラベルから動的に算出して見切れを防止
         const viewBoxPts = [
             { x: minBcX, y: pB.y },
             { x: maxBcX, y: pB.y },
-            pA, pB, pC, pI, pIa, pF, pP, pQ, pR, extQ, extR,
-            lblF, lblQ, lblR, lblP,
-            { x: pA.x, y: pA.y - 16 },
-            { x: pB.x + 16, y: pB.y - 14 },
-            { x: pC.x - 16, y: pC.y - 14 },
-            { x: pIa.x, y: pIa.y + 18 }
+            { x: lineABSeg.x1, y: lineABSeg.y1 },
+            { x: lineABSeg.x2, y: lineABSeg.y2 },
+            { x: lineACSeg.x1, y: lineACSeg.y1 },
+            { x: lineACSeg.x2, y: lineACSeg.y2 },
+            pA, pB, pC, pI, pIa, pF, pD, pP, pQ, pR,
+            lblF, lblD, lblQ, lblR, lblP, lblIa,
+            { x: pI.x - rSvg, y: pI.y - rSvg },
+            { x: pI.x + rSvg, y: pI.y + rSvg },
+            { x: pIa.x - raSvg, y: pIa.y - raSvg },
+            { x: pIa.x + raSvg, y: pIa.y + raSvg },
+            { x: pA.x, y: pA.y - 18 },
+            { x: pB.x + 18, y: pB.y + 16 },
+            { x: pC.x - 18, y: pC.y + 16 }
         ];
         let minVX = Infinity, maxVX = -Infinity, minVY = Infinity, maxVY = -Infinity;
         viewBoxPts.forEach(p => {
@@ -11118,23 +11573,37 @@ const formulaData = {
             if (p.y < minVY) minVY = p.y;
             if (p.y > maxVY) maxVY = p.y;
         });
-        const pad = 12;
+        const pad = 16;
         const viewBox = `${Math.floor(minVX - pad)} ${Math.floor(minVY - pad)} ${Math.ceil(maxVX - minVX + pad * 2)} ${Math.ceil(maxVY - minVY + pad * 2)}`;
+
+        // 相似の基準頂点（接しない頂点 A / B / C）への補助線
+        const simVertex = touchSide === "BC" ? pA : (touchSide === "AC" ? pB : pC);
+        const aRefForQ = Math.hypot(pQ.x - pA.x, pQ.y - pA.y) > 4 ? pA : pB;
+        const bRefForP = Math.hypot(pP.x - pB.x, pP.y - pB.y) > 4 ? pB : pC;
+
+        const incenterDElements = showIncenterD
+            ? `
+                <line x1="${pI.x}" y1="${pI.y}" x2="${pD.x}" y2="${pD.y}" stroke="#2563eb" stroke-width="1.3"/>
+                ${rightAngleMark(pD, pI, pB, 5, "#2563eb")}
+                <circle cx="${pD.x}" cy="${pD.y}" r="2.8" fill="#2563eb"/>
+                <text x="${lblD.x}" y="${lblD.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">D</text>
+            `
+            : "";
 
         return {
             problem: `
                 <div>
-                    図は $\\triangle \\mathrm{ABC}$ と、その内接円（中心 $\\mathrm{I}$、半径 $r$）および辺 $\\mathrm{BC}$ に接する傍接円（中心 $\\mathrm{I}_a$、半径 $r_a$）である。<br>
+                    図は $\\triangle \\mathrm{ABC}$ と、その内接円（中心 $\\mathrm{I}$、半径 $r$）および辺 $\\mathrm{${touchSide}}$ に接する傍接円（中心 $\\mathrm{I}_${exSub}$、半径 $${rExSymbol}$）である。<br>
                     $\\mathrm{BC} = ${aTex}$、$\\mathrm{AC} = ${bTex}$、$\\mathrm{AB} = ${cTex}$ とするとき、次の問いに答えなさい。
                 </div>
                 <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
-                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 340px; height: auto;">
+                    <svg viewBox="${viewBox}" style="width: 100%; max-width: 380px; height: auto;">
                         <!-- 辺 BC とその延長線 -->
                         <line x1="${minBcX}" y1="${pB.y}" x2="${maxBcX}" y2="${pB.y}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,2"/>
 
-                        <!-- AB, AC の延長線（接点 Q, R まで延長） -->
-                        <line x1="${pA.x}" y1="${pA.y}" x2="${extQ.x}" y2="${extQ.y}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2,2"/>
-                        <line x1="${pA.x}" y1="${pA.y}" x2="${extR.x}" y2="${extR.y}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2,2"/>
+                        <!-- 直線 AB, AC とその延長線 -->
+                        <line x1="${lineABSeg.x1}" y1="${lineABSeg.y1}" x2="${lineABSeg.x2}" y2="${lineABSeg.y2}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2,2"/>
+                        <line x1="${lineACSeg.x1}" y1="${lineACSeg.y1}" x2="${lineACSeg.x2}" y2="${lineACSeg.y2}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="2,2"/>
 
                         <!-- 内接円 -->
                         <circle cx="${pI.x}" cy="${pI.y}" r="${rSvg}" fill="#eff6ff" fill-opacity="0.4" stroke="#2563eb" stroke-width="1.4"/>
@@ -11142,23 +11611,24 @@ const formulaData = {
                         <!-- 傍接円 -->
                         <circle cx="${pIa.x}" cy="${pIa.y}" r="${raSvg}" fill="#fef2f2" fill-opacity="0.35" stroke="#dc2626" stroke-width="1.4" stroke-dasharray="4,3"/>
 
-                        <!-- 相似三角形 △AIF ∽ △AIaQ の補助線（半径 IF, IaQ と中心を結ぶ線分 AI, AIa） -->
-                        <line x1="${pA.x}" y1="${pA.y}" x2="${pI.x}" y2="${pI.y}" stroke="#2563eb" stroke-width="1.1" stroke-dasharray="2,2"/>
-                        <line x1="${pA.x}" y1="${pA.y}" x2="${pIa.x}" y2="${pIa.y}" stroke="#dc2626" stroke-width="1.1" stroke-dasharray="2,2"/>
+                        <!-- 相似三角形の補助線（接しない頂点から中心 I, I_ex へ） -->
+                        <line x1="${simVertex.x}" y1="${simVertex.y}" x2="${pI.x}" y2="${pI.y}" stroke="#2563eb" stroke-width="1.1" stroke-dasharray="2,2"/>
+                        <line x1="${simVertex.x}" y1="${simVertex.y}" x2="${pIa.x}" y2="${pIa.y}" stroke="#dc2626" stroke-width="1.1" stroke-dasharray="2,2"/>
                         <line x1="${pI.x}" y1="${pI.y}" x2="${pF.x}" y2="${pF.y}" stroke="#2563eb" stroke-width="1.3"/>
-                        <line x1="${pIa.x}" y1="${pIa.y}" x2="${pQ.x}" y2="${pQ.y}" stroke="#dc2626" stroke-width="1.3"/>
-                        <line x1="${pIa.x}" y1="${pIa.y}" x2="${pP.x}" y2="${pP.y}" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="2,2"/>
+                        ${incenterDElements}
+                        <line x1="${pIa.x}" y1="${pIa.y}" x2="${pQ.x}" y2="${pQ.y}" stroke="#dc2626" stroke-width="${touchSide === "BC" ? "1.3" : "1.2"}" ${touchSide === "BC" ? "" : 'stroke-dasharray="2,2"'}/>
+                        <line x1="${pIa.x}" y1="${pIa.y}" x2="${pP.x}" y2="${pP.y}" stroke="#dc2626" stroke-width="${touchSide === "BC" ? "1.2" : "1.3"}" ${touchSide === "BC" ? 'stroke-dasharray="2,2"' : ""}/>
                         <line x1="${pIa.x}" y1="${pIa.y}" x2="${pR.x}" y2="${pR.y}" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="2,2"/>
 
                         <!-- 直角マーク（F, Q, P） -->
                         ${rightAngleMark(pF, pI, pA, 5, "#2563eb")}
-                        ${rightAngleMark(pQ, pIa, pA, 5.5, "#dc2626")}
-                        ${rightAngleMark(pP, pIa, pB, 5, "#dc2626")}
+                        ${rightAngleMark(pQ, pIa, aRefForQ, 5.5, "#dc2626")}
+                        ${rightAngleMark(pP, pIa, bRefForP, 5, "#dc2626")}
 
                         <!-- 三角形 ABC -->
                         <polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="#f8fafc" fill-opacity="0.75" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
 
-                        <!-- 接点 P, Q, R, F と中心 I, Ia -->
+                        <!-- 接点 P, Q, R, F と中心 I, I_ex -->
                         <circle cx="${pF.x}" cy="${pF.y}" r="2.8" fill="#2563eb"/>
                         <circle cx="${pP.x}" cy="${pP.y}" r="2.8" fill="#dc2626"/>
                         <circle cx="${pQ.x}" cy="${pQ.y}" r="2.8" fill="#dc2626"/>
@@ -11168,10 +11638,10 @@ const formulaData = {
 
                         <!-- 頂点・中心ラベル -->
                         <text x="${pA.x}" y="${pA.y - 11}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
-                        <text x="${pB.x + 10}" y="${pB.y - 9}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
-                        <text x="${pC.x - 10}" y="${pC.y - 9}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                        <text x="${pB.x + 10}" y="${pB.y + 10}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                        <text x="${pC.x - 10}" y="${pC.y + 10}" font-size="13" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
                         <text x="${pI.x - 7}" y="${pI.y - 6}" font-size="12" font-weight="bold" text-anchor="end" dominant-baseline="central" fill="#2563eb">I</text>
-                        <text x="${pIa.x}" y="${pIa.y + 13}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">I<tspan dy="3" font-size="9">a</tspan></text>
+                        <text x="${lblIa.x}" y="${lblIa.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">${iExSubHtml}</text>
 
                         <!-- 接点ラベル F, P, Q, R -->
                         <text x="${lblF.x}" y="${lblF.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">F</text>
@@ -11181,45 +11651,31 @@ const formulaData = {
                     </svg>
                 </div>
                 <div style="margin-top: 4px;">
-                    (1) 内接円までの接線の長さを求めなさい。<br>
+                    (1) 内接円と辺 $\\mathrm{AB}$ の接点を $\\mathrm{F}$ とするとき、$\\mathrm{AF}$ の長さを求めなさい。<br>
                     (2) 内接円の半径 $r$ を求めなさい。<br>
-                    (3) 辺 $\\mathrm{BC}$ に接する傍接円までの接線の長さを求めなさい。<br>
-                    (4) 辺 $\\mathrm{BC}$ に接する傍接円の半径 $r_a$ を求めなさい。
+                    ${q3QuestionHtml}<br>
+                    (4) 辺 $\\mathrm{${touchSide}}$ に接する傍接円の半径 $${rExSymbol}$ を求めなさい。
                 </div>
             `,
-            answer: `(1) 頂点 $\\mathrm{A}$ から：${sMinusA}、頂点 $\\mathrm{B}$ から：${sMinusB}、頂点 $\\mathrm{C}$ から：${sMinusC}<br>(2) $r = ${rTex}$<br>(3) 頂点 $\\mathrm{A}$ から：${sVal}、辺 $\\mathrm{BC}$ 上の接点で分けた長さ：${sMinusC} と ${sMinusB}（AB, AC の延長線上の余分：${sMinusC}、${sMinusB}）<br>(4) $r_a = ${raTex}$`,
+            answer: `(1) AF = ${afVal}<br>(2) r = ${rStr}<br>(3) ${targetSegName} = ${targetSegVal}<br>(4) ${rExTextHtml} = ${raFinalStr}`,
             explanation: `
                 <strong>(1)</strong><br>
-                円の外部の1点から円に引いた2本の接線の長さは等しいので、内接円と辺 $\\mathrm{AB},\\, \\mathrm{BC},\\, \\mathrm{CA}$ の接点をそれぞれ $\\mathrm{F},\\, \\mathrm{D},\\, \\mathrm{E}$ とすると、<br>
-                $\\mathrm{AF} = \\mathrm{AE} = x$、$\\mathrm{BF} = \\mathrm{BD} = y$、$\\mathrm{CD} = \\mathrm{CE} = z$ とおける。<br>
-                各辺の長さより、<br>
-                $x + y = ${cTex}$、$y + z = ${aTex}$、$z + x = ${bTex}$。<br>
-                3つを足すと $2(x + y + z) = ${aTex} + ${bTex} + ${cTex} = ${2 * sVal}$ より $x + y + z = ${sVal}$。<br>
-                よって、<br>
-                ・頂点 $\\mathrm{A}$ から：$x = ${sVal} - ${aTex} = ${sMinusA}$<br>
-                ・頂点 $\\mathrm{B}$ から：$y = ${sVal} - ${bTex} = ${sMinusB}$<br>
-                ・頂点 $\\mathrm{C}$ から：$z = ${sVal} - ${cTex} = ${sMinusC}$<br><br>
+                内接円の接線の公式より、頂点 A から接点 F までの長さ AF は「頂点 A をはさむ2辺の和から向かい合う辺 BC を引いて 2 で割った値」になる。<br>
+                AF = ${fracHtml("AB + AC - BC", "2")} = ${fracHtml(`${cTex} + ${bTex} - ${aTex}`, "2")} = ${fracHtml(`${2 * afVal}`, "2")} = <strong>${afVal}</strong>。<br><br>
 
                 <strong>(2)</strong><br>
-                $\\triangle \\mathrm{ABC}$ の面積を $S$ とすると、内接円の半径 $r$ を用いて<br>
-                $$S = \\frac{1}{2}r(${aTex} + ${bTex} + ${cTex}) = ${sVal}r$$<br>
-                一方、$S = ${areaTex}$ なので、${sVal}r = ${areaTex}$ より $r = ${rTex}$。<br><br>
+                ${areaCalcHtml}。<br>
+                △ABC の面積を S とすると、内接円の中心 I から各辺への垂線の長さ（＝半径 r）を用いて<br>
+                S = ${fracHtml("1", "2")} × r × (AB + BC + CA) = ${fracHtml("1", "2")} × r × (${cTex} + ${aTex} + ${bTex}) = ${sVal}r<br>
+                S = ${areaStr} なので、${sVal}r = ${areaStr} より <strong>r = ${rStr}</strong>。<br><br>
 
                 <strong>(3)</strong><br>
-                辺 $\\mathrm{BC}$ に接する傍接円と辺 $\\mathrm{BC}$ の接点を $\\mathrm{P}$、辺 $\\mathrm{AB},\\, \\mathrm{AC}$ の延長線との接点をそれぞれ $\\mathrm{Q},\\, \\mathrm{R}$ とする。<br>
-                接線の長さが等しいことから $\\mathrm{AQ} = \\mathrm{AR}$、$\\mathrm{BQ} = \\mathrm{BP}$、$\\mathrm{CR} = \\mathrm{CP}$。<br>
-                $\\mathrm{AQ} + \\mathrm{AR} = (\\mathrm{AB} + \\mathrm{BP}) + (\\mathrm{AC} + \\mathrm{CP}) = ${cTex} + ${bTex} + ${aTex} = ${2 * sVal}$ より、<br>
-                頂点 $\\mathrm{A}$ からの接線の長さは $\\mathrm{AQ} = \\mathrm{AR} = ${sVal}$。<br>
-                また、$\\mathrm{BP} = \\mathrm{BQ} = ${sVal} - ${cTex} = ${sMinusC}$、$\\mathrm{CP} = \\mathrm{CR} = ${sVal} - ${bTex} = ${sMinusB}$。<br><br>
+                ${q3ExplainHtml}<br><br>
 
                 <strong>(4)</strong><br>
-                内接円の中心 $\\mathrm{I}$ から $\\mathrm{AB}$ に下ろした垂線の足を $\\mathrm{F}$（$\\mathrm{IF} = r = ${rTex}$）、傍接円の中心 $\\mathrm{I}_a$ から $\\mathrm{AB}$ の延長線に下ろした垂線の足を $\\mathrm{Q}$（$\\mathrm{I}_a\\mathrm{Q} = r_a$）とする。<br>
-                $\\triangle \\mathrm{AIF}$ と $\\triangle \\mathrm{AI}_a\\mathrm{Q}$ はともに直角三角形で $\\angle \\mathrm{A}$ を共有（$\\angle \\mathrm{FAI} = \\angle \\mathrm{QAI}_a$）しているので、<strong>$\\triangle \\mathrm{AIF} \\sim \\triangle \\mathrm{AI}_a\\mathrm{Q}$</strong>。<br>
-                相似比は $\\mathrm{AF} : \\mathrm{AQ} = ${sMinusA} : ${sVal}$ なので、<br>
-                $$\\frac{r_a}{r} = \\frac{\\mathrm{AQ}}{\\mathrm{AF}} = \\frac{${sVal}}{${sMinusA}}$$<br>
-                よって、<br>
-                $$r_a = ${raCalc}$$<br>
-                <strong>答え：(1) Aから ${sMinusA}、Bから ${sMinusB}、Cから ${sMinusC}　(2) $r = ${rTex}$　(3) Aから ${sVal}（BC上 ${sMinusC} と ${sMinusB}）　(4) $r_a = ${raTex}$</strong>
+                内接円の中心 I から下ろした垂線と傍接円の中心 ${iExTextHtml} から下ろした垂線との相似から、内接円半径 r と傍接円半径 ${rExTextHtml} を結びつけることができる。<br>
+                ${q4ExplainHtml}<br>
+                <strong>答え：(1) AF = ${afVal}　(2) r = ${rStr}　(3) ${targetSegName} = ${targetSegVal}　(4) ${rExTextHtml} = ${raFinalStr}</strong>
             `
         };
     }
