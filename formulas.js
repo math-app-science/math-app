@@ -11679,6 +11679,216 @@ const formulaData = {
             `
         };
     }
+},
+"自己相似（フラクタル）": {
+    level: "公立",
+    formula: `
+        <div>④ <strong>連なる図形や複数の円での相似比</strong>：二等辺三角形の中に相似な円が順に並ぶ場合など、相似な図形が連なるときは、隣り合う図形（または三角形と円）の<strong>相似比 $1 : r$</strong> を見つけて、半径・長さ・面積を順に求める（相似比が $1 : r$ のとき、面積比は <strong>$1 : r^2$</strong> になる）。</div>
+    `,
+    selfCheck: [
+        '直角三角形 ABM の辺の比から三平方の定理を使って高さ AM を求め、内接円の公式から円 O1 の半径を出せているか？',
+        '円 O1 の高さ（直径）を使って残りの高さを求め、全体の高さとの比から相似比を正しく導けているか？',
+        '求めた相似比（倍率）を使って、円 O2 → 円 O3 と順に半径を計算できているか？'
+    ],
+    generateRandom: function () {
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
+
+        const gcd = (a, b) => {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { const t = b; b = a % b; a = t; }
+            return a || 1;
+        };
+
+        // 平方根 n * sqrt(rad) を簡約する（rad >= 1, rad は平方因子を持たない形に正規化）
+        const simplifySqrt = (coeff, rad) => {
+            let c = coeff;
+            let r = rad;
+            for (let d = Math.floor(Math.sqrt(r)); d >= 2; d--) {
+                if (r % (d * d) === 0) {
+                    c *= d;
+                    r /= (d * d);
+                    break;
+                }
+            }
+            return { c, r };
+        };
+
+        // (coeff * sqrt(rad)) / den を約分して HTML 文字列を作る
+        const formatSqrtFrac = (coeff, rad, den) => {
+            const s = simplifySqrt(coeff, rad);
+            if (s.c === 0) return { html: "0", s: { c: 0, r: 1 }, den: 1 };
+            const g = gcd(Math.abs(s.c), Math.abs(den));
+            const n = s.c / g;
+            const d = den / g;
+            const rootPart = s.r === 1 ? "" : `√${s.r}`;
+            const numStr = (s.r > 1 && Math.abs(n) === 1)
+                ? `${n < 0 ? "−" : ""}${rootPart}`
+                : `${n}${rootPart}`;
+            const html = d === 1 ? `${numStr}` : `${fracHtml(`${numStr}`, `${d}`)}`;
+            return { html, s: { c: n, r: s.r }, den: d };
+        };
+
+        // 2つの同じ平方根を持つ項の差を計算
+        const addSubSameRootFrac = (a, da, b, db, rad, sign) => {
+            const lcmD = (da * db) / gcd(da, db);
+            const numA = a * (lcmD / da);
+            const numB = b * (lcmD / db);
+            const resNum = sign === "+" ? numA + numB : numA - numB;
+            return formatSqrtFrac(resNum, rad, lcmD);
+        };
+
+        // 2つの同じ平方根を持つ項の比を整数比 m : n に直す
+        const ratioSameRootFrac = (a, da, b, db) => {
+            const lcmD = (da * db) / gcd(da, db);
+            const left = Math.abs(a * (lcmD / da));
+            const right = Math.abs(b * (lcmD / db));
+            const g = gcd(left, right);
+            return { m: left / g, n: right / g };
+        };
+
+        // AB = AC = side, BC = base, 高さ h = hCoeff * sqrt(hRad)
+        // ratioBase, ratioSide は直角三角形 ABM における BM : AB の比（または三辺の比の基準）
+        const cases = [
+            // 整数高さ（ピタゴラス数）
+            { side: 5,  base: 6,  hCoeff: 4,  hRad: 1, rBm: 3, rSide: 5, rHStr: "4" },
+            { side: 10, base: 12, hCoeff: 8,  hRad: 1, rBm: 3, rSide: 5, rHStr: "4" },
+            { side: 15, base: 18, hCoeff: 12, hRad: 1, rBm: 3, rSide: 5, rHStr: "4" },
+            { side: 13, base: 10, hCoeff: 12, hRad: 1, rBm: 5, rSide: 13, rHStr: "12" },
+            { side: 17, base: 16, hCoeff: 15, hRad: 1, rBm: 8, rSide: 17, rHStr: "15" },
+            { side: 17, base: 30, hCoeff: 8,  hRad: 1, rBm: 15, rSide: 17, rHStr: "8" },
+            // 正三角形ベース（高さが √3）
+            { side: 6,  base: 6,  hCoeff: 3,  hRad: 3, rBm: 1, rSide: 2, rHStr: "√3" },
+            { side: 8,  base: 8,  hCoeff: 4,  hRad: 3, rBm: 1, rSide: 2, rHStr: "√3" },
+            { side: 10, base: 10, hCoeff: 5,  hRad: 3, rBm: 1, rSide: 2, rHStr: "√3" },
+            { side: 12, base: 12, hCoeff: 6,  hRad: 3, rBm: 1, rSide: 2, rHStr: "√3" },
+            // √2 や √5 を含むバリエーション
+            { side: 3,  base: 4,  hCoeff: 1,  hRad: 5, rBm: 2, rSide: 3, rHStr: "√5" },
+            { side: 6,  base: 8,  hCoeff: 2,  hRad: 5, rBm: 2, rSide: 3, rHStr: "√5" },
+            { side: 6,  base: 4,  hCoeff: 4,  hRad: 2, rBm: 1, rSide: 3, rHStr: "2√2" },
+            { side: 9,  base: 6,  hCoeff: 6,  hRad: 2, rBm: 1, rSide: 3, rHStr: "2√2" }
+        ];
+        const c = cases[Math.floor(Math.random() * cases.length)];
+        const { side, base, hCoeff, hRad, rBm, rSide, rHStr } = c;
+
+        const halfBase = base / 2;
+        const hNorm = simplifySqrt(hCoeff, hRad);
+        const hStr = formatSqrtFrac(hNorm.c, hNorm.r, 1).html;
+
+        // 比の1あたりを求める倍率（例：AB = 10 で比が 5 なら 2倍）
+        const unitMul = side / rSide;
+        const unitMulStr = Number.isInteger(unitMul) ? `${unitMul}` : formatSqrtFrac(unitMul, 1, 1).html;
+
+        // △ABC の面積 = (1/2) * base * h
+        const areaInfo = formatSqrtFrac(halfBase * hNorm.c, hNorm.r, 1);
+        const perimAbc = side + side + base;
+
+        // 内接円の公式: area = (1/2) * r1 * perimAbc => r1 = (2 * area) / perimAbc
+        const r1Info = formatSqrtFrac(2 * areaInfo.s.c, areaInfo.s.r, perimAbc);
+
+        // 直径 2 * r1
+        const diam1Info = formatSqrtFrac(2 * r1Info.s.c, r1Info.s.r, r1Info.den);
+
+        // 上側残余の二等辺三角形の高さ h2 = h - 2*r1
+        const h2Info = (diam1Info.s.r === hNorm.r)
+            ? addSubSameRootFrac(hNorm.c, 1, diam1Info.s.c, diam1Info.den, hNorm.r, "-")
+            : formatSqrtFrac(hNorm.c * diam1Info.den - diam1Info.s.c, hNorm.r, diam1Info.den);
+
+        // 全体の高さ h と上側の高さ h2 の比（相似比 simM : simN）
+        const simRatio = ratioSameRootFrac(hNorm.c, 1, h2Info.s.c, h2Info.den);
+        const simM = simRatio.m;
+        const simN = simRatio.n;
+
+        // (2) 円 O2 の半径 r2 = r1 * (simN / simM)
+        const r2Info = formatSqrtFrac(r1Info.s.c * simN, r1Info.s.r, r1Info.den * simM);
+
+        // (3) 円 O3 の半径 r3 = r2 * (simN / simM)
+        const r3Info = formatSqrtFrac(r2Info.s.c * simN, r2Info.s.r, r2Info.den * simM);
+
+        // SVG描画：二等辺三角形 ABC の中に、順に内接する円 O1, O2, O3 と垂線 AM を描画
+        const A = { x: 150, y: 24 };
+        const B = { x: 65, y: 184 };
+        const C = { x: 235, y: 184 };
+        const M = { x: 150, y: 184 };
+
+        const halfBaseSvg = (C.x - B.x) / 2;
+        const heightSvg = B.y - A.y;
+        const slantSvg = Math.hypot(halfBaseSvg, heightSvg);
+        const sinHalfApex = halfBaseSvg / slantSvg;
+
+        const r1Svg = Number(((heightSvg * sinHalfApex) / (1 + sinHalfApex)).toFixed(2));
+        const cy1Svg = Number((B.y - r1Svg).toFixed(2));
+
+        const kSvg = (1 - sinHalfApex) / (1 + sinHalfApex);
+        const r2Svg = Number((r1Svg * kSvg).toFixed(2));
+        const cy2Svg = Number((cy1Svg - (r1Svg + r2Svg)).toFixed(2));
+
+        const r3Svg = Number((r2Svg * kSvg).toFixed(2));
+        const cy3Svg = Number((cy2Svg - (r2Svg + r3Svg)).toFixed(2));
+
+        const sq = 7;
+        const rightAngleMark = `<polyline points="${M.x - sq},${M.y} ${M.x - sq},${M.y - sq} ${M.x},${M.y - sq}" fill="none" stroke="#64748b" stroke-width="1.2"/>`;
+
+        const svgHtml = `
+            <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="35 4 230 198" style="width: 100%; max-width: 280px; height: auto;">
+                    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                    <line x1="${A.x}" y1="${A.y}" x2="${M.x}" y2="${M.y}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
+                    ${rightAngleMark}
+                    <circle cx="${A.x}" cy="${cy1Svg}" r="${r1Svg}" fill="#dbeafe" fill-opacity="0.7" stroke="#2563eb" stroke-width="1.6"/>
+                    <circle cx="${A.x}" cy="${cy2Svg}" r="${r2Svg}" fill="#fef3c7" fill-opacity="0.85" stroke="#d97706" stroke-width="1.5"/>
+                    <circle cx="${A.x}" cy="${cy3Svg}" r="${r3Svg}" fill="#dcfce7" fill-opacity="0.85" stroke="#16a34a" stroke-width="1.4"/>
+                    <text x="${A.x}" y="${A.y - 10}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                    <text x="${B.x - 10}" y="${B.y + 8}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                    <text x="${C.x + 10}" y="${C.y + 8}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                    <text x="${M.x}" y="${M.y + 10}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#64748b">M</text>
+                    <text x="${A.x}" y="${cy1Svg}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1e3a8a">O<tspan dy="3" font-size="8.5">1</tspan></text>
+                    <text x="${A.x + r2Svg + 12}" y="${cy2Svg}" font-size="10" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#92400e">O<tspan dy="3" font-size="8">2</tspan></text>
+                    <text x="${A.x + r3Svg + 12}" y="${cy3Svg}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#166534">O<tspan dy="3" font-size="7.5">3</tspan></text>
+                </svg>
+            </div>
+        `;
+
+        return {
+            problem: `
+                <div>
+                    AB = ${side} cm、AC = ${side} cm、BC = ${base} cm の二等辺三角形 ABC がある。<br>
+                    図のように、二等辺三角形 ABC の辺 AB、AC に接しながら順に小さくなる相似な円を並べ、中心をそれぞれ O<sub>1</sub>、O<sub>2</sub>、O<sub>3</sub> とする。<br>
+                    次の問いに答えなさい。
+                </div>
+                ${svgHtml}
+                <div style="margin-top: 4px;">
+                    (1) 円 O<sub>1</sub> の半径を求めなさい。<br>
+                    (2) 円 O<sub>2</sub> の半径を求めなさい。<br>
+                    (3) 円 O<sub>3</sub> の半径を求めなさい。
+                </div>
+            `,
+            answer: `(1) ${r1Info.html} cm<br>(2) ${r2Info.html} cm<br>(3) ${r3Info.html} cm`,
+            explanation: `
+                <strong>(1)</strong><br>
+                頂点 A から底辺 BC へ垂線 AM を引くと、BM = MC = ${halfBase} cm となる。<br>
+                直角三角形 ABM において、BM : AB = ${halfBase} : ${side} = <strong>${rBm} : ${rSide}</strong> なので、三辺の比（BM : AM : AB）を考え、三平方の定理より高さの比は <strong>${rHStr}</strong> となる。<br>
+                比の1あたりは ${side} ÷ ${rSide} = ${unitMulStr} 倍なので、高さ AM は<br>
+                AM = ${rHStr} × ${unitMulStr} = <strong>${hStr} cm</strong><br>
+                △ABC の面積は ${fracHtml("1", "2")} × ${base} × ${hStr} = ${areaInfo.html} cm<sup>2</sup>、周りの長さは ${side} + ${side} + ${base} = ${perimAbc} cm。<br>
+                円 O<sub>1</sub> の半径を r<sub>1</sub> とすると、内接円の公式（面積 = ${fracHtml("1", "2")} × r<sub>1</sub> × 周りの長さ）より、<br>
+                ${areaInfo.html} = ${fracHtml("1", "2")} × r<sub>1</sub> × ${perimAbc} &nbsp;⇒&nbsp; r<sub>1</sub> = <strong>${r1Info.html} cm</strong><br><br>
+
+                <strong>(2)</strong><br>
+                円 O<sub>1</sub> は底辺 BC に接しているので、底辺 BC から円 O<sub>1</sub> の頂点 A 側の端までの高さは 2r<sub>1</sub> = ${diam1Info.html} cm。<br>
+                よって、その上側の小さな二等辺三角形の高さは<br>
+                ${hStr} − ${diam1Info.html} = ${h2Info.html} cm<br>
+                全体の高さ ${hStr} cm と上側の高さ ${h2Info.html} cm の比から、相似比は <strong>${simM} : ${simN}</strong> となる。<br>
+                公式④より、円 O<sub>2</sub> の半径は円 O<sub>1</sub> の半径の ${fracHtml(`${simN}`, `${simM}`)} 倍なので、<br>
+                ${r1Info.html} × ${fracHtml(`${simN}`, `${simM}`)} = <strong>${r2Info.html} cm</strong><br><br>
+
+                <strong>(3)</strong><br>
+                隣り合う円の相似比は ${simM} : ${simN} なので、円 O<sub>3</sub> の半径は円 O<sub>2</sub> の半径の ${fracHtml(`${simN}`, `${simM}`)} 倍となる。<br>
+                よって、<br>
+                ${r2Info.html} × ${fracHtml(`${simN}`, `${simM}`)} = <strong>${r3Info.html} cm</strong>
+            `
+        };
+    }
 }
 
 
