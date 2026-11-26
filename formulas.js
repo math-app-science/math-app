@@ -5542,306 +5542,7 @@ const formulaData = {
     },
      
     "平面図形": {
-        "三平方の定理": {
-    category: "図形",
-    level: "公立",
-    formula: "<strong>【三平方の定理】</strong><br>" +
-             "直角三角形の直角をはさむ2辺の長さを \\(a, b\\)、斜辺の長さを \\(c\\) とすると、<br>" +
-             "\\(a^2 + b^2 = c^2\\) が成り立ちます。<br>" +
-             "・斜辺を求めるとき：\\(c = \\sqrt{a^2 + b^2}\\)<br>" +
-             "・その他の1辺を求めるとき：\\(a = \\sqrt{c^2 - b^2}\\)、\\(b = \\sqrt{c^2 - a^2}\\)<br>" +
-             "・2辺以上に文字が含まれるとき：\\(a^2 + b^2 = c^2\\) をそのまま用いて方程式を立てます。",
-    generateRandom: function() {
-        // 求める対象をランダム選択 ("a", "b", "c")
-        const targetSide = ["a", "b", "c"][Math.floor(Math.random() * 3)];
-        
-        let a, b, c;
-        let insideVal = 0;
-
-        // ルートを簡約化するヘルパー関数 (例: 20 -> {coef: 2, inside: 5})
-        const simplifyRoot = (n) => {
-            let coef = 1;
-            let inside = n;
-            for (let i = 2; i * i <= inside; i++) {
-                while (inside % (i * i) === 0) {
-                    coef *= i;
-                    inside /= (i * i);
-                }
-            }
-            return { coef, inside };
-        };
-
-        const formatRoot = (coef, inside) => {
-            if (inside === 1) return `${coef}`;
-            if (coef === 1) return `\\sqrt{${inside}}`;
-            return `${coef}\\sqrt{${inside}}`;
-        };
-        
-        if (targetSide === "c") {
-            // 斜辺 c を求める（整数にならない組み合わせ）
-            do {
-                a = Math.floor(Math.random() * 6) + 2; // 2〜7
-                b = Math.floor(Math.random() * 6) + 2; // 2〜7
-                insideVal = a * a + b * b;
-            } while (Number.isInteger(Math.sqrt(insideVal)));
-        } else if (targetSide === "a") {
-            // 辺 a を求める
-            do {
-                c = Math.floor(Math.random() * 7) + 5; // 5〜11
-                b = Math.floor(Math.random() * (c - 2)) + 2; // 2〜c-2
-                insideVal = c * c - b * b;
-            } while (Number.isInteger(Math.sqrt(insideVal)) || insideVal <= 0);
-        } else {
-            // 辺 b を求める
-            do {
-                c = Math.floor(Math.random() * 7) + 5; // 5〜11
-                a = Math.floor(Math.random() * (c - 2)) + 2; // 2〜c-2
-                insideVal = c * c - a * a;
-            } while (Number.isInteger(Math.sqrt(insideVal)) || insideVal <= 0);
-        }
-
-        const simplified = simplifyRoot(insideVal);
-        const finalAnsText = formatRoot(simplified.coef, simplified.inside);
-        const expansionStep = simplified.coef > 1 ? ` = ${finalAnsText}` : "";
-
-        // --- 1°単位の精密ランダム回転 ＆ 外側ラベル配置 ---
-        const angleDeg = Math.floor(Math.random() * 360); // 0〜359度
-        const angleRad = (angleDeg * Math.PI) / 180;
-
-        const baseC = { x: 0, y: 0 };
-        const baseA = { x: 0, y: 60 }; // 縦辺
-        const baseB = { x: 80, y: 0 }; // 横辺
-
-        const rotatePoint = (pt, rad) => ({
-            x: pt.x * Math.cos(rad) - pt.y * Math.sin(rad),
-            y: pt.x * Math.sin(rad) + pt.y * Math.cos(rad)
-        });
-
-        const rC = rotatePoint(baseC, angleRad);
-        const rA = rotatePoint(baseA, angleRad);
-        const rB = rotatePoint(baseB, angleRad);
-
-        const svgW = 220, svgH = 180;
-        const allX = [rC.x, rA.x, rB.x];
-        const allY = [rC.y, rA.y, rB.y];
-        const minX = Math.min(...allX), maxX = Math.max(...allX);
-        const minY = Math.min(...allY), maxY = Math.max(...allY);
-        
-        const centerX = (minX + maxX) / 2;
-        const centerY = (minY + maxY) / 2;
-
-        const offsetX = svgW / 2 - centerX;
-        const offsetY = svgH / 2 - centerY;
-
-        const tx = (pt) => ({ x: pt.x + offsetX, y: pt.y + offsetY });
-
-        const pC = tx(rC);
-        const pA = tx(rA);
-        const pB = tx(rB);
-
-        const gX = (pC.x + pA.x + pB.x) / 3;
-        const gY = (pC.y + pA.y + pB.y) / 3;
-
-        const getOuterLabelPos = (p1, p2, dist) => {
-            const midX = (p1.x + p2.x) / 2;
-            const midY = (p1.y + p2.y) / 2;
-            let vx = midX - gX;
-            let vy = midY - gY;
-            const len = Math.hypot(vx, vy) || 1;
-            return {
-                x: midX + (vx / len) * dist,
-                y: midY + (vy / len) * dist + 4
-            };
-        };
-
-        const posA = getOuterLabelPos(pC, pA, 16);
-        const posB = getOuterLabelPos(pC, pB, 16);
-        const posC = getOuterLabelPos(pA, pB, 18);
-
-        const vCAx = (pA.x - pC.x) / Math.hypot(pA.x - pC.x, pA.y - pC.y);
-        const vCAy = (pA.y - pC.y) / Math.hypot(pA.x - pC.x, pA.y - pC.y);
-        const vCBx = (pB.x - pC.x) / Math.hypot(pB.x - pC.x, pB.y - pC.y);
-        const vCBy = (pB.y - pC.y) / Math.hypot(pB.x - pC.x, pB.y - pC.y);
-        const rLen = 10;
-
-        const q1 = { x: pC.x + vCAx * rLen, y: pC.y + vCAy * rLen };
-        const q2 = { x: q1.x + vCBx * rLen, y: q1.y + vCBy * rLen };
-        const q3 = { x: pC.x + vCBx * rLen, y: pC.y + vCBy * rLen };
-
-        // 表示用ラベル用（ダミーとして値を入れる。実際のルート表示は問題文と解説で組み立てる）
-        let labelA_val, labelB_val, labelC_val;
-        if (targetSide === "a") {
-            labelA_val = "x";
-            labelB_val = `${b}`;
-            labelC_val = targetSide === "c" ? "x" : `${c}`; // cは数値
-        } else if (targetSide === "b") {
-            labelA_val = `${a}`;
-            labelB_val = "x";
-            labelC_val = `${c}`;
-        } else {
-            labelA_val = `${a}`;
-            labelB_val = `${b}`;
-            labelC_val = "x";
-        }
-
-        // 三角形上の表示が数値になる部分はそのまま、未知数は "x"
-        let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 220px;">` +
-                       `<style>.svg-text { font-family: sans-serif; font-size: 12px; fill: #000; font-weight: bold; }</style>` +
-                       `<polygon points="${pC.x},${pC.y} ${pB.x},${pB.y} ${pA.x},${pA.y}" fill="#eef2f7" stroke="#333" stroke-width="2" />` +
-                       `<path d="M ${q1.x} ${q1.y} L ${q2.x} ${q2.y} L ${q3.x} ${q3.y}" fill="none" stroke="#e74c3c" stroke-width="1.5" />` +
-                       `<text x="${posA.x}" y="${posA.y}" class="svg-text" text-anchor="middle">${targetSide === "a" ? "x" : a}</text>` +
-                       `<text x="${posB.x}" y="${posB.y}" class="svg-text" text-anchor="middle">${targetSide === "b" ? "x" : b}</text>` +
-                       `<text x="${posC.x}" y="${posC.y}" class="svg-text" text-anchor="middle" fill="#27ae60">${targetSide === "c" ? "x" : c}</text>` +
-                       `</svg>`;
-
-        let problemText = "";
-        let explanationText = "";
-
-        if (targetSide === "c") {
-            problemText = `直角をはさむ2辺の長さが \\(${a}\\text{cm}\\) と \\(${b}\\text{cm}\\) である直角三角形の斜辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
-            explanationText = `【解説】<br>` +
-                              `1. <strong>斜辺 \\(c\\) を求める公式 \\(c = \\sqrt{a^2 + b^2}\\) にあてはめます。</strong><br>` +
-                              `　\\(x = \\sqrt{${a}^2 + ${b}^2}\\)<br>` +
-                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
-                              `　\\(x = \\sqrt{${a*a} + ${b*b}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
-                              `3. <strong>したがって、求める斜辺の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
-        } else if (targetSide === "a") {
-            problemText = `斜辺の長さが \\(${c}\\text{cm}\\)、直角をはさむ1辺の長さが \\(${b}\\text{cm}\\) である直角三角形の、もう1つの直角をはさむ辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
-            explanationText = `【解説】<br>` +
-                              `1. <strong>直角をはさむ辺 \\(a\\) を求める公式 \\(a = \\sqrt{c^2 - b^2}\\) にあてはめます。</strong><br>` +
-                              `　\\(x = \\sqrt{${c}^2 - ${b}^2}\\)<br>` +
-                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
-                              `　\\(x = \\sqrt{${c*c} - ${b*b}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
-                              `3. <strong>したがって、求める辺 \\(a\\) の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
-        } else {
-            problemText = `斜辺の長さが \\(${c}\\text{cm}\\)、直角をはさむ1辺の長さが \\(${a}\\text{cm}\\) である直角三角形の、もう1つの直角をはさむ辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
-            explanationText = `【解説】<br>` +
-                              `1. <strong>直角をはさむ辺 \\(b\\) を求める公式 \\(b = \\sqrt{c^2 - a^2}\\) にあてはめます。</strong><br>` +
-                              `　\\(x = \\sqrt{${c}^2 - ${a}^2}\\)<br>` +
-                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
-                              `　\\(x = \\sqrt{${c*c} - ${a*a}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
-                              `3. <strong>したがって、求める辺 \\(b\\) の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
-        }
-
-        return {
-            problem: problemText,
-            explanation: explanationText
-        };
-    }
-},
-"多角形の内角・外角の和": {
-    category: "平面図形",
-    level: "基礎",
-    formula: "<strong>【多角形の内角・外角の和】</strong><br>" +
-             "・\\(n\\) 角形の内角の和は \\(180^\\circ \\times (n - 2)\\)<br>" +
-             "・どんな \\(n\\) 角形でも、外角の和は常に \\(360^\\circ\\)<br>" +
-             "・正 \\(n\\) 角形の \\(1\\) つの外角は \\(\\frac{360^\\circ}{n}\\)、\\(1\\) つの内角は \\(180^\\circ - (1\\)つ\\(の\\)外角\)",
-    generateRandom: function() {
-        // 数値を漢数字に変換するヘルパー関数
-        const toKanjiNumber = (num) => {
-            const digits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
-            if (num < 10) return digits[num];
-            if (num === 10) return "十";
-            if (num < 20) return "十" + digits[num % 10];
-            const tens = Math.floor(num / 10);
-            const ones = num % 10;
-            return (tens > 1 ? digits[tens] : "") + "十" + (ones > 0 ? digits[ones] : "");
-        };
-
-        // パターン選択（0: 正多角形の内角の和, 1: 外角から正n角形を求める, 2: 内角と外角の比から正n角形を求める, 3: 正ではない多角形の内角を求める）
-        const pattern = Math.floor(Math.random() * 4);
-
-        let problemText = "";
-        let explanationText = "";
-
-        if (pattern === 0) {
-            // パターン0: 正二十角形など、正n角形の内角の和
-            const nList = [10, 12, 15, 18, 20];
-            const n = nList[Math.floor(Math.random() * nList.length)];
-            const sumAngle = 180 * (n - 2);
-            const kanjiName = `正${toKanjiNumber(n)}角形`;
-
-            problemText = `${kanjiName}の内角の和を求めなさい。`;
-            explanationText = `【解説】<br>` +
-                              `1. <strong>多角形の内角の和の公式</strong> \\(180^\\circ \\times (n - 2)\\) を使います。<br>` +
-                              `2. <strong>\\(n = ${n}\\) を公式に代入して計算します。</strong><br>` +
-                              `　\\(180^\\circ \\times (${n} - 2) = 180^\\circ \\times ${n - 2} = \\mathbf{${sumAngle}^\\circ}\\) です。`;
-
-        } else if (pattern === 1) {
-            // パターン1: 1つの外角の大きさから正n角形を求める
-            const exteriorAngles = [24, 30, 36, 40, 45];
-            const ext = exteriorAngles[Math.floor(Math.random() * exteriorAngles.length)];
-            const n = 360 / ext;
-            const kanjiName = `正${toKanjiNumber(n)}角形`;
-
-            problemText = `1 つの外角の大きさが \\(${ext}^\\circ\\) になる正多角形がある。正何角形かを求めなさい。`;
-            explanationText = `【解説】<br>` +
-                              `1. <strong>外角の和は常に \\(360^\\circ\\) です。</strong><br>` +
-                              `2. <strong>\\(1\\) つの外角の大きさから辺の数 \\(n\\) を求めます。</strong><br>` +
-                              `　\\(360^\\circ \\div ${ext}^\\circ = ${n}\\)<br>` +
-                              `3. したがって、求める図形は \\(\\mathbf{${kanjiName}}\\) です。`;
-
-        } else if (pattern === 2) {
-            // パターン2: 1つの内角が外角の〇倍である正多角形
-            const mults = [3, 4, 5, 7];
-            const m = mults[Math.floor(Math.random() * mults.length)];
-            const ext = 180 / (m + 1);
-            const n = 2 * (m + 1);
-            const kanjiName = `正${toKanjiNumber(n)}角形`;
-
-            problemText = `1 つの内角の大きさが 1 つの外角の大きさの \\(${m}\\) 倍である正多角形を求めなさい。`;
-            explanationText = `【解説】<br>` +
-                              `1. <strong>外角の大きさを \\(x^\\circ\\) とすると、内角の大きさは \\(${m}x^\\circ\\) と表せます。</strong><br>` +
-                              `2. <strong>内角と外角の和は \\(180^\\circ\\) なので、方程式を立てます。</strong><br>` +
-                              `　\\(${m}x + x = 180^\\circ \\implies ${m+1}x = 180^\\circ \\implies x = ${ext}^\\circ\\)（外角）<br>` +
-                              `3. <strong>外角の和 \\(360^\\circ\\) を \\(1\\) つの外角で割って辺の数 \\(n\\) を求めます。</strong><br>` +
-                              `　\\(360^\\circ \\div ${ext}^\\circ = ${n}\\)<br>` +
-                              `したがって、求める図形は \\(\\mathbf{${kanjiName}}\\) です。`;
-
-        } else {
-            // パターン3: 正ではない多角形（四角形や五角形の内角の未知の角を求める）
-            const type = Math.random() < 0.5 ? "quad" : "penta";
-            if (type === "quad") {
-                const a = Math.floor(Math.random() * 30) + 60;
-                const b = Math.floor(Math.random() * 30) + 70;
-                const c = Math.floor(Math.random() * 30) + 80;
-                const d = 360 - (a + b + c);
-
-                problemText = `四角形の4つの内角のうち、3つの角の大きさがそれぞれ \\(${a}^\\circ\\)、\\(${b}^\\circ\\)、\\(${c}^\\circ\\) であるとき、残りの角の大きさを求めなさい。`;
-                explanationText = `【解説】<br>` +
-                                  `1. <strong>四角形の内角の和は \\(180^\\circ \\times (4 - 2) = 360^\\circ\\) です。</strong><br>` +
-                                  `2. <strong>わかっている内角を足して \\(360^\\circ\\) から引きます。</strong><br>` +
-                                  `　\\(360^\\circ - (${a}^\\circ + ${b}^\\circ + ${c}^\\circ)\\)<br>` +
-                                  `　\\(= 360^\\circ - ${a+b+c}^\\circ = \\mathbf{${d}^\\circ}\\) です。`;
-            } else {
-                const angles = [95, 100, 110, 115, 120];
-                const targetIdx = Math.floor(Math.random() * 5);
-                const unknownAns = angles[targetIdx];
-                let knownSum = 0;
-                const knownAngles = angles.filter((val, idx) => {
-                    if (idx === targetIdx) return false;
-                    knownSum += val;
-                    return true;
-                });
-
-                const formattedKnownAngles = knownAngles.map(v => `\\(${v}^\\circ\\)`).join("、");
-
-                problemText = `五角形の5つの内角のうち、4つの角の大きさがそれぞれ ${formattedKnownAngles} であるとき、残りの角の大きさを求めなさい。`;
-                explanationText = `【解説】<br>` +
-                                  `1. <strong>五角形の内角の和は \\(180^\\circ \\times (5 - 2) = 540^\\circ\\) です。</strong><br>` +
-                                  `2. <strong>すべての内角の和から、わかっている内角の合計を引きます。</strong><br>` +
-                                  `　\\(540^\\circ - (${knownAngles.map(v => `${v}^\\circ`).join(" + ")})\\)<br>` +
-                                  `　\\(= 540^\\circ - ${knownSum}^\\circ = \\mathbf{${unknownAns}^\\circ}\\) です。`;
-            }
-        }
-
-        return {
-            problem: problemText,
-            explanation: explanationText
-        };
-    }
-},
-"多角形の対角線": {
+       "多角形の対角線": {
     category: "平面図形",
     level: "基礎",
     formula: "<strong>【多角形の対角線】</strong><br>" +
@@ -5919,6 +5620,8 @@ const formulaData = {
         };
     }
 },
+
+
 "角度計算の基本": {
     category: "平面図形",
     level: "基礎",
@@ -6191,6 +5894,119 @@ const formulaData = {
         };
     }
 },
+"多角形の内角・外角の和": {
+    category: "平面図形",
+    level: "基礎",
+    formula: "<strong>【多角形の内角・外角の和】</strong><br>" +
+             "・\\(n\\) 角形の内角の和は \\(180^\\circ \\times (n - 2)\\)<br>" +
+             "・どんな \\(n\\) 角形でも、外角の和は常に \\(360^\\circ\\)<br>" +
+             "・正 \\(n\\) 角形の \\(1\\) つの外角は \\(\\frac{360^\\circ}{n}\\)、\\(1\\) つの内角は \\(180^\\circ - (1\\)つ\\(の\\)外角\)",
+    generateRandom: function() {
+        // 数値を漢数字に変換するヘルパー関数
+        const toKanjiNumber = (num) => {
+            const digits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+            if (num < 10) return digits[num];
+            if (num === 10) return "十";
+            if (num < 20) return "十" + digits[num % 10];
+            const tens = Math.floor(num / 10);
+            const ones = num % 10;
+            return (tens > 1 ? digits[tens] : "") + "十" + (ones > 0 ? digits[ones] : "");
+        };
+
+        // パターン選択（0: 正多角形の内角の和, 1: 外角から正n角形を求める, 2: 内角と外角の比から正n角形を求める, 3: 正ではない多角形の内角を求める）
+        const pattern = Math.floor(Math.random() * 4);
+
+        let problemText = "";
+        let explanationText = "";
+
+        if (pattern === 0) {
+            // パターン0: 正二十角形など、正n角形の内角の和
+            const nList = [10, 12, 15, 18, 20];
+            const n = nList[Math.floor(Math.random() * nList.length)];
+            const sumAngle = 180 * (n - 2);
+            const kanjiName = `正${toKanjiNumber(n)}角形`;
+
+            problemText = `${kanjiName}の内角の和を求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>多角形の内角の和の公式</strong> \\(180^\\circ \\times (n - 2)\\) を使います。<br>` +
+                              `2. <strong>\\(n = ${n}\\) を公式に代入して計算します。</strong><br>` +
+                              `　\\(180^\\circ \\times (${n} - 2) = 180^\\circ \\times ${n - 2} = \\mathbf{${sumAngle}^\\circ}\\) です。`;
+
+        } else if (pattern === 1) {
+            // パターン1: 1つの外角の大きさから正n角形を求める
+            const exteriorAngles = [24, 30, 36, 40, 45];
+            const ext = exteriorAngles[Math.floor(Math.random() * exteriorAngles.length)];
+            const n = 360 / ext;
+            const kanjiName = `正${toKanjiNumber(n)}角形`;
+
+            problemText = `1 つの外角の大きさが \\(${ext}^\\circ\\) になる正多角形がある。正何角形かを求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>外角の和は常に \\(360^\\circ\\) です。</strong><br>` +
+                              `2. <strong>\\(1\\) つの外角の大きさから辺の数 \\(n\\) を求めます。</strong><br>` +
+                              `　\\(360^\\circ \\div ${ext}^\\circ = ${n}\\)<br>` +
+                              `3. したがって、求める図形は \\(\\mathbf{${kanjiName}}\\) です。`;
+
+        } else if (pattern === 2) {
+            // パターン2: 1つの内角が外角の〇倍である正多角形
+            const mults = [3, 4, 5, 7];
+            const m = mults[Math.floor(Math.random() * mults.length)];
+            const ext = 180 / (m + 1);
+            const n = 2 * (m + 1);
+            const kanjiName = `正${toKanjiNumber(n)}角形`;
+
+            problemText = `1 つの内角の大きさが 1 つの外角の大きさの \\(${m}\\) 倍である正多角形を求めなさい。`;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>外角の大きさを \\(x^\\circ\\) とすると、内角の大きさは \\(${m}x^\\circ\\) と表せます。</strong><br>` +
+                              `2. <strong>内角と外角の和は \\(180^\\circ\\) なので、方程式を立てます。</strong><br>` +
+                              `　\\(${m}x + x = 180^\\circ \\implies ${m+1}x = 180^\\circ \\implies x = ${ext}^\\circ\\)（外角）<br>` +
+                              `3. <strong>外角の和 \\(360^\\circ\\) を \\(1\\) つの外角で割って辺の数 \\(n\\) を求めます。</strong><br>` +
+                              `　\\(360^\\circ \\div ${ext}^\\circ = ${n}\\)<br>` +
+                              `したがって、求める図形は \\(\\mathbf{${kanjiName}}\\) です。`;
+
+        } else {
+            // パターン3: 正ではない多角形（四角形や五角形の内角の未知の角を求める）
+            const type = Math.random() < 0.5 ? "quad" : "penta";
+            if (type === "quad") {
+                const a = Math.floor(Math.random() * 30) + 60;
+                const b = Math.floor(Math.random() * 30) + 70;
+                const c = Math.floor(Math.random() * 30) + 80;
+                const d = 360 - (a + b + c);
+
+                problemText = `四角形の4つの内角のうち、3つの角の大きさがそれぞれ \\(${a}^\\circ\\)、\\(${b}^\\circ\\)、\\(${c}^\\circ\\) であるとき、残りの角の大きさを求めなさい。`;
+                explanationText = `【解説】<br>` +
+                                  `1. <strong>四角形の内角の和は \\(180^\\circ \\times (4 - 2) = 360^\\circ\\) です。</strong><br>` +
+                                  `2. <strong>わかっている内角を足して \\(360^\\circ\\) から引きます。</strong><br>` +
+                                  `　\\(360^\\circ - (${a}^\\circ + ${b}^\\circ + ${c}^\\circ)\\)<br>` +
+                                  `　\\(= 360^\\circ - ${a+b+c}^\\circ = \\mathbf{${d}^\\circ}\\) です。`;
+            } else {
+                const angles = [95, 100, 110, 115, 120];
+                const targetIdx = Math.floor(Math.random() * 5);
+                const unknownAns = angles[targetIdx];
+                let knownSum = 0;
+                const knownAngles = angles.filter((val, idx) => {
+                    if (idx === targetIdx) return false;
+                    knownSum += val;
+                    return true;
+                });
+
+                const formattedKnownAngles = knownAngles.map(v => `\\(${v}^\\circ\\)`).join("、");
+
+                problemText = `五角形の5つの内角のうち、4つの角の大きさがそれぞれ ${formattedKnownAngles} であるとき、残りの角の大きさを求めなさい。`;
+                explanationText = `【解説】<br>` +
+                                  `1. <strong>五角形の内角の和は \\(180^\\circ \\times (5 - 2) = 540^\\circ\\) です。</strong><br>` +
+                                  `2. <strong>すべての内角の和から、わかっている内角の合計を引きます。</strong><br>` +
+                                  `　\\(540^\\circ - (${knownAngles.map(v => `${v}^\\circ`).join(" + ")})\\)<br>` +
+                                  `　\\(= 540^\\circ - ${knownSum}^\\circ = \\mathbf{${unknownAns}^\\circ}\\) です。`;
+            }
+        }
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+},
+
 "三枚相似": {
     category: "平面図形",
     level: "公立",
@@ -6689,6 +6505,427 @@ const formulaData = {
                 };
             }
         },
+"カックン折れ線90°": {
+    level: "難関私立",
+    formula: `
+        <div><strong>カックン折れ線90°</strong>：直線に向かって90°が刺さっている時に垂線を下すと相似ができる。特に正方形や長方形の折り返しの時に発生することが多い。</div>
+    `,
+    selfCheck: [
+        '折り返しの合同から、等しい辺（AE＝A\'E、AD＝A\'D\' など）と移動した90°の角（∠DEF、∠EA\'D\' など）を正確に把握できているか？',
+        '直線上に90°が刺さっている箇所（カックン折れ線90°）を見つけて、補角・余角の関係から相似な直角三角形（△EBF ∽ △DCE や △EBA\' ∽ △A\'CG ∽ △D\'FG）を取り出せているか？',
+        '相似な三角形どうしで「対応する辺の順番」をそろえて比例式を立て、三平方の定理や差の計算と組み合わせて求めたい線分までたどり着けているか？'
+    ],
+    generateRandom: function () {
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
+
+        const gcd = (a, b) => {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { const t = b; b = a % b; a = t; }
+            return a || 1;
+        };
+
+        const formatFrac = (num, den) => {
+            const g = gcd(num, den);
+            const n = num / g;
+            const d = den / g;
+            return {
+                n,
+                d,
+                html: d === 1 ? `${n}` : `${fracHtml(`${n}`, `${d}`)}`
+            };
+        };
+
+        const pattern = Math.floor(Math.random() * 2);
+
+        // ============================================================
+        // パターン 0：長方形 ABCD の折り返し（点 A を辺 BC 上の E へ）
+        // ============================================================
+        if (pattern === 0) {
+            const cases = [
+                { ab: 6,  ad: 10, ec: 8 },  // BE = 2, EF = 10/3
+                { ab: 8,  ad: 10, ec: 6 },  // BE = 4, EF = 5
+                { ab: 12, ad: 13, ec: 5 },  // BE = 8, EF = 13/3
+                { ab: 9,  ad: 15, ec: 12 }, // BE = 3, EF = 5
+                { ab: 8,  ad: 17, ec: 15 }  // BE = 2, EF = 17/4
+            ];
+            const c = cases[Math.floor(Math.random() * cases.length)];
+            const { ab, ad, ec } = c;
+
+            const be = ad - ec;
+            const efInfo = formatFrac(ab * ab + be * be, 2 * ab);
+
+            const scale = Math.min(180 / ad, 115 / ab);
+            const xLeft = 65;
+            const yTop = 36;
+            const wSvg = Number((ad * scale).toFixed(2));
+            const hSvg = Number((ab * scale).toFixed(2));
+            const xRight = Number((xLeft + wSvg).toFixed(2));
+            const yBot = Number((yTop + hSvg).toFixed(2));
+
+            const A = { x: xLeft, y: yTop };
+            const D = { x: xRight, y: yTop };
+            const B = { x: xLeft, y: yBot };
+            const C = { x: xRight, y: yBot };
+
+            const E = { x: Number((xLeft + be * scale).toFixed(2)), y: yBot };
+            const efPx = Number(((efInfo.n / efInfo.d) * scale).toFixed(2));
+            const F = { x: xLeft, y: Number((yTop + efPx).toFixed(2)) };
+
+            const svgHtml = `
+                <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="35 12 235 170" style="width: 100%; max-width: 290px; height: auto;">
+                        <polyline points="${F.x},${F.y} ${A.x},${A.y} ${D.x},${D.y}" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,3"/>
+                        <polyline points="${F.x},${F.y} ${B.x},${B.y} ${C.x},${C.y} ${D.x},${D.y}" fill="none" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+                        <line x1="${D.x}" y1="${D.y}" x2="${F.x}" y2="${F.y}" stroke="#d97706" stroke-width="1.8"/>
+                        <line x1="${F.x}" y1="${F.y}" x2="${E.x}" y2="${E.y}" stroke="#2563eb" stroke-width="2.2"/>
+                        <line x1="${D.x}" y1="${D.y}" x2="${E.x}" y2="${E.y}" stroke="#2563eb" stroke-width="1.8"/>
+                        <circle cx="${A.x}" cy="${A.y}" r="2.2" fill="#64748b"/>
+                        <circle cx="${E.x}" cy="${E.y}" r="3" fill="#2563eb"/>
+                        <circle cx="${F.x}" cy="${F.y}" r="3" fill="#d97706"/>
+                        <text x="${(A.x - 10).toFixed(2)}" y="${(A.y - 6).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                        <text x="${(D.x + 10).toFixed(2)}" y="${(D.y - 6).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">D</text>
+                        <text x="${(B.x - 10).toFixed(2)}" y="${(B.y + 8).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                        <text x="${(C.x + 10).toFixed(2)}" y="${(C.y + 8).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                        <text x="${(F.x - 11).toFixed(2)}" y="${F.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#b45309">F</text>
+                        <text x="${E.x}" y="${(E.y + 12).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1d4ed8">E</text>
+                    </svg>
+                </div>
+            `;
+
+            return {
+                problem: `
+                    <div>
+                        長方形 ABCD において、点 A を辺 BC 上の点 E に重なるように折り返した。そのときの折り目は辺 AB 上の点 F と頂点 D を結んだ線分 DF である。<br>
+                        AB = ${ab} cm、AD = ${ad} cm のとき、線分 EF の長さを求めなさい。
+                    </div>
+                    ${svgHtml}
+                `,
+                answer: `${efInfo.html} cm`,
+                explanation: `
+                    折り返しの性質より、△DEF ≡ △DAF なので、DE = AD = ${ad} cm、EF = AF、∠DEF = ∠DAF = 90° である。<br>
+                    直角三角形 DCE（∠C = 90°）で DC = AB = ${ab} cm、DE = ${ad} cm なので、三平方の定理より<br>
+                    EC = √(${ad}<sup>2</sup> − ${ab}<sup>2</sup>) = ${ec} cm<br>
+                    よって、BE = BC − EC = ${ad} − ${ec} = ${be} cm となる。<br><br>
+
+                    <strong>【解法1：三平方の定理】</strong><br>
+                    EF = x cm とすると AF = x cm なので、BF = AB − AF = (${ab} − x) cm となる。<br>
+                    直角三角形 EBF（∠B = 90°）で三平方の定理より<br>
+                    (${ab} − x)<sup>2</sup> + ${be}<sup>2</sup> = x<sup>2</sup><br>
+                    これを解くと、x = <strong>${efInfo.html} cm</strong><br><br>
+
+                    <strong>【解法2：相似（カックン折れ線90°）】</strong><br>
+                    直線 BC 上の点 E に ∠DEF = 90° が刺さっているため、∠FEB + ∠DEC = 90° である。<br>
+                    また、△DCE で ∠EDC + ∠DEC = 90° なので、∠FEB = ∠EDC となり、2組の角がそれぞれ等しいから <strong>△EBF ∽ △DCE</strong> である。<br>
+                    対応する辺の比より、BE : CD = EF : DE なので、<br>
+                    ${be} : ${ab} = EF : ${ad}<br>
+                    ${ab} × EF = ${be} × ${ad} &nbsp;⇒&nbsp; EF = <strong>${efInfo.html} cm</strong>
+                `
+            };
+        }
+
+        // ============================================================
+        // パターン 1：正方形 ABCD を折り返し線 EF で折る（点 A が辺 BC 上の A' に移る）
+        // ============================================================
+        const sqCases = [
+            { side: 8,  ba: 4, eb: 3,  ea: 5  }, // 3:4:5 の直角三角形
+            { side: 16, ba: 8, eb: 6,  ea: 10 }, // 6:8:10
+            { side: 9,  ba: 3, eb: 4,  ea: 5  }, // 4:3:5
+            { side: 18, ba: 6, eb: 8,  ea: 10 }, // 8:6:10
+            { side: 25, ba: 5, eb: 12, ea: 13 }  // 12:5:13
+        ];
+
+        const sc = sqCases[Math.floor(Math.random() * sqCases.length)];
+        const { side, ba, eb, ea } = sc;
+
+        // A'C = side - ba
+        const aPrimeC = side - ba;
+        // (1) △EBA' ∽ △A'CG より EB : A'C = BA' : CG => CG = (A'C * BA') / EB
+        const cgInfo = formatFrac(aPrimeC * ba, eb);
+
+        // (2) D'F の計算
+        // △EBA' ∽ △A'CG より EB : A'C = EA' : A'G => A'G = (A'C * EA') / EB
+        const aPrimeGInfo = formatFrac(aPrimeC * ea, eb);
+        // D'G = A'D' - A'G = side - A'G
+        const dPrimeGInfo = formatFrac(side * aPrimeGInfo.d - aPrimeGInfo.n, aPrimeGInfo.d);
+        // △D'FG ∽ △A'CG ∽ △EBA' より D'F : D'G = EB : BA' => D'F = D'G * (eb / ba)
+        const dPrimeFInfo = formatFrac(dPrimeGInfo.n * eb, dPrimeGInfo.d * ba);
+
+        // SVG座標計算
+        const scale = 124 / side;
+        const xL = 70;
+        const yT = 32;
+        const sPx = Number((side * scale).toFixed(2));
+        const xR = Number((xL + sPx).toFixed(2));
+        const yB = Number((yT + sPx).toFixed(2));
+
+        const A = { x: xL, y: yT };
+        const B = { x: xL, y: yB };
+        const C = { x: xR, y: yB };
+        const D = { x: xR, y: yT };
+
+        const E = { x: xL, y: Number((yB - eb * scale).toFixed(2)) };
+        const dfVal = dPrimeFInfo.n / dPrimeFInfo.d;
+        const F = { x: xR, y: Number((yT + dfVal * scale).toFixed(2)) };
+        const Ap = { x: Number((xL + ba * scale).toFixed(2)), y: yB };
+        const G = { x: xR, y: Number((yB - (cgInfo.n / cgInfo.d) * scale).toFixed(2)) };
+
+        // 折り返し後の点 D' の座標（A' から G を通る半直線上に長さ side だけ進んだ点）
+        const vx = G.x - Ap.x;
+        const vy = G.y - Ap.y;
+        const vLen = Math.hypot(vx, vy) || 1;
+        const Dp = {
+            x: Number((Ap.x + (vx / vLen) * sPx).toFixed(2)),
+            y: Number((Ap.y + (vy / vLen) * sPx).toFixed(2))
+        };
+
+        const svgHtml = `
+            <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="35 8 255 182" style="width: 100%; max-width: 310px; height: auto;">
+                    <polyline points="${E.x},${E.y} ${A.x},${A.y} ${D.x},${D.y} ${F.x},${F.y}" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,3"/>
+                    <polyline points="${E.x},${E.y} ${B.x},${B.y} ${C.x},${C.y} ${F.x},${F.y}" fill="none" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+                    <line x1="${E.x}" y1="${E.y}" x2="${F.x}" y2="${F.y}" stroke="#d97706" stroke-width="1.8"/>
+                    <polyline points="${E.x},${E.y} ${Ap.x},${Ap.y} ${Dp.x},${Dp.y} ${F.x},${F.y}" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
+                    <circle cx="${A.x}" cy="${A.y}" r="2.2" fill="#64748b"/>
+                    <circle cx="${D.x}" cy="${D.y}" r="2.2" fill="#64748b"/>
+                    <circle cx="${E.x}" cy="${E.y}" r="2.8" fill="#d97706"/>
+                    <circle cx="${F.x}" cy="${F.y}" r="2.8" fill="#d97706"/>
+                    <circle cx="${Ap.x}" cy="${Ap.y}" r="3" fill="#2563eb"/>
+                    <circle cx="${Dp.x}" cy="${Dp.y}" r="3" fill="#2563eb"/>
+                    <circle cx="${G.x}" cy="${G.y}" r="3" fill="#16a34a"/>
+                    <text x="${(A.x - 10).toFixed(2)}" y="${(A.y - 6).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                    <text x="${(B.x - 10).toFixed(2)}" y="${(B.y + 8).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                    <text x="${(C.x + 10).toFixed(2)}" y="${(C.y + 8).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                    <text x="${(D.x + 10).toFixed(2)}" y="${(D.y - 6).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">D</text>
+                    <text x="${(E.x - 11).toFixed(2)}" y="${E.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#b45309">E</text>
+                    <text x="${(F.x + 11).toFixed(2)}" y="${F.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#b45309">F</text>
+                    <text x="${Ap.x}" y="${(Ap.y + 12).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1d4ed8">A'</text>
+                    <text x="${(Dp.x + 11).toFixed(2)}" y="${(Dp.y - 6).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1d4ed8">D'</text>
+                    <text x="${(G.x + 11).toFixed(2)}" y="${G.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#15803d">G</text>
+                </svg>
+            </div>
+        `;
+
+        return {
+            problem: `
+                <div>
+                    1辺が ${side} cm の正方形 ABCD において、辺 AB 上に点 E、辺 CD 上に点 F がある。<br>
+                    線分 EF を折り目として四角形 AEFD を折り返したところ、頂点 A が辺 BC 上の点 A' に重なり（頂点 D の移動先を D' とする）、BA' = ${ba} cm となった。<br>
+                    折り返した後の辺 A'D' と辺 CD の交点を G とするとき、次の長さを求めなさい。
+                </div>
+                ${svgHtml}
+                <div style="margin-top: 4px;">
+                    (1) 線分 CG の長さ<br>
+                    (2) 線分 D'F の長さ
+                </div>
+            `,
+            answer: `(1) ${cgInfo.html} cm<br>(2) ${dPrimeFInfo.html} cm`,
+            explanation: `
+                <strong>(1)</strong><br>
+                折り返した後の点 A' について、EB = x cm とおくと AE = (${side} − x) cm なので、EA' = AE = (${side} − x) cm となる。<br>
+                直角三角形 EBA'（∠B = 90°）で三平方の定理より<br>
+                x<sup>2</sup> + ${ba}<sup>2</sup> = (${side} − x)<sup>2</sup> &nbsp;⇒&nbsp; x = ${eb}<br>
+                よって、EB = ${eb} cm、EA' = ${ea} cm、A'C = BC − BA' = ${side} − ${ba} = ${aPrimeC} cm である。<br><br>
+                直線 BC 上の点 A' に折り返された直角（∠EA'D' = ∠A = 90°）が刺さっているため（カックン折れ線90°）、∠BA'E + ∠CA'G = 90° となる。<br>
+                また、△EBA' で ∠BEA' + ∠BA'E = 90° なので ∠BEA' = ∠CA'G となり、2組の角がそれぞれ等しいから <strong>△EBA' ∽ △A'CG</strong> である。<br>
+                対応する辺の比より、EB : A'C = BA' : CG なので、<br>
+                ${eb} : ${aPrimeC} = ${ba} : CG &nbsp;⇒&nbsp; CG = <strong>${cgInfo.html} cm</strong><br><br>
+
+                <strong>(2)</strong><br>
+                同じく △EBA' ∽ △A'CG の対応する辺の比より、EB : A'C = EA' : A'G なので、<br>
+                ${eb} : ${aPrimeC} = ${ea} : A'G &nbsp;⇒&nbsp; A'G = ${aPrimeGInfo.html} cm<br>
+                よって、D'G = A'D' − A'G = ${side} − ${aPrimeGInfo.html} = ${dPrimeGInfo.html} cm となる。<br><br>
+                さらに、△D'FG と △A'CG において、∠D' = ∠C = 90°、対頂角より ∠D'GF = ∠A'GC なので、<strong>△D'FG ∽ △A'CG ∽ △EBA'</strong> である。<br>
+                対応する辺の比より、D'F : D'G = EB : BA' なので、<br>
+                D'F : ${dPrimeGInfo.html} = ${eb} : ${ba} &nbsp;⇒&nbsp; D'F = <strong>${dPrimeFInfo.html} cm</strong>
+            `
+        };
+    }
+},
+"カックン折れ線60°": {
+    level: "難関私立",
+    formula: `
+        <div><strong>カックン折れ線60°</strong>：直線に向かって60°が刺さっている時に、両側の角の和が120°になることから相似ができる。特に正三角形の辺上に60°が接するときに発生することが多い。</div>
+    `,
+    selfCheck: [
+        '正三角形の内角（∠B = ∠C = 60°）と直線上の角（180°）から、∠ADB + ∠EDC = 120° および ∠ADB + ∠BAD = 120° を導けているか？',
+        '2組の角がそれぞれ等しいことから、対応する頂点の順番をそろえて △ABD ∽ △DCE を作れているか？',
+        '相似比からまず CE を求め、AE を聞かれた場合は AC − CE の引き算まで正確に計算できているか？'
+    ],
+    generateRandom: function () {
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
+
+        const gcd = (a, b) => {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { const t = b; b = a % b; a = t; }
+            return a || 1;
+        };
+
+        const formatFrac = (num, den) => {
+            const g = gcd(num, den);
+            const n = num / g;
+            const d = den / g;
+            return {
+                n,
+                d,
+                html: d === 1 ? `${n}` : `${fracHtml(`${n}`, `${d}`)}`
+            };
+        };
+
+        // 正三角形 ABC の1辺 side、辺 BC 上の点 D について BD = bd
+        // CD = side - bd、△ABD ∽ △DCE より AB : DC = BD : CE  =>  CE = (BD * CD) / side
+        // E が辺 AC 上に収まる条件：CE < side（常に成立）
+        const cases = [
+            { side: 6,  bd: 2 }, // CD = 4, CE = 8/6 = 4/3, AE = 14/3
+            { side: 6,  bd: 3 }, // CD = 3, CE = 9/6 = 3/2, AE = 9/2
+            { side: 8,  bd: 2 }, // CD = 6, CE = 12/8 = 3/2, AE = 13/2
+            { side: 8,  bd: 4 }, // CD = 4, CE = 16/8 = 2,   AE = 6
+            { side: 9,  bd: 3 }, // CD = 6, CE = 18/9 = 2,   AE = 7
+            { side: 9,  bd: 6 }, // CD = 3, CE = 18/9 = 2,   AE = 7
+            { side: 10, bd: 4 }, // CD = 6, CE = 24/10 = 12/5, AE = 38/5
+            { side: 12, bd: 3 }, // CD = 9, CE = 27/12 = 9/4,  AE = 39/4
+            { side: 12, bd: 4 }, // CD = 8, CE = 32/12 = 8/3,  AE = 28/3
+            { side: 12, bd: 8 }  // CD = 4, CE = 32/12 = 8/3,  AE = 28/3
+        ];
+        const c = cases[Math.floor(Math.random() * cases.length)];
+        const { side, bd } = c;
+
+        const cd = side - bd;
+        const ceInfo = formatFrac(bd * cd, side);
+        const aeInfo = formatFrac(side * ceInfo.d - ceInfo.n, ceInfo.d);
+
+        // 出題ターゲットをランダム選択（0: CEのみ, 1: AEのみ, 2: (1)CE (2)AE の2問構成）
+        const askMode = Math.floor(Math.random() * 3);
+
+        // SVG描画：正三角形 ABC、辺 BC 上の D、辺 AC 上の E、折れ線 AD - DE と ∠ADE = 60° の円弧
+        const sidePx = 164;
+        const hPx = sidePx * (Math.sqrt(3) / 2);
+        const cxMid = 150;
+        const yBot = 176;
+        const yTop = Number((yBot - hPx).toFixed(2));
+
+        const A = { x: cxMid, y: yTop };
+        const B = { x: Number((cxMid - sidePx / 2).toFixed(2)), y: yBot };
+        const C = { x: Number((cxMid + sidePx / 2).toFixed(2)), y: yBot };
+
+        const tBd = bd / side;
+        const D = {
+            x: Number((B.x + (C.x - B.x) * tBd).toFixed(2)),
+            y: yBot
+        };
+
+        const ceVal = ceInfo.n / ceInfo.d;
+        const tCe = ceVal / side;
+        const E = {
+            x: Number((C.x + (A.x - C.x) * tCe).toFixed(2)),
+            y: Number((C.y + (A.y - C.y) * tCe).toFixed(2))
+        };
+
+        // ∠ADE = 60° の円弧パス計算
+        const arcR = 16;
+        const angDA = Math.atan2(A.y - D.y, A.x - D.x);
+        const angDE = Math.atan2(E.y - D.y, E.x - D.x);
+        const arcStart = {
+            x: Number((D.x + arcR * Math.cos(angDA)).toFixed(2)),
+            y: Number((D.y + arcR * Math.sin(angDA)).toFixed(2))
+        };
+        const arcEnd = {
+            x: Number((D.x + arcR * Math.cos(angDE)).toFixed(2)),
+            y: Number((D.y + arcR * Math.sin(angDE)).toFixed(2))
+        };
+        const angMid = (angDA + angDE) / 2;
+        const label60 = {
+            x: Number((D.x + (arcR + 12) * Math.cos(angMid)).toFixed(2)),
+            y: Number((D.y + (arcR + 12) * Math.sin(angMid)).toFixed(2))
+        };
+
+        const svgHtml = `
+            <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="35 12 230 186" style="width: 100%; max-width: 285px; height: auto;">
+                    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+                    <polyline points="${A.x},${A.y} ${D.x},${D.y} ${E.x},${E.y}" fill="none" stroke="#2563eb" stroke-width="2.1" stroke-linejoin="round"/>
+                    <path d="M ${arcStart.x} ${arcStart.y} A ${arcR} ${arcR} 0 0 1 ${arcEnd.x} ${arcEnd.y}" fill="none" stroke="#d97706" stroke-width="1.5"/>
+                    <circle cx="${D.x}" cy="${D.y}" r="3" fill="#2563eb"/>
+                    <circle cx="${E.x}" cy="${E.y}" r="3" fill="#2563eb"/>
+                    <text x="${A.x}" y="${(A.y - 10).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                    <text x="${(B.x - 10).toFixed(2)}" y="${(B.y + 8).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                    <text x="${(C.x + 10).toFixed(2)}" y="${(C.y + 8).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                    <text x="${D.x}" y="${(D.y + 12).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1d4ed8">D</text>
+                    <text x="${(E.x + 11).toFixed(2)}" y="${(E.y - 4).toFixed(2)}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1d4ed8">E</text>
+                    <text x="${label60.x}" y="${label60.y}" font-size="10" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#b45309">60°</text>
+                </svg>
+            </div>
+        `;
+
+        const simExplanation = `
+            正三角形 ABC の1辺の長さは ${side} cm なので、AB = BC = AC = ${side} cm、∠B = ∠C = 60° である。<br>
+            また、CD = BC − BD = ${side} − ${bd} = ${cd} cm となる。<br><br>
+            直線 BC 上の点 D に ∠ADE = 60° が刺さっているため（カックン折れ線60°）、<br>
+            ∠ADB + ∠EDC = 180° − 60° = 120° である。<br>
+            また、△ABD の内角の和より ∠ADB + ∠BAD = 180° − 60° = 120° なので、<strong>∠BAD = ∠EDC</strong> となる。<br>
+            よって、2組の角がそれぞれ等しいから <strong>△ABD ∽ △DCE</strong> である。<br><br>
+            対応する辺の比より、AB : DC = BD : CE なので、<br>
+            ${side} : ${cd} = ${bd} : CE<br>
+            ${side} × CE = ${cd} × ${bd} &nbsp;⇒&nbsp; CE = <strong>${ceInfo.html} cm</strong>
+        `;
+
+        if (askMode === 0) {
+            return {
+                problem: `
+                    <div>
+                        1辺が ${side} cm の正三角形 ABC において、辺 BC 上に点 D、辺 AC 上に点 E を、∠ADE = 60° となるようにとった。<br>
+                        BD = ${bd} cm のとき、線分 CE の長さを求めなさい。
+                    </div>
+                    ${svgHtml}
+                `,
+                answer: `${ceInfo.html} cm`,
+                explanation: simExplanation
+            };
+        }
+
+        if (askMode === 1) {
+            return {
+                problem: `
+                    <div>
+                        1辺が ${side} cm の正三角形 ABC において、辺 BC 上に点 D、辺 AC 上に点 E を、∠ADE = 60° となるようにとった。<br>
+                        BD = ${bd} cm のとき、線分 AE の長さを求めなさい。
+                    </div>
+                    ${svgHtml}
+                `,
+                answer: `${aeInfo.html} cm`,
+                explanation: `
+                    ${simExplanation}<br><br>
+                    したがって、線分 AE の長さは<br>
+                    AE = AC − CE = ${side} − ${ceInfo.html} = <strong>${aeInfo.html} cm</strong>
+                `
+            };
+        }
+
+        return {
+            problem: `
+                <div>
+                    1辺が ${side} cm の正三角形 ABC において、辺 BC 上に点 D、辺 AC 上に点 E を、∠ADE = 60° となるようにとった。<br>
+                    BD = ${bd} cm のとき、次の長さを求めなさい。
+                </div>
+                ${svgHtml}
+                <div style="margin-top: 4px;">
+                    (1) 線分 CE の長さ<br>
+                    (2) 線分 AE の長さ
+                </div>
+            `,
+            answer: `(1) ${ceInfo.html} cm<br>(2) ${aeInfo.html} cm`,
+            explanation: `
+                <strong>(1)</strong><br>
+                ${simExplanation}<br><br>
+                <strong>(2)</strong><br>
+                AC = ${side} cm なので、<br>
+                AE = AC − CE = ${side} − ${ceInfo.html} = <strong>${aeInfo.html} cm</strong>
+            `
+        };
+    }
+},
+
         "相似を作る": {
             category: "平面図形",
             level: "公立",
@@ -11805,46 +12042,67 @@ const formulaData = {
         // (3) 円 O3 の半径 r3 = r2 * (simN / simM)
         const r3Info = formatSqrtFrac(r2Info.s.c * simN, r2Info.s.r, r2Info.den * simM);
 
-        // SVG描画：二等辺三角形 ABC の中に、順に内接する円 O1, O2, O3 と垂線 AM を描画
-        const A = { x: 150, y: 24 };
-        const B = { x: 65, y: 184 };
-        const C = { x: 235, y: 184 };
-        const M = { x: 150, y: 184 };
+        // SVG描画：実際の (side, base, h) の比率に合わせて二等辺三角形 ABC と垂線 AM、内接円 O1, O2, O3 を厳密配置
+        const actualH = hNorm.c * Math.sqrt(hNorm.r);
+        const actualHalfBase = base / 2;
+        const actualSlant = Math.hypot(actualHalfBase, actualH);
+        // sin(半頂角 α) = (BC/2) / AB
+        const sinAlpha = actualHalfBase / actualSlant;
 
-        const halfBaseSvg = (C.x - B.x) / 2;
-        const heightSvg = B.y - A.y;
-        const slantSvg = Math.hypot(halfBaseSvg, heightSvg);
-        const sinHalfApex = halfBaseSvg / slantSvg;
+        // viewBox [0, 0, 300, 210] 内に収まるように底辺幅と高さをスケーリング
+        const maxWidth = 190;
+        const maxHeight = 152;
+        const scale = Math.min(maxWidth / (2 * actualHalfBase), maxHeight / actualH);
 
-        const r1Svg = Number(((heightSvg * sinHalfApex) / (1 + sinHalfApex)).toFixed(2));
-        const cy1Svg = Number((B.y - r1Svg).toFixed(2));
+        const cxMid = 150;
+        const yBase = 182;
+        const halfBaseSvg = actualHalfBase * scale;
+        const heightSvg = actualH * scale;
+        const yTop = yBase - heightSvg;
 
-        const kSvg = (1 - sinHalfApex) / (1 + sinHalfApex);
+        const A = { x: cxMid, y: Number(yTop.toFixed(2)) };
+        const B = { x: Number((cxMid - halfBaseSvg).toFixed(2)), y: yBase };
+        const C = { x: Number((cxMid + halfBaseSvg).toFixed(2)), y: yBase };
+        const M = { x: cxMid, y: yBase };
+
+        // 垂線 AM 上で辺 AB, AC からの垂直距離が r となる点の y 座標：
+        // 頂点 A からの距離 d = r / sin(α) なので、y = yTop + r / sin(α)
+        // 底辺 BC に接する円 O1 の半径：r1 + r1 / sin(α) = heightSvg  =>  r1 = heightSvg * sin(α) / (1 + sin(α))
+        const r1Svg = Number(((heightSvg * sinAlpha) / (1 + sinAlpha)).toFixed(2));
+        const cy1Svg = Number((yBase - r1Svg).toFixed(2));
+
+        // 隣り合う円が辺 AB, AC および直前の円と外接するときの半径比 k = (1 - sinα) / (1 + sinα)
+        const kSvg = (1 - sinAlpha) / (1 + sinAlpha);
         const r2Svg = Number((r1Svg * kSvg).toFixed(2));
         const cy2Svg = Number((cy1Svg - (r1Svg + r2Svg)).toFixed(2));
 
         const r3Svg = Number((r2Svg * kSvg).toFixed(2));
         const cy3Svg = Number((cy2Svg - (r2Svg + r3Svg)).toFixed(2));
 
-        const sq = 7;
-        const rightAngleMark = `<polyline points="${M.x - sq},${M.y} ${M.x - sq},${M.y - sq} ${M.x},${M.y - sq}" fill="none" stroke="#64748b" stroke-width="1.2"/>`;
+        // 直角記号（点 M 付近、三角形の向き・大きさに合わせて調整）
+        const sq = Math.min(7, Math.max(4.5, halfBaseSvg * 0.08, heightSvg * 0.06));
+        const rightAngleMark = `<polyline points="${(M.x - sq).toFixed(2)},${M.y} ${(M.x - sq).toFixed(2)},${(M.y - sq).toFixed(2)} ${M.x},${(M.y - sq).toFixed(2)}" fill="none" stroke="#64748b" stroke-width="1.2"/>`;
+
+        // ラベル O2, O3 は円の右外側（辺 AC との間に十分な余白がある場合）または円内に配置
+        const labelO2X = Math.min(C.x - 14, cxMid + r2Svg + 11);
+        const labelO3X = Math.min(C.x - 14, cxMid + r3Svg + 11);
 
         const svgHtml = `
             <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
-                <svg viewBox="35 4 230 198" style="width: 100%; max-width: 280px; height: auto;">
+                <svg viewBox="0 0 300 210" style="width: 100%; max-width: 300px; height: auto;">
                     <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
                     <line x1="${A.x}" y1="${A.y}" x2="${M.x}" y2="${M.y}" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
                     ${rightAngleMark}
-                    <circle cx="${A.x}" cy="${cy1Svg}" r="${r1Svg}" fill="#dbeafe" fill-opacity="0.7" stroke="#2563eb" stroke-width="1.6"/>
-                    <circle cx="${A.x}" cy="${cy2Svg}" r="${r2Svg}" fill="#fef3c7" fill-opacity="0.85" stroke="#d97706" stroke-width="1.5"/>
-                    <circle cx="${A.x}" cy="${cy3Svg}" r="${r3Svg}" fill="#dcfce7" fill-opacity="0.85" stroke="#16a34a" stroke-width="1.4"/>
-                    <text x="${A.x}" y="${A.y - 10}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
-                    <text x="${B.x - 10}" y="${B.y + 8}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
-                    <text x="${C.x + 10}" y="${C.y + 8}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
-                    <text x="${M.x}" y="${M.y + 10}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#64748b">M</text>
-                    <text x="${A.x}" y="${cy1Svg}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1e3a8a">O<tspan dy="3" font-size="8.5">1</tspan></text>
-                    <text x="${A.x + r2Svg + 12}" y="${cy2Svg}" font-size="10" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#92400e">O<tspan dy="3" font-size="8">2</tspan></text>
-                    <text x="${A.x + r3Svg + 12}" y="${cy3Svg}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#166534">O<tspan dy="3" font-size="7.5">3</tspan></text>
+                    <circle cx="${cxMid}" cy="${cy1Svg}" r="${r1Svg}" fill="#dbeafe" fill-opacity="0.7" stroke="#2563eb" stroke-width="1.6"/>
+                    <circle cx="${cxMid}" cy="${cy2Svg}" r="${r2Svg}" fill="#fef3c7" fill-opacity="0.85" stroke="#d97706" stroke-width="1.5"/>
+                    <circle cx="${cxMid}" cy="${cy3Svg}" r="${r3Svg}" fill="#dcfce7" fill-opacity="0.85" stroke="#16a34a" stroke-width="1.4"/>
+                    <text x="${A.x}" y="${(A.y - 11).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                    <text x="${(B.x - 11).toFixed(2)}" y="${(B.y + 8).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                    <text x="${(C.x + 11).toFixed(2)}" y="${(C.y + 8).toFixed(2)}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                    <text x="${M.x}" y="${(M.y + 11).toFixed(2)}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#64748b">M</text>
+                    <text x="${cxMid}" y="${cy1Svg}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1e3a8a">O<tspan dy="3" font-size="8.5">1</tspan></text>
+                    <text x="${labelO2X.toFixed(2)}" y="${cy2Svg}" font-size="10" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#92400e">O<tspan dy="3" font-size="8">2</tspan></text>
+                    <text x="${labelO3X.toFixed(2)}" y="${cy3Svg}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#166534">O<tspan dy="3" font-size="7.5">3</tspan></text>
                 </svg>
             </div>
         `;
@@ -11889,7 +12147,194 @@ const formulaData = {
             `
         };
     }
-}
+},
+ "三平方の定理": {
+    category: "図形",
+    level: "公立",
+    formula: "<strong>【三平方の定理】</strong><br>" +
+             "直角三角形の直角をはさむ2辺の長さを \\(a, b\\)、斜辺の長さを \\(c\\) とすると、<br>" +
+             "\\(a^2 + b^2 = c^2\\) が成り立ちます。<br>" +
+             "・斜辺を求めるとき：\\(c = \\sqrt{a^2 + b^2}\\)<br>" +
+             "・その他の1辺を求めるとき：\\(a = \\sqrt{c^2 - b^2}\\)、\\(b = \\sqrt{c^2 - a^2}\\)<br>" +
+             "・2辺以上に文字が含まれるとき：\\(a^2 + b^2 = c^2\\) をそのまま用いて方程式を立てます。",
+    generateRandom: function() {
+        // 求める対象をランダム選択 ("a", "b", "c")
+        const targetSide = ["a", "b", "c"][Math.floor(Math.random() * 3)];
+        
+        let a, b, c;
+        let insideVal = 0;
+
+        // ルートを簡約化するヘルパー関数 (例: 20 -> {coef: 2, inside: 5})
+        const simplifyRoot = (n) => {
+            let coef = 1;
+            let inside = n;
+            for (let i = 2; i * i <= inside; i++) {
+                while (inside % (i * i) === 0) {
+                    coef *= i;
+                    inside /= (i * i);
+                }
+            }
+            return { coef, inside };
+        };
+
+        const formatRoot = (coef, inside) => {
+            if (inside === 1) return `${coef}`;
+            if (coef === 1) return `\\sqrt{${inside}}`;
+            return `${coef}\\sqrt{${inside}}`;
+        };
+        
+        if (targetSide === "c") {
+            // 斜辺 c を求める（整数にならない組み合わせ）
+            do {
+                a = Math.floor(Math.random() * 6) + 2; // 2〜7
+                b = Math.floor(Math.random() * 6) + 2; // 2〜7
+                insideVal = a * a + b * b;
+            } while (Number.isInteger(Math.sqrt(insideVal)));
+        } else if (targetSide === "a") {
+            // 辺 a を求める
+            do {
+                c = Math.floor(Math.random() * 7) + 5; // 5〜11
+                b = Math.floor(Math.random() * (c - 2)) + 2; // 2〜c-2
+                insideVal = c * c - b * b;
+            } while (Number.isInteger(Math.sqrt(insideVal)) || insideVal <= 0);
+        } else {
+            // 辺 b を求める
+            do {
+                c = Math.floor(Math.random() * 7) + 5; // 5〜11
+                a = Math.floor(Math.random() * (c - 2)) + 2; // 2〜c-2
+                insideVal = c * c - a * a;
+            } while (Number.isInteger(Math.sqrt(insideVal)) || insideVal <= 0);
+        }
+
+        const simplified = simplifyRoot(insideVal);
+        const finalAnsText = formatRoot(simplified.coef, simplified.inside);
+        const expansionStep = simplified.coef > 1 ? ` = ${finalAnsText}` : "";
+
+        // --- 1°単位の精密ランダム回転 ＆ 外側ラベル配置 ---
+        const angleDeg = Math.floor(Math.random() * 360); // 0〜359度
+        const angleRad = (angleDeg * Math.PI) / 180;
+
+        const baseC = { x: 0, y: 0 };
+        const baseA = { x: 0, y: 60 }; // 縦辺
+        const baseB = { x: 80, y: 0 }; // 横辺
+
+        const rotatePoint = (pt, rad) => ({
+            x: pt.x * Math.cos(rad) - pt.y * Math.sin(rad),
+            y: pt.x * Math.sin(rad) + pt.y * Math.cos(rad)
+        });
+
+        const rC = rotatePoint(baseC, angleRad);
+        const rA = rotatePoint(baseA, angleRad);
+        const rB = rotatePoint(baseB, angleRad);
+
+        const svgW = 220, svgH = 180;
+        const allX = [rC.x, rA.x, rB.x];
+        const allY = [rC.y, rA.y, rB.y];
+        const minX = Math.min(...allX), maxX = Math.max(...allX);
+        const minY = Math.min(...allY), maxY = Math.max(...allY);
+        
+        const centerX = (minX + maxX) / 2;
+        const centerY = (minY + maxY) / 2;
+
+        const offsetX = svgW / 2 - centerX;
+        const offsetY = svgH / 2 - centerY;
+
+        const tx = (pt) => ({ x: pt.x + offsetX, y: pt.y + offsetY });
+
+        const pC = tx(rC);
+        const pA = tx(rA);
+        const pB = tx(rB);
+
+        const gX = (pC.x + pA.x + pB.x) / 3;
+        const gY = (pC.y + pA.y + pB.y) / 3;
+
+        const getOuterLabelPos = (p1, p2, dist) => {
+            const midX = (p1.x + p2.x) / 2;
+            const midY = (p1.y + p2.y) / 2;
+            let vx = midX - gX;
+            let vy = midY - gY;
+            const len = Math.hypot(vx, vy) || 1;
+            return {
+                x: midX + (vx / len) * dist,
+                y: midY + (vy / len) * dist + 4
+            };
+        };
+
+        const posA = getOuterLabelPos(pC, pA, 16);
+        const posB = getOuterLabelPos(pC, pB, 16);
+        const posC = getOuterLabelPos(pA, pB, 18);
+
+        const vCAx = (pA.x - pC.x) / Math.hypot(pA.x - pC.x, pA.y - pC.y);
+        const vCAy = (pA.y - pC.y) / Math.hypot(pA.x - pC.x, pA.y - pC.y);
+        const vCBx = (pB.x - pC.x) / Math.hypot(pB.x - pC.x, pB.y - pC.y);
+        const vCBy = (pB.y - pC.y) / Math.hypot(pB.x - pC.x, pB.y - pC.y);
+        const rLen = 10;
+
+        const q1 = { x: pC.x + vCAx * rLen, y: pC.y + vCAy * rLen };
+        const q2 = { x: q1.x + vCBx * rLen, y: q1.y + vCBy * rLen };
+        const q3 = { x: pC.x + vCBx * rLen, y: pC.y + vCBy * rLen };
+
+        // 表示用ラベル用（ダミーとして値を入れる。実際のルート表示は問題文と解説で組み立てる）
+        let labelA_val, labelB_val, labelC_val;
+        if (targetSide === "a") {
+            labelA_val = "x";
+            labelB_val = `${b}`;
+            labelC_val = targetSide === "c" ? "x" : `${c}`; // cは数値
+        } else if (targetSide === "b") {
+            labelA_val = `${a}`;
+            labelB_val = "x";
+            labelC_val = `${c}`;
+        } else {
+            labelA_val = `${a}`;
+            labelB_val = `${b}`;
+            labelC_val = "x";
+        }
+
+        // 三角形上の表示が数値になる部分はそのまま、未知数は "x"
+        let svgGraph = `<svg viewBox="0 0 ${svgW} ${svgH}" style="background: #fff; border: 1px solid #ccc; border-radius: 4px; display: block; margin: 10px auto; width: 100%; max-width: 220px;">` +
+                       `<style>.svg-text { font-family: sans-serif; font-size: 12px; fill: #000; font-weight: bold; }</style>` +
+                       `<polygon points="${pC.x},${pC.y} ${pB.x},${pB.y} ${pA.x},${pA.y}" fill="#eef2f7" stroke="#333" stroke-width="2" />` +
+                       `<path d="M ${q1.x} ${q1.y} L ${q2.x} ${q2.y} L ${q3.x} ${q3.y}" fill="none" stroke="#e74c3c" stroke-width="1.5" />` +
+                       `<text x="${posA.x}" y="${posA.y}" class="svg-text" text-anchor="middle">${targetSide === "a" ? "x" : a}</text>` +
+                       `<text x="${posB.x}" y="${posB.y}" class="svg-text" text-anchor="middle">${targetSide === "b" ? "x" : b}</text>` +
+                       `<text x="${posC.x}" y="${posC.y}" class="svg-text" text-anchor="middle" fill="#27ae60">${targetSide === "c" ? "x" : c}</text>` +
+                       `</svg>`;
+
+        let problemText = "";
+        let explanationText = "";
+
+        if (targetSide === "c") {
+            problemText = `直角をはさむ2辺の長さが \\(${a}\\text{cm}\\) と \\(${b}\\text{cm}\\) である直角三角形の斜辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>斜辺 \\(c\\) を求める公式 \\(c = \\sqrt{a^2 + b^2}\\) にあてはめます。</strong><br>` +
+                              `　\\(x = \\sqrt{${a}^2 + ${b}^2}\\)<br>` +
+                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
+                              `　\\(x = \\sqrt{${a*a} + ${b*b}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
+                              `3. <strong>したがって、求める斜辺の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
+        } else if (targetSide === "a") {
+            problemText = `斜辺の長さが \\(${c}\\text{cm}\\)、直角をはさむ1辺の長さが \\(${b}\\text{cm}\\) である直角三角形の、もう1つの直角をはさむ辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>直角をはさむ辺 \\(a\\) を求める公式 \\(a = \\sqrt{c^2 - b^2}\\) にあてはめます。</strong><br>` +
+                              `　\\(x = \\sqrt{${c}^2 - ${b}^2}\\)<br>` +
+                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
+                              `　\\(x = \\sqrt{${c*c} - ${b*b}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
+                              `3. <strong>したがって、求める辺 \\(a\\) の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
+        } else {
+            problemText = `斜辺の長さが \\(${c}\\text{cm}\\)、直角をはさむ1辺の長さが \\(${a}\\text{cm}\\) である直角三角形の、もう1つの直角をはさむ辺の長さ \\(x\\) を求めなさい。<br>` + svgGraph;
+            explanationText = `【解説】<br>` +
+                              `1. <strong>直角をはさむ辺 \\(b\\) を求める公式 \\(b = \\sqrt{c^2 - a^2}\\) にあてはめます。</strong><br>` +
+                              `　\\(x = \\sqrt{${c}^2 - ${a}^2}\\)<br>` +
+                              `2. <strong>根号の中を計算し、できるだけ簡単な形に変形します。</strong><br>` +
+                              `　\\(x = \\sqrt{${c*c} - ${a*a}} = \\sqrt{${insideVal}}${expansionStep}\\)<br>` +
+                              `3. <strong>したがって、求める辺 \\(b\\) の長さは \\(\\mathbf{${finalAnsText}\\text{cm}}\\) です。</strong>`;
+        }
+
+        return {
+            problem: problemText,
+            explanation: explanationText
+        };
+    }
+},
 
 
 
