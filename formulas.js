@@ -12335,8 +12335,886 @@ const formulaData = {
         };
     }
 },
+"ピタゴラス数": {
+    level: "基礎",
+    formula: `
+        <div><strong>ピタゴラス数</strong>：$a^2 + b^2 = c^2$ において、$(a, b, c)$ が全て整数になる数の組をピタゴラス数という。この辺の比は出題されることが多く、覚えておくと便利である。</div>
+        <div style="margin-top: 6px;"><strong>【小さいものから5つのピタゴラス数】</strong><br>
+        ① $(3, 4, 5)$ ／ ② $(5, 12, 13)$ ／ ③ $(8, 15, 17)$ ／ ④ $(7, 24, 25)$ ／ ⑤ $(20, 21, 29)$</div>
+        <div style="margin-top: 6px;"><strong>【ピタゴラス数の探し方】</strong><br>
+        ・<strong>最小の辺が奇数のとき（3, 5, 7, …）</strong>：その奇数の2乗を、差が $1$ になる連続する2つの整数に分ける（例：$5^2 = 25 = 12 + 13$ ⇒ $(5, 12, 13)$）。<br>
+        ・<strong>2つの整数 $m &gt; n$ を使う方法</strong>：$m^2 - n^2$、$2mn$、$m^2 + n^2$ に当てはめるとピタゴラス数を作れる（例：$m = 4, n = 1$ ⇒ $15, 8, 17$）。</div>
+    `,
+    selfCheck: [
+        '図形が回転していても、直角（90°）の向かい側にある「一番長い辺（斜辺）」を正しく見分けられているか？（斜辺の比と他の辺の比を入れ替えていないか？）',
+        '与えられた2辺の比（または最大公約数・√や分数）からピタゴラス数の比を見つけたあと、最後に「比の1あたり（倍率）」を掛け忘れて比の数のまま答えていないか？',
+        '直角を挟む2辺のうち1つを求めるのに、斜辺の2乗と足し算をしていないか？（斜辺² − 他の辺² で引き算をする）'
+    ],
+    generateRandom: function () {
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
 
+        const gcd = (a, b) => {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { const t = b; b = a % b; a = t; }
+            return a || 1;
+        };
 
+        const simplifySqrt = (coeff, rad) => {
+            let c = coeff;
+            let r = rad;
+            for (let d = Math.floor(Math.sqrt(r)); d >= 2; d--) {
+                if (r % (d * d) === 0) {
+                    c *= d;
+                    r /= (d * d);
+                    break;
+                }
+            }
+            return { c, r };
+        };
+
+        const makeTerm = (coeff, rad, den) => {
+            const s = simplifySqrt(coeff, rad);
+            const g = gcd(Math.abs(s.c), Math.abs(den));
+            const n = s.c / g;
+            const d = den / g;
+            const rootPart = s.r === 1 ? "" : `√${s.r}`;
+            const numStr = (s.r > 1 && Math.abs(n) === 1)
+                ? `${n < 0 ? "−" : ""}${rootPart}`
+                : `${n}${rootPart}`;
+            const html = d === 1 ? `${numStr}` : `${fracHtml(`${numStr}`, `${d}`)}`;
+            const plainStr = d === 1 ? `${numStr}` : `${numStr}/${d}`;
+            return {
+                html,
+                plainStr,
+                numStr,
+                denStr: `${d}`,
+                isFrac: d !== 1
+            };
+        };
+
+        const triples = [
+            { a: 3,  b: 4,  c: 5  },
+            { a: 5,  b: 12, c: 13 },
+            { a: 8,  b: 15, c: 17 },
+            { a: 7,  b: 24, c: 25 },
+            { a: 20, b: 21, c: 29 }
+        ];
+        const t = triples[Math.floor(Math.random() * triples.length)];
+
+        const mulOptions = [
+            { kNum: 2, kRad: 1, kDen: 1 },
+            { kNum: 3, kRad: 1, kDen: 1 },
+            { kNum: 4, kRad: 1, kDen: 1 },
+            { kNum: 5, kRad: 1, kDen: 1 },
+            { kNum: 1, kRad: 1, kDen: 2 },
+            { kNum: 3, kRad: 1, kDen: 2 },
+            { kNum: 5, kRad: 1, kDen: 2 },
+            { kNum: 1, kRad: 2, kDen: 1 },
+            { kNum: 2, kRad: 2, kDen: 1 },
+            { kNum: 1, kRad: 3, kDen: 1 },
+            { kNum: 1, kRad: 5, kDen: 1 },
+            { kNum: 1, kRad: 2, kDen: 2 }
+        ];
+        const mOpt = mulOptions[Math.floor(Math.random() * mulOptions.length)];
+
+        const mulTerm = makeTerm(mOpt.kNum, mOpt.kRad, mOpt.kDen);
+        const sideATerm = makeTerm(t.a * mOpt.kNum, mOpt.kRad, mOpt.kDen);
+        const sideBTerm = makeTerm(t.b * mOpt.kNum, mOpt.kRad, mOpt.kDen);
+        const sideCTerm = makeTerm(t.c * mOpt.kNum, mOpt.kRad, mOpt.kDen);
+
+        const askType = Math.floor(Math.random() * 3);
+
+        let svgSpecA, svgSpecB, svgSpecC, ansTerm, ratioStepText, pythStepText;
+        if (askType === 0) {
+            svgSpecA = { term: sideATerm, isX: false };
+            svgSpecB = { term: sideBTerm, isX: false };
+            svgSpecC = { term: null, isX: true };
+            ansTerm = sideCTerm;
+            ratioStepText = `直角を挟む2辺の比は ${sideATerm.html} : ${sideBTerm.html} = <strong>${t.a} : ${t.b}</strong> なので、ピタゴラス数 (${t.a}, ${t.b}, ${t.c}) より斜辺の比は <strong>${t.c}</strong> となる。<br>比の1あたり（倍率）は ${mulTerm.html} なので、x = ${t.c} × ${mulTerm.html} = <strong>${ansTerm.html} cm</strong>`;
+            pythStepText = `x<sup>2</sup> = (${sideATerm.html})<sup>2</sup> + (${sideBTerm.html})<sup>2</sup> ⇒ x = <strong>${ansTerm.html} cm</strong>`;
+        } else if (askType === 1) {
+            svgSpecA = { term: null, isX: true };
+            svgSpecB = { term: sideBTerm, isX: false };
+            svgSpecC = { term: sideCTerm, isX: false };
+            ansTerm = sideATerm;
+            ratioStepText = `分かっている2辺の比は ${sideBTerm.html} : ${sideCTerm.html} = <strong>${t.b} : ${t.c}</strong> なので、ピタゴラス数 (${t.a}, ${t.b}, ${t.c}) より残りの辺の比は <strong>${t.a}</strong> となる。<br>比の1あたり（倍率）は ${mulTerm.html} なので、x = ${t.a} × ${mulTerm.html} = <strong>${ansTerm.html} cm</strong>`;
+            pythStepText = `x<sup>2</sup> = (${sideCTerm.html})<sup>2</sup> − (${sideBTerm.html})<sup>2</sup> ⇒ x = <strong>${ansTerm.html} cm</strong>`;
+        } else {
+            svgSpecA = { term: sideATerm, isX: false };
+            svgSpecB = { term: null, isX: true };
+            svgSpecC = { term: sideCTerm, isX: false };
+            ansTerm = sideBTerm;
+            ratioStepText = `分かっている2辺の比は ${sideATerm.html} : ${sideCTerm.html} = <strong>${t.a} : ${t.c}</strong> なので、ピタゴラス数 (${t.a}, ${t.b}, ${t.c}) より残りの辺の比は <strong>${t.b}</strong> となる。<br>比の1あたり（倍率）は ${mulTerm.html} なので、x = ${t.b} × ${mulTerm.html} = <strong>${ansTerm.html} cm</strong>`;
+            pythStepText = `x<sup>2</sup> = (${sideCTerm.html})<sup>2</sup> − (${sideATerm.html})<sup>2</sup> ⇒ x = <strong>${ansTerm.html} cm</strong>`;
+        }
+
+        // 1°単位で 0°〜359° のランダム回転角度を決定
+        const rotDeg = Math.floor(Math.random() * 360);
+        const rotRad = (rotDeg * Math.PI) / 180;
+
+        const visA = Math.max(48, Math.min(92, t.a * 5.0));
+        const visB = Math.max(70, Math.min(126, t.b * 5.0));
+        const scaleVis = 122 / Math.hypot(visA, visB);
+        const w0 = visB * scaleVis;
+        const h0 = visA * scaleVis;
+
+        const rawPts = [
+            { x: 0,  y: 0 },
+            { x: w0, y: 0 },
+            { x: 0,  y: -h0 }
+        ];
+        const gx = (rawPts[0].x + rawPts[1].x + rawPts[2].x) / 3;
+        const gy = (rawPts[0].y + rawPts[1].y + rawPts[2].y) / 3;
+
+        const cx = 155;
+        const cy = 120;
+        const rotatePt = (pt) => {
+            const dx = pt.x - gx;
+            const dy = pt.y - gy;
+            return {
+                x: Number((cx + dx * Math.cos(rotRad) - dy * Math.sin(rotRad)).toFixed(2)),
+                y: Number((cy + dx * Math.sin(rotRad) + dy * Math.cos(rotRad)).toFixed(2))
+            };
+        };
+
+        const P0 = rotatePt(rawPts[0]);
+        const P1 = rotatePt(rawPts[1]);
+        const P2 = rotatePt(rawPts[2]);
+
+        const sq = 8;
+        const u1 = { x: (P1.x - P0.x) / w0, y: (P1.y - P0.y) / w0 };
+        const u2 = { x: (P2.x - P0.x) / h0, y: (P2.y - P0.y) / h0 };
+        const rA = { x: (P0.x + u1.x * sq).toFixed(2), y: (P0.y + u1.y * sq).toFixed(2) };
+        const rB = { x: (P0.x + (u1.x + u2.x) * sq).toFixed(2), y: (P0.y + (u1.y + u2.y) * sq).toFixed(2) };
+        const rC = { x: (P0.x + u2.x * sq).toFixed(2), y: (P0.y + u2.y * sq).toFixed(2) };
+        const rightAngleMark = `<polyline points="${rA.x},${rA.y} ${rB.x},${rB.y} ${rC.x},${rC.y}" fill="none" stroke="#64748b" stroke-width="1.3"/>`;
+
+        const placeEdgeLabel = (M1, M2, oppVertex, dist) => {
+            const mx = (M1.x + M2.x) / 2;
+            const my = (M1.y + M2.y) / 2;
+            const ex = M2.x - M1.x;
+            const ey = M2.y - M1.y;
+            const len = Math.hypot(ex, ey) || 1;
+            let nx = -ey / len;
+            let ny = ex / len;
+            if (nx * (oppVertex.x - mx) + ny * (oppVertex.y - my) > 0) {
+                nx = -nx;
+                ny = -ny;
+            }
+            return {
+                x: Number((mx + nx * dist).toFixed(2)),
+                y: Number((my + ny * dist).toFixed(2))
+            };
+        };
+
+        const renderSvgEdgeLabel = (pos, spec) => {
+            const color = spec.isX ? "#2563eb" : "#0f172a";
+            if (spec.isX) {
+                return `<text x="${pos.x}" y="${pos.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="${color}">x cm</text>`;
+            }
+            const term = spec.term;
+            if (!term.isFrac) {
+                return `<text x="${pos.x}" y="${pos.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="${color}">${term.numStr} cm</text>`;
+            }
+            const maxChars = Math.max(term.numStr.length, term.denStr.length, 1);
+            const barHalfW = Math.max(7, maxChars * 3.3 + 2);
+            const xFrac = Number((pos.x - 7).toFixed(2));
+            const yNum = Number((pos.y - 7.5).toFixed(2));
+            const yDen = Number((pos.y + 8).toFixed(2));
+            const xUnit = Number((xFrac + barHalfW + 11).toFixed(2));
+            return `
+                <g fill="${color}">
+                    <text x="${xFrac}" y="${yNum}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">${term.numStr}</text>
+                    <line x1="${(xFrac - barHalfW).toFixed(2)}" y1="${pos.y}" x2="${(xFrac + barHalfW).toFixed(2)}" y2="${pos.y}" stroke="${color}" stroke-width="1.1"/>
+                    <text x="${xFrac}" y="${yDen}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">${term.denStr}</text>
+                    <text x="${xUnit}" y="${pos.y}" font-size="10.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">cm</text>
+                </g>
+            `;
+        };
+
+        const posLabelB = placeEdgeLabel(P0, P1, P2, 20);
+        const posLabelA = placeEdgeLabel(P0, P2, P1, 20);
+        const posLabelC = placeEdgeLabel(P1, P2, P0, 22);
+
+        const svgHtml = `
+            <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="0 0 310 240" style="width: 100%; max-width: 325px; height: auto;">
+                    <polygon points="${P0.x},${P0.y} ${P1.x},${P1.y} ${P2.x},${P2.y}" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                    ${rightAngleMark}
+                    ${renderSvgEdgeLabel(posLabelA, svgSpecA)}
+                    ${renderSvgEdgeLabel(posLabelB, svgSpecB)}
+                    ${renderSvgEdgeLabel(posLabelC, svgSpecC)}
+                </svg>
+            </div>
+        `;
+
+        return {
+            problem: `
+                <div>
+                    次の直角三角形において、$x$ の値を求めなさい。
+                </div>
+                ${svgHtml}
+            `,
+            answer: `${ansTerm.html} cm`,
+            explanation: `
+                <strong>【解法1：ピタゴラス数の比を使う】</strong><br>
+                ${ratioStepText}<br><br>
+                <strong>【解法2：三平方の定理】</strong><br>
+                ${pythStepText}
+            `
+        };
+    }
+},
+"特別角の直角三角形": {
+    level: "基礎",
+    formula: `
+        <div><strong>特別角の直角三角形</strong>：30°、45°、60°をもつ直角三角形は3辺の比が決定される。<br>
+        ★三平方の定理は2辺から1辺を求めるものだが、特別角を持っている場合、<strong>1辺から2辺</strong>を求めることができる。<br>
+        ★座標平面や角度のない平面図形において、<strong>3辺比から角度</strong>を求めることがある。</div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin-top: 8px;">
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px;">
+                <div style="font-weight: bold; font-size: 0.92em; color: #0f172a;">① 60°定規（60°側から 1：2：√3）</div>
+                <svg viewBox="0 0 210 128" style="width: 100%; max-width: 215px; height: auto; display: block; margin: 2px auto 0;">
+                    <polygon points="54,104 102,104 54,21" fill="#f8fafc" stroke="#0f172a" stroke-width="1.7" stroke-linejoin="round"/>
+                    <polyline points="54,96 62,96 62,104" fill="none" stroke="#64748b" stroke-width="1.2"/>
+                    <path d="M 88 104 A 14 14 0 0 0 95.0 91.9" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                    <text x="81" y="96" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">60°</text>
+                    <path d="M 54 37 A 16 16 0 0 0 62.0 34.9" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                    <text x="64" y="51" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">30°</text>
+                    <text x="78" y="116" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">①</text>
+                    <text x="92" y="60" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">②</text>
+                    <g transform="translate(33, 66)">
+                        <circle cx="0" cy="0" r="8.5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+                        <text x="0" y="0.5" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">√3</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px;">
+                <div style="font-weight: bold; font-size: 0.92em; color: #0f172a;">② 45°定規（45°側から 1：1：√2）</div>
+                <svg viewBox="0 0 210 128" style="width: 100%; max-width: 215px; height: auto; display: block; margin: 2px auto 0;">
+                    <polygon points="52,104 128,104 52,28" fill="#f8fafc" stroke="#0f172a" stroke-width="1.7" stroke-linejoin="round"/>
+                    <polyline points="52,96 60,96 60,104" fill="none" stroke="#64748b" stroke-width="1.2"/>
+                    <path d="M 112 104 A 16 16 0 0 0 116.7 92.7" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                    <text x="100" y="96" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">45°</text>
+                    <path d="M 52 44 A 16 16 0 0 0 63.3 39.3" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                    <text x="63" y="54" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">45°</text>
+                    <text x="90" y="116" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">①</text>
+                    <text x="34" y="70" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">①</text>
+                    <g transform="translate(105, 57)">
+                        <circle cx="0" cy="0" r="8.5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+                        <text x="0" y="0.5" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">√2</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px;">
+                <div style="font-weight: bold; font-size: 0.92em; color: #0f172a;">③ 間違えやすい比（1：2：√5）</div>
+                <svg viewBox="0 0 210 128" style="width: 100%; max-width: 215px; height: auto; display: block; margin: 2px auto 0;">
+                    <polygon points="36,102 132,102 36,54" fill="#f8fafc" stroke="#0f172a" stroke-width="1.7" stroke-linejoin="round"/>
+                    <polyline points="36,94 44,94 44,102" fill="none" stroke="#64748b" stroke-width="1.2"/>
+                    <text x="21" y="78" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">①</text>
+                    <text x="84" y="115" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">②</text>
+                    <g transform="translate(92, 69)">
+                        <circle cx="0" cy="0" r="8.5" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2"/>
+                        <text x="0" y="0.5" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">√5</text>
+                    </g>
+                    <text x="158" y="78" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#64748b">※特別角なし</text>
+                </svg>
+            </div>
+
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px;">
+                <div style="font-weight: bold; font-size: 0.92em; color: #0f172a;">④ 立方体内でよく出る比（1：√2：√3）</div>
+                <svg viewBox="0 0 210 128" style="width: 100%; max-width: 215px; height: auto; display: block; margin: 2px auto 0;">
+                    <polygon points="40,102 134,102 40,36" fill="#f8fafc" stroke="#0f172a" stroke-width="1.7" stroke-linejoin="round"/>
+                    <polyline points="40,94 48,94 48,102" fill="none" stroke="#64748b" stroke-width="1.2"/>
+                    <text x="24" y="69" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#059669">①</text>
+                    <g transform="translate(87, 114)">
+                        <circle cx="0" cy="0" r="8.5" fill="#ecfdf5" stroke="#059669" stroke-width="1.2"/>
+                        <text x="0" y="0.5" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#059669">√2</text>
+                    </g>
+                    <g transform="translate(97, 60)">
+                        <circle cx="0" cy="0" r="8.5" fill="#ecfdf5" stroke="#059669" stroke-width="1.2"/>
+                        <text x="0" y="0.5" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#059669">√3</text>
+                    </g>
+                    <text x="163" y="78" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#64748b">※特別角なし</text>
+                </svg>
+            </div>
+        </div>
+    `,
+    selfCheck: [
+        '図形が回転していても、「直角の向かい側＝一番長い辺（② や √2）」と「与えられた角度（60°・30°・45°）の向かい側の辺」を正しく対応づけられているか？',
+        '直角を挟む2辺の比が 1 : 2 のとき、斜辺を √3 ではなく √5 と見分けて、特別角の 1 : 2 : √3（斜辺が 2）と混同していないか？',
+        '√2 や √3 で割る計算のあと、分母の有理化と約分を正しく行えているか？（求めた3辺を2乗して a² + b² = c² が成り立つかで検算する）'
+    ],
+    generateRandom: function () {
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
+
+        const gcd = (a, b) => {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { const t = b; b = a % b; a = t; }
+            return a || 1;
+        };
+
+        const simplifySqrt = (coeff, rad) => {
+            let c = coeff;
+            let r = rad;
+            for (let d = Math.floor(Math.sqrt(r)); d >= 2; d--) {
+                if (r % (d * d) === 0) {
+                    c *= d;
+                    r /= (d * d);
+                    break;
+                }
+            }
+            return { c, r };
+        };
+
+        const makeTerm = (coeff, rad, den) => {
+            const s = simplifySqrt(coeff, rad);
+            const g = gcd(Math.abs(s.c), Math.abs(den));
+            const n = s.c / g;
+            const d = den / g;
+            const rootPart = s.r === 1 ? "" : `√${s.r}`;
+            const numStr = (s.r > 1 && Math.abs(n) === 1)
+                ? `${n < 0 ? "−" : ""}${rootPart}`
+                : `${n}${rootPart}`;
+            const html = d === 1 ? `${numStr}` : `${fracHtml(`${numStr}`, `${d}`)}`;
+            return {
+                html,
+                numStr,
+                denStr: `${d}`,
+                isFrac: d !== 1,
+                c: n,
+                r: s.r,
+                d
+            };
+        };
+
+        const multiplyTerm = (term, mCoeff, mRad, mDen) =>
+            makeTerm(term.c * mCoeff, term.r * mRad, term.d * mDen);
+
+        const triType = Math.floor(Math.random() * 2);
+
+        const unitPool = [
+            { c: 3, r: 1, d: 1 },
+            { c: 4, r: 1, d: 1 },
+            { c: 5, r: 1, d: 1 },
+            { c: 6, r: 1, d: 1 },
+            { c: 3, r: 1, d: 2 },
+            { c: 5, r: 1, d: 2 },
+            { c: 2, r: 1, d: 3 },
+            { c: 1, r: 2, d: 1 },
+            { c: 2, r: 2, d: 1 },
+            { c: 1, r: 3, d: 1 },
+            { c: 2, r: 3, d: 1 },
+            { c: 1, r: 6, d: 1 },
+            { c: 1, r: 2, d: 2 },
+            { c: 1, r: 3, d: 2 }
+        ];
+        const uRaw = unitPool[Math.floor(Math.random() * unitPool.length)];
+        const unitTerm = makeTerm(uRaw.c, uRaw.r, uRaw.d);
+
+        let w0, h0, givenAngleDeg, angleAtVertex, givenAngleName;
+        let termAB, termAC, termBC;
+
+        if (triType === 0) {
+            w0 = 76;
+            h0 = Number((76 * Math.sqrt(3)).toFixed(2));
+            termAB = unitTerm;
+            termBC = multiplyTerm(unitTerm, 2, 1, 1);
+            termAC = multiplyTerm(unitTerm, 1, 3, 1);
+            if (Math.random() < 0.5) {
+                givenAngleDeg = 60;
+                angleAtVertex = "B";
+                givenAngleName = "∠B = 60°";
+            } else {
+                givenAngleDeg = 30;
+                angleAtVertex = "C";
+                givenAngleName = "∠C = 30°";
+            }
+        } else {
+            w0 = 102;
+            h0 = 102;
+            termAB = unitTerm;
+            termAC = unitTerm;
+            termBC = multiplyTerm(unitTerm, 1, 2, 1);
+            if (Math.random() < 0.5) {
+                givenAngleDeg = 45;
+                angleAtVertex = "B";
+                givenAngleName = "∠B = 45°";
+            } else {
+                givenAngleDeg = 45;
+                angleAtVertex = "C";
+                givenAngleName = "∠C = 45°";
+            }
+        }
+
+        const knownEdge = Math.floor(Math.random() * 3);
+
+        let specAB, specAC, specBC, xTerm, yTerm, givenText, stepText;
+        if (knownEdge === 0) {
+            specAB = { term: termAB, varName: null };
+            specBC = { term: null, varName: "x" };
+            specAC = { term: null, varName: "y" };
+            xTerm = termBC;
+            yTerm = termAC;
+            givenText = `AB = ${termAB.html} cm`;
+            if (triType === 0) {
+                stepText = `∠A = 90°、${givenAngleName} より、3辺の比は <strong>AB : BC : AC = 1 : 2 : √3</strong> である。<br>
+                    AB = ${termAB.html} cm が比の ① にあたるので、<br>
+                    x = BC = ${termAB.html} × 2 = <strong>${xTerm.html} cm</strong><br>
+                    y = AC = ${termAB.html} × √3 = <strong>${yTerm.html} cm</strong>`;
+            } else {
+                stepText = `∠A = 90°、${givenAngleName} より、直角二等辺三角形で3辺の比は <strong>AB : AC : BC = 1 : 1 : √2</strong> である。<br>
+                    AB = ${termAB.html} cm が比の ① にあたるので、<br>
+                    x = BC = ${termAB.html} × √2 = <strong>${xTerm.html} cm</strong><br>
+                    y = AC = AB = <strong>${yTerm.html} cm</strong>`;
+            }
+        } else if (knownEdge === 1) {
+            specAB = { term: null, varName: "x" };
+            specBC = { term: termBC, varName: null };
+            specAC = { term: null, varName: "y" };
+            xTerm = termAB;
+            yTerm = termAC;
+            givenText = `BC = ${termBC.html} cm`;
+            if (triType === 0) {
+                stepText = `∠A = 90°、${givenAngleName} より、3辺の比は <strong>AB : BC : AC = 1 : 2 : √3</strong> である。<br>
+                    斜辺 BC = ${termBC.html} cm が比の ② にあたるので、比の ① は ${termBC.html} ÷ 2 = ${unitTerm.html} cm となる。<br>
+                    x = AB = <strong>${xTerm.html} cm</strong><br>
+                    y = AC = ${unitTerm.html} × √3 = <strong>${yTerm.html} cm</strong>`;
+            } else {
+                stepText = `∠A = 90°、${givenAngleName} より、直角二等辺三角形で3辺の比は <strong>AB : AC : BC = 1 : 1 : √2</strong> である。<br>
+                    斜辺 BC = ${termBC.html} cm が比の √2 にあたるので、比の ① は ${termBC.html} ÷ √2 = ${unitTerm.html} cm となる。<br>
+                    x = AB = <strong>${xTerm.html} cm</strong><br>
+                    y = AC = <strong>${yTerm.html} cm</strong>`;
+            }
+        } else {
+            specAB = { term: null, varName: "x" };
+            specBC = { term: null, varName: "y" };
+            specAC = { term: termAC, varName: null };
+            xTerm = termAB;
+            yTerm = termBC;
+            givenText = `AC = ${termAC.html} cm`;
+            if (triType === 0) {
+                stepText = `∠A = 90°、${givenAngleName} より、3辺の比は <strong>AB : BC : AC = 1 : 2 : √3</strong> である。<br>
+                    AC = ${termAC.html} cm が比の √3 にあたるので、比の ① は ${termAC.html} ÷ √3 = ${unitTerm.html} cm となる。<br>
+                    x = AB = <strong>${xTerm.html} cm</strong><br>
+                    y = BC = ${unitTerm.html} × 2 = <strong>${yTerm.html} cm</strong>`;
+            } else {
+                stepText = `∠A = 90°、${givenAngleName} より、直角二等辺三角形で3辺の比は <strong>AB : AC : BC = 1 : 1 : √2</strong> である。<br>
+                    AC = ${termAC.html} cm が比の ① にあたるので、<br>
+                    x = AB = AC = <strong>${xTerm.html} cm</strong><br>
+                    y = BC = ${termAC.html} × √2 = <strong>${yTerm.html} cm</strong>`;
+            }
+        }
+
+        const rotDeg = Math.floor(Math.random() * 360);
+        const rotRad = (rotDeg * Math.PI) / 180;
+
+        const rawA = { x: 0,  y: 0 };
+        const rawB = { x: w0, y: 0 };
+        const rawC = { x: 0,  y: -h0 };
+        const gx = (rawA.x + rawB.x + rawC.x) / 3;
+        const gy = (rawA.y + rawB.y + rawC.y) / 3;
+
+        const cx = 160;
+        const cy = 128;
+        const rotatePt = (pt) => {
+            const dx = pt.x - gx;
+            const dy = pt.y - gy;
+            return {
+                x: Number((cx + dx * Math.cos(rotRad) - dy * Math.sin(rotRad)).toFixed(2)),
+                y: Number((cy + dx * Math.sin(rotRad) + dy * Math.cos(rotRad)).toFixed(2))
+            };
+        };
+
+        const A = rotatePt(rawA);
+        const B = rotatePt(rawB);
+        const C = rotatePt(rawC);
+        const G = { x: cx, y: cy };
+
+        const sq = 8;
+        const uAB = { x: (B.x - A.x) / w0, y: (B.y - A.y) / w0 };
+        const uAC = { x: (C.x - A.x) / h0, y: (C.y - A.y) / h0 };
+        const r1 = { x: (A.x + uAB.x * sq).toFixed(2), y: (A.y + uAB.y * sq).toFixed(2) };
+        const r2 = { x: (A.x + (uAB.x + uAC.x) * sq).toFixed(2), y: (A.y + (uAB.y + uAC.y) * sq).toFixed(2) };
+        const r3 = { x: (A.x + uAC.x * sq).toFixed(2), y: (A.y + uAC.y * sq).toFixed(2) };
+        const rightAngleSvg = `<polyline points="${r1.x},${r1.y} ${r2.x},${r2.y} ${r3.x},${r3.y}" fill="none" stroke="#64748b" stroke-width="1.3"/>`;
+
+        const V = angleAtVertex === "B" ? B : C;
+        const V1 = angleAtVertex === "B" ? A : A;
+        const V2 = angleAtVertex === "B" ? C : B;
+        const ang1 = Math.atan2(V1.y - V.y, V1.x - V.x);
+        const ang2 = Math.atan2(V2.y - V.y, V2.x - V.x);
+        let dAng = ang2 - ang1;
+        while (dAng <= -Math.PI) dAng += 2 * Math.PI;
+        while (dAng > Math.PI) dAng -= 2 * Math.PI;
+        const sweepFlag = dAng >= 0 ? 1 : 0;
+        const arcR = givenAngleDeg === 30 ? 22 : 17;
+        const aStart = {
+            x: Number((V.x + arcR * Math.cos(ang1)).toFixed(2)),
+            y: Number((V.y + arcR * Math.sin(ang1)).toFixed(2))
+        };
+        const aEnd = {
+            x: Number((V.x + arcR * Math.cos(ang2)).toFixed(2)),
+            y: Number((V.y + arcR * Math.sin(ang2)).toFixed(2))
+        };
+        const angMid = ang1 + dAng / 2;
+        const angLabelPos = {
+            x: Number((V.x + (arcR + 13) * Math.cos(angMid)).toFixed(2)),
+            y: Number((V.y + (arcR + 13) * Math.sin(angMid)).toFixed(2))
+        };
+
+        const placeVertexLabel = (P, dist) => {
+            const vx = P.x - G.x;
+            const vy = P.y - G.y;
+            const len = Math.hypot(vx, vy) || 1;
+            return {
+                x: Number((P.x + (vx / len) * dist).toFixed(2)),
+                y: Number((P.y + (vy / len) * dist).toFixed(2))
+            };
+        };
+        const posA = placeVertexLabel(A, 14);
+        const posB = placeVertexLabel(B, 14);
+        const posC = placeVertexLabel(C, 14);
+
+        const placeEdgeLabel = (M1, M2, oppVertex, dist) => {
+            const mx = (M1.x + M2.x) / 2;
+            const my = (M1.y + M2.y) / 2;
+            const ex = M2.x - M1.x;
+            const ey = M2.y - M1.y;
+            const len = Math.hypot(ex, ey) || 1;
+            let nx = -ey / len;
+            let ny = ex / len;
+            if (nx * (oppVertex.x - mx) + ny * (oppVertex.y - my) > 0) {
+                nx = -nx;
+                ny = -ny;
+            }
+            return {
+                x: Number((mx + nx * dist).toFixed(2)),
+                y: Number((my + ny * dist).toFixed(2))
+            };
+        };
+
+        const renderSvgEdgeLabel = (pos, spec) => {
+            if (spec.varName) {
+                return `<text x="${pos.x}" y="${pos.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">${spec.varName} cm</text>`;
+            }
+            const term = spec.term;
+            if (!term.isFrac) {
+                return `<text x="${pos.x}" y="${pos.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">${term.numStr} cm</text>`;
+            }
+            const maxChars = Math.max(term.numStr.length, term.denStr.length, 1);
+            const barHalfW = Math.max(7, maxChars * 3.3 + 2);
+            const xFrac = Number((pos.x - 7).toFixed(2));
+            const yNum = Number((pos.y - 7.5).toFixed(2));
+            const yDen = Number((pos.y + 8).toFixed(2));
+            const xUnit = Number((xFrac + barHalfW + 11).toFixed(2));
+            return `
+                <g fill="#0f172a">
+                    <text x="${xFrac}" y="${yNum}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">${term.numStr}</text>
+                    <line x1="${(xFrac - barHalfW).toFixed(2)}" y1="${pos.y}" x2="${(xFrac + barHalfW).toFixed(2)}" y2="${pos.y}" stroke="#0f172a" stroke-width="1.1"/>
+                    <text x="${xFrac}" y="${yDen}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">${term.denStr}</text>
+                    <text x="${xUnit}" y="${pos.y}" font-size="10.5" font-weight="bold" text-anchor="middle" dominant-baseline="central">cm</text>
+                </g>
+            `;
+        };
+
+        const posLabelAB = placeEdgeLabel(A, B, C, 21);
+        const posLabelAC = placeEdgeLabel(A, C, B, 21);
+        const posLabelBC = placeEdgeLabel(B, C, A, 22);
+
+        const svgHtml = `
+            <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="0 0 320 256" style="width: 100%; max-width: 330px; height: auto;">
+                    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                    ${rightAngleSvg}
+                    <path d="M ${aStart.x} ${aStart.y} A ${arcR} ${arcR} 0 0 ${sweepFlag} ${aEnd.x} ${aEnd.y}" fill="none" stroke="#d97706" stroke-width="1.5"/>
+                    <text x="${angLabelPos.x}" y="${angLabelPos.y}" font-size="10" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#b45309">${givenAngleDeg}°</text>
+                    <text x="${posA.x}" y="${posA.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                    <text x="${posB.x}" y="${posB.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                    <text x="${posC.x}" y="${posC.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                    ${renderSvgEdgeLabel(posLabelAB, specAB)}
+                    ${renderSvgEdgeLabel(posLabelAC, specAC)}
+                    ${renderSvgEdgeLabel(posLabelBC, specBC)}
+                </svg>
+            </div>
+        `;
+
+        return {
+            problem: `
+                <div>
+                    次の直角三角形 ABC（∠A = 90°、${givenAngleName}、${givenText}）において、$x$ と $y$ の値を求めなさい。
+                </div>
+                ${svgHtml}
+            `,
+            answer: `x = ${xTerm.html} cm, &nbsp; y = ${yTerm.html} cm`,
+            explanation: `
+                ${stepText}
+            `
+        };
+    }
+},
+"15°、75°の直角三角形": {
+    level: "難関私立",
+    formula: `
+        <div><strong>15°、75°の直角三角形</strong>：15°、75°、90°をもつ直角三角形の3辺の比は、15°の対辺から順に <strong>√6 − √2 ： √6 + √2 ： 4</strong> となる。</div>
+        <div style="margin-top: 8px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center;">
+            <svg viewBox="0 0 265 138" style="width: 100%; max-width: 290px; height: auto; display: block; margin: 0 auto;">
+                <!-- 直角 P0(56, 102), 右下頂点 P1(196, 102), 上頂点 P2(56, 64.49) -->
+                <polygon points="56,102 196,102 56,64.49" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+                <!-- 直角記号（P0） -->
+                <polyline points="56,94 64,94 64,102" fill="none" stroke="#64748b" stroke-width="1.2"/>
+
+                <!-- P1(196, 102) の 15° 弧 -->
+                <path d="M 178 102 A 18 18 0 0 1 178.6 97.3" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                <text x="150" y="96.5" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">15°</text>
+
+                <!-- P2(56, 64.49) の 75° 弧 -->
+                <path d="M 56 82.49 A 18 18 0 0 0 73.39 69.12" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                <text x="77" y="83.5" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">75°</text>
+
+                <!-- 短い辺（P0-P2）の比：√6−√2（楕円で囲む） -->
+                <g transform="translate(27, 83)">
+                    <ellipse cx="0" cy="0" rx="25" ry="9.5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+                    <text x="0" y="0.5" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">√6−√2</text>
+                </g>
+
+                <!-- 長い辺（P0-P1）の比：√6＋√2（楕円で囲む） -->
+                <g transform="translate(126, 118)">
+                    <ellipse cx="0" cy="0" rx="25" ry="9.5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+                    <text x="0" y="0.5" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">√6＋√2</text>
+                </g>
+
+                <!-- 斜辺（P1-P2）の比：青丸に普通の数字 4 -->
+                <g transform="translate(134, 73)">
+                    <circle cx="0" cy="0" r="9.5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+                    <text x="0" y="0.5" font-size="10" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">4</text>
+                </g>
+            </svg>
+        </div>
+    `,
+    selfCheck: [
+        '15°の向かい側が「√6 − √2」、75°の向かい側が「√6 + √2」、90°の向かい側（斜辺）が「4」であることを逆にしていないか？',
+        '15°と75°の直角三角形の比を使うとき、√6 − √2 と √6 + √2 の掛け算・割り算・有理化の符号（＋と−）を間違えていないか？',
+        '頂角150°や頂角30°の二等辺三角形で、底辺の半分（1/2）や高さの計算を途中で飛ばしたり、三平方の定理の平方根を取り忘れたりしていないか？'
+    ],
+    generateRandom: function () {
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
+
+        const pType = Math.floor(Math.random() * 3);
+
+        // ============================================================
+        // ① 3辺比の証明（△AEG の 60°定規と △CEG の 45°定規を利用）
+        // ============================================================
+        if (pType === 0) {
+            const sideOpts = [2, 4, 6];
+            const sideLen = sideOpts[Math.floor(Math.random() * sideOpts.length)];
+
+            const svgHtml = `
+                <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="0 0 230 220" style="width: 100%; max-width: 265px; height: auto;">
+                        <polygon points="55,35 195,35 195,175 55,175" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+                        <line x1="55" y1="35" x2="195" y2="175" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,3"/>
+                        <polygon points="55,35 92.51,175 195,72.51" fill="rgba(37,99,235,0.08)" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
+                        <polyline points="138.8,118.8 133.85,123.75 138.8,128.7" fill="none" stroke="#dc2626" stroke-width="1.2"/>
+                        <circle cx="92.51" cy="175" r="2.8" fill="#2563eb"/>
+                        <circle cx="195" cy="72.51" r="2.8" fill="#2563eb"/>
+                        <circle cx="143.76" cy="123.76" r="2.8" fill="#dc2626"/>
+                        <text x="43" y="28" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                        <text x="43" y="184" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                        <text x="207" y="184" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                        <text x="207" y="28" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">D</text>
+                        <text x="92.51" y="191" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1d4ed8">E</text>
+                        <text x="208" y="72.51" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#1d4ed8">F</text>
+                        <text x="155" y="121" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">G</text>
+                    </svg>
+                </div>
+            `;
+
+            const unitNote = sideLen === 4
+                ? `正三角形の1辺が <strong>4 cm</strong> なので、そのまま AE = 4 cm とおくと、`
+                : `辺の比を求めるので、正三角形の1辺（${sideLen} cm）を基準に <strong>AE = 4</strong> としても比は変わらない。AE = 4 とおくと、`;
+
+            return {
+                problem: `
+                    <div>
+                        正方形 ABCD に対角線 AC を引き、辺 BC 上に点 E、辺 CD 上に点 F をとる。<br>
+                        △AEF が1辺 <strong>${sideLen} cm</strong> の正三角形であり、対角線 AC と辺 EF の交点を G とするとき、<br>
+                        <strong>BE ： AB ： AE ＝ √6 − √2 ： √6 ＋ √2 ： 4</strong> を証明しなさい。
+                    </div>
+                    ${svgHtml}
+                `,
+                answer: `【証明】△ABE ≡ △ADF から ∠EAG = 30°・∠AGE = 90° を導き、△AEG（60°定規）と △CEG（45°定規）より AG = 2√3、CG = EG = 2、CE = 2√2 を求めて BE : AB : AE = √6 − √2 : √6 + √2 : 4 を示す。`,
+                explanation: `
+                    <strong>【証明】</strong><br>
+                    正方形 ABCD より、AB = AD、∠B = ∠D = 90°、∠BAC = ∠DAC = 45° である。<br>
+                    △AEF は正三角形なので、AE = AF、∠EAF = 60° である。<br>
+                    直角三角形 ABE と直角三角形 ADF において、斜辺と他の1辺がそれぞれ等しいので<br>
+                    <strong>△ABE ≡ △ADF</strong> となり、∠BAE = ∠DAF である。<br>
+                    ∠BAD = 90° より、∠BAE = ∠DAF = (90° − 60°) ÷ 2 ＝ <strong>15°</strong> となる。<br>
+                    よって、∠EAG = ∠BAC − ∠BAE = 45° − 15° ＝ <strong>30°</strong> であり、△AEG において ∠AGE = 180° − (30° + 60°) ＝ <strong>90°</strong> となる。<br><br>
+
+                    ${unitNote}<br>
+                    <strong>① △AEG（30°、60°、90° の 60°定規：1 ： 2 ： √3）より</strong><br>
+                    AE ： EG ： AG ＝ 2 ： 1 ： √3 なので、<br>
+                    <strong>EG ＝ 2</strong>、<strong>AG ＝ 2√3</strong><br><br>
+
+                    <strong>② △CEG（∠ECG = 45°、∠EGC = 90° の 45°定規：1 ： 1 ： √2）より</strong><br>
+                    EG ： CG ： CE ＝ 1 ： 1 ： √2 なので、<br>
+                    <strong>CG ＝ 2</strong>、<strong>CE ＝ 2√2</strong><br><br>
+
+                    <strong>③ 正方形の1辺 AB（＝ BC）と BE を求める</strong><br>
+                    対角線 AC ＝ AG ＋ CG ＝ <strong>2√3 ＋ 2</strong> である。<br>
+                    直角二等辺三角形 ABC（1 ： 1 ： √2）より、AB ＝ BC ＝ AC ÷ √2 ＝ ${fracHtml("2√3 ＋ 2", "√2")} ＝ <strong>√6 ＋ √2</strong><br>
+                    また、BE ＝ BC − CE ＝ (√6 ＋ √2) − 2√2 ＝ <strong>√6 − √2</strong><br><br>
+
+                    以上より、<br>
+                    <strong>BE ： AB ： AE ＝ √6 − √2 ： √6 ＋ √2 ： 4</strong>（証明終わり）
+                `
+            };
+        }
+
+        // ============================================================
+        // ② 頂角150°の二等辺三角形の面積を求める（下側角度弧・3辺比で高さ算出）
+        // ============================================================
+        if (pType === 1) {
+            const intOptions150 = [
+                { b: 2, bh: "1", ah: "2 − √3",  area: "2 − √3" },
+                { b: 4, bh: "2", ah: "4 − 2√3", area: "8 − 4√3" },
+                { b: 6, bh: "3", ah: "6 − 3√3", area: "18 − 9√3" },
+                { b: 8, bh: "4", ah: "8 − 4√3", area: "32 − 16√3" }
+            ];
+            const opt150 = intOptions150[Math.floor(Math.random() * intOptions150.length)];
+
+            const svg150Html = `
+                <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="0 0 280 155" style="width: 100%; max-width: 300px; height: auto;">
+                        <polygon points="140,78 56,105 224,105" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                        <!-- 頂点 A の 150° 角度弧（下側） -->
+                        <path d="M 122.86 83.55 A 18 18 0 0 0 157.14 83.55" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+                        <text x="140" y="88.5" font-size="10.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">150°</text>
+                        <!-- 頂点ラベル -->
+                        <text x="140" y="63" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                        <text x="43" y="109" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                        <text x="237" y="109" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                        <!-- 底辺の長さのみ表記 -->
+                        <text x="140" y="126" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">${opt150.b} cm</text>
+                    </svg>
+                </div>
+            `;
+
+            return {
+                problem: `
+                    <div>
+                        AB = AC、∠BAC = 150° の二等辺三角形 ABC において、底辺 BC = <strong>${opt150.b} cm</strong> である。<br>
+                        △ABC の面積を求めなさい。
+                    </div>
+                    ${svg150Html}
+                `,
+                answer: `<strong>${opt150.area} cm<sup>2</sup></strong>`,
+                explanation: `
+                    頂点 A から底辺 BC に垂線 AH を下ろすと、二等辺三角形の性質より BH = CH = <strong>${opt150.bh} cm</strong> となる。<br>
+                    また、∠BAH = 150° ÷ 2 ＝ <strong>75°</strong>、∠ABH = 90° − 75° ＝ <strong>15°</strong> なので、<br>
+                    直角三角形 ABH（∠AHB = 90°）は <strong>15°、75°、90°</strong> の直角三角形である。<br><br>
+
+                    15°、75°、90° の直角三角形の3辺の比（15°の対辺 ： 75°の対辺 ： 斜辺 ＝ √6 − √2 ： √6 + √2 ： 4）より、<br>
+                    AH ： BH ＝ (√6 − √2) ： (√6 + √2) ＝ (2 − √3) ： 1<br>
+                    よって、高さ AH ＝ ${opt150.bh} × (2 − √3) ＝ <strong>${opt150.ah} cm</strong> である。<br><br>
+
+                    したがって、△ABC の面積は<br>
+                    ${fracHtml("1", "2")} × ${opt150.b} × (${opt150.ah}) ＝ <strong>${opt150.area} cm<sup>2</sup></strong>
+                `
+            };
+        }
+
+        // ============================================================
+        // ③ 頂角30°の二等辺三角形の1辺の長さを求める（BCは二重根号が解きやすい長さ）
+        // ============================================================
+        // BC = k√2（k = 2, 4, 6, 8）とすると：
+        // CH = (k/2)√2, OH = (k/2)√6, AH = k√2 + (k/2)√6
+        // AC^2 = CH^2 + AH^2 = k^2 * (4 + 2√3)
+        // AC = k * √(4 + 2√3) = k * (√3 + 1) = k√3 + k（= (k/2)(√6 + √2)）
+        const easyDoubleRootOptions30 = [
+            { b: "2√2", ch: "√2",  oh: "√6",   ah: "2√2 ＋ √6",   ac2: "4(4 ＋ 2√3)",   outerK: "2", acDoubleInner: "√(4 ＋ 2√3)", ab: "2√3 ＋ 2" },
+            { b: "4√2", ch: "2√2", oh: "2√6",  ah: "4√2 ＋ 2√6",  ac2: "16(4 ＋ 2√3)",  outerK: "4", acDoubleInner: "√(4 ＋ 2√3)", ab: "4√3 ＋ 4" },
+            { b: "6√2", ch: "3√2", oh: "3√6",  ah: "6√2 ＋ 3√6",  ac2: "36(4 ＋ 2√3)",  outerK: "6", acDoubleInner: "√(4 ＋ 2√3)", ab: "6√3 ＋ 6" },
+            { b: "8√2", ch: "4√2", oh: "4√6",  ah: "8√2 ＋ 4√6",  ac2: "64(4 ＋ 2√3)",  outerK: "8", acDoubleInner: "√(4 ＋ 2√3)", ab: "8√3 ＋ 8" }
+        ];
+        const opt30 = easyDoubleRootOptions30[Math.floor(Math.random() * easyDoubleRootOptions30.length)];
+
+        const svg30Html = `
+            <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="0 0 280 212" style="width: 100%; max-width: 300px; height: auto;">
+                    <polygon points="140,24 98,180.75 182,180.75" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                    <!-- 破線 AH（A から BC への垂線） -->
+                    <line x1="140" y1="24" x2="140" y2="180.75" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,3"/>
+                    <!-- 破線 OB, OC（外接円の中心 O と B, C を結ぶ線分） -->
+                    <line x1="98" y1="180.75" x2="140" y2="108" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3"/>
+                    <line x1="182" y1="180.75" x2="140" y2="108" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4,3"/>
+                    <!-- 外接円の中心 O -->
+                    <circle cx="140" cy="108" r="3" fill="#2563eb"/>
+                    <!-- 垂線 H の直角記号 -->
+                    <polyline points="140,172.75 148,172.75 148,180.75" fill="none" stroke="#64748b" stroke-width="1.2"/>
+                    <!-- 頂点 A の 30° 角度弧 -->
+                    <path d="M 133.79 47.18 A 24 24 0 0 0 146.21 47.18" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+                    <text x="140" y="58" font-size="10.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">30°</text>
+                    <!-- 点ラベル -->
+                    <text x="140" y="11" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                    <text x="85" y="185" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                    <text x="195" y="185" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                    <text x="140" y="192" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">H</text>
+                    <text x="150" y="108" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">O</text>
+                    <!-- 底辺の長さのみ表記 -->
+                    <text x="140" y="203" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">${opt30.b} cm</text>
+                </svg>
+            </div>
+        `;
+
+        return {
+            problem: `
+                <div>
+                    AB = AC、∠BAC = 30° の二等辺三角形 ABC において、底辺 BC = <strong>${opt30.b} cm</strong> である。<br>
+                    等しい辺 AB の長さを求めなさい。
+                </div>
+                ${svg30Html}
+            `,
+            answer: `AB ＝ <strong>${opt30.ab} cm</strong>`,
+            explanation: `
+                頂点 A から底辺 BC に垂線 AH を下ろし、△ABC の外接円の中心（A、B、C を通る円の中心）を O とする。<br>
+                <strong>① 円周角の定理より ∠BOC ＝ 60° として OH を求める</strong><br>
+                ∠BAC = 30° であるから、円周角の定理より中心角 ∠BOC = 60° となり、OB = OC なので △OBC は1辺 ${opt30.b} cm の正三角形である。<br>
+                OH は正三角形 OBC の高さ（30°、60°、90° の直角三角形）なので、<strong>OH ＝ ${opt30.oh} cm</strong>。<br><br>
+
+                <strong>② OC ＝ OA より AH の長さを求める</strong><br>
+                O は外接円の中心なので OA ＝ OB ＝ OC ＝ ${opt30.b} cm であり、O は線分 AH 上にある。<br>
+                よって、<strong>AH ＝ OA ＋ OH ＝ ${opt30.b} ＋ ${opt30.oh} ＝ ${opt30.ah} cm</strong>。<br><br>
+
+                <strong>③ △ACH で三平方の定理を用いて AB（＝ AC）を求める</strong><br>
+                CH ＝ ${fracHtml(`${opt30.b}`, "2")} ＝ ${opt30.ch} cm であるから、直角三角形 ACH で三平方の定理より、<br>
+                AC<sup>2</sup> ＝ CH<sup>2</sup> ＋ AH<sup>2</sup> ＝ (${opt30.ch})<sup>2</sup> ＋ (${opt30.ah})<sup>2</sup> ＝ <strong>${opt30.ac2}</strong>。<br>
+                AB ＝ AC なので、したがって <strong>AB ＝ ${opt30.ab} cm</strong>。<br><br>
+
+                <div style="background: #f8fafc; border-left: 3px solid #2563eb; padding: 6px 8px; border-radius: 4px;">
+                    <strong>【補足：二重根号の解き方】</strong><br>
+                    √(A ± 2√B) は、<strong>足して A、掛けて B になる2つの正の数 p、q（p ＞ q）</strong>を見つけて <strong>√p ± √q</strong> に直す。<br>
+                    たとえば AC ＝ ${opt30.outerK}${opt30.acDoubleInner} のように「<strong>2√3</strong>」の形に整えたら、<strong>足して 4、掛けて 3 になる2数（3 と 1）</strong>を見つけて √(4 ＋ 2√3) ＝ √3 ＋ 1 と二重根号を外すことができる。<br><br>
+
+                    <strong>【別解：15°、75°、90° の3辺比で AC を求める】</strong><br>
+                    直角三角形 ACH は ∠CAH = 15°、∠ACH = 75°、∠AHC = 90° であり、15° の対辺 CH ＝ ${opt30.ch} cm である。<br>
+                    3辺の比（15°の対辺 ： 75°の対辺 ： 斜辺 ＝ √6 − √2 ： √6 + √2 ： 4）より、<br>
+                    CH ： AC ＝ (√6 − √2) ： 4 なので、<br>
+                    AC ＝ ${opt30.ch} × ${fracHtml("4", "√6 − √2")} ＝ ${opt30.ch} × (√6 ＋ √2) ＝ <strong>${opt30.ab} cm</strong>。<br>
+                    このように、外接円や二重根号を経由するよりも、<strong>15°、75°、90° の3辺比（√6 − √2 ： √6 + √2 ： 4）を覚えた方が圧倒的に簡単で速く解ける</strong>。
+                </div>
+            `
+        };
+    }
+}
 
     },
     "立体図形": {
