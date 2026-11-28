@@ -13133,19 +13133,21 @@ const formulaData = {
         }
 
         // ============================================================
-        // ③ 頂角30°の二等辺三角形の1辺の長さを求める（BCは二重根号が解きやすい長さ）
+        // ③ 頂角30°の二等辺三角形の1辺の長さを求める（整数・√2倍の両方に対応）
         // ============================================================
-        // BC = k√2（k = 2, 4, 6, 8）とすると：
-        // CH = (k/2)√2, OH = (k/2)√6, AH = k√2 + (k/2)√6
-        // AC^2 = CH^2 + AH^2 = k^2 * (4 + 2√3)
-        // AC = k * √(4 + 2√3) = k * (√3 + 1) = k√3 + k（= (k/2)(√6 + √2)）
-        const easyDoubleRootOptions30 = [
-            { b: "2√2", ch: "√2",  oh: "√6",   ah: "2√2 ＋ √6",   ac2: "4(4 ＋ 2√3)",   outerK: "2", acDoubleInner: "√(4 ＋ 2√3)", ab: "2√3 ＋ 2" },
-            { b: "4√2", ch: "2√2", oh: "2√6",  ah: "4√2 ＋ 2√6",  ac2: "16(4 ＋ 2√3)",  outerK: "4", acDoubleInner: "√(4 ＋ 2√3)", ab: "4√3 ＋ 4" },
-            { b: "6√2", ch: "3√2", oh: "3√6",  ah: "6√2 ＋ 3√6",  ac2: "36(4 ＋ 2√3)",  outerK: "6", acDoubleInner: "√(4 ＋ 2√3)", ab: "6√3 ＋ 6" },
-            { b: "8√2", ch: "4√2", oh: "4√6",  ah: "8√2 ＋ 4√6",  ac2: "64(4 ＋ 2√3)",  outerK: "8", acDoubleInner: "√(4 ＋ 2√3)", ab: "8√3 ＋ 8" }
+        const options30 = [
+            // 整数パターン（BC = 2, 4, 6, 8）
+            { b: "2",   ch: "1",   oh: "√3",   ah: "2 ＋ √3",    ac2: "8 ＋ 4√3",     acExpr: "√(8 ＋ 2√12)",     twoRoot: "2√12",  sumVal: 8,   prodVal: 12,  ab: "√6 ＋ √2" },
+            { b: "4",   ch: "2",   oh: "2√3",  ah: "4 ＋ 2√3",   ac2: "32 ＋ 16√3",   acExpr: "√(32 ＋ 2√192)",   twoRoot: "2√192", sumVal: 32,  prodVal: 192, ab: "2√6 ＋ 2√2" },
+            { b: "6",   ch: "3",   oh: "3√3",  ah: "6 ＋ 3√3",   ac2: "72 ＋ 36√3",   acExpr: "√(72 ＋ 2√432)",   twoRoot: "2√432", sumVal: 72,  prodVal: 432, ab: "3√6 ＋ 3√2" },
+            { b: "8",   ch: "4",   oh: "4√3",  ah: "8 ＋ 4√3",   ac2: "128 ＋ 64√3",  acExpr: "√(128 ＋ 2√768)",  twoRoot: "2√768", sumVal: 128, prodVal: 768, ab: "4√6 ＋ 4√2" },
+            // 二重根号が解きやすい √2 倍パターン（BC = 2√2, 4√2, 6√2, 8√2）
+            { b: "2√2", ch: "√2",  oh: "√6",   ah: "2√2 ＋ √6",  ac2: "4(4 ＋ 2√3)",    acExpr: "2√(4 ＋ 2√3)",     twoRoot: "2√3",   sumVal: 4,   prodVal: 3,   ab: "2√3 ＋ 2" },
+            { b: "4√2", ch: "2√2", oh: "2√6",  ah: "4√2 ＋ 2√6", ac2: "16(4 ＋ 2√3)",   acExpr: "4√(4 ＋ 2√3)",     twoRoot: "2√3",   sumVal: 4,   prodVal: 3,   ab: "4√3 ＋ 4" },
+            { b: "6√2", ch: "3√2", oh: "3√6",  ah: "6√2 ＋ 3√6", ac2: "36(4 ＋ 2√3)",   acExpr: "6√(4 ＋ 2√3)",     twoRoot: "2√3",   sumVal: 4,   prodVal: 3,   ab: "6√3 ＋ 6" },
+            { b: "8√2", ch: "4√2", oh: "4√6",  ah: "8√2 ＋ 4√6", ac2: "64(4 ＋ 2√3)",   acExpr: "8√(4 ＋ 2√3)",     twoRoot: "2√3",   sumVal: 4,   prodVal: 3,   ab: "8√3 ＋ 8" }
         ];
-        const opt30 = easyDoubleRootOptions30[Math.floor(Math.random() * easyDoubleRootOptions30.length)];
+        const opt30 = options30[Math.floor(Math.random() * options30.length)];
 
         const svg30Html = `
             <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
@@ -13202,7 +13204,7 @@ const formulaData = {
                 <div style="background: #f8fafc; border-left: 3px solid #2563eb; padding: 6px 8px; border-radius: 4px;">
                     <strong>【補足：二重根号の解き方】</strong><br>
                     √(A ± 2√B) は、<strong>足して A、掛けて B になる2つの正の数 p、q（p ＞ q）</strong>を見つけて <strong>√p ± √q</strong> に直す。<br>
-                    たとえば AC ＝ ${opt30.outerK}${opt30.acDoubleInner} のように「<strong>2√3</strong>」の形に整えたら、<strong>足して 4、掛けて 3 になる2数（3 と 1）</strong>を見つけて √(4 ＋ 2√3) ＝ √3 ＋ 1 と二重根号を外すことができる。<br><br>
+                    たとえば AC ＝ ${opt30.acExpr} のように「<strong>${opt30.twoRoot}</strong>」の形に整えたら、<strong>足して ${opt30.sumVal}、掛けて ${opt30.prodVal}</strong> になる2数を探すことで二重根号を外すことができる。<br><br>
 
                     <strong>【別解：15°、75°、90° の3辺比で AC を求める】</strong><br>
                     直角三角形 ACH は ∠CAH = 15°、∠ACH = 75°、∠AHC = 90° であり、15° の対辺 CH ＝ ${opt30.ch} cm である。<br>
@@ -13211,6 +13213,404 @@ const formulaData = {
                     AC ＝ ${opt30.ch} × ${fracHtml("4", "√6 − √2")} ＝ ${opt30.ch} × (√6 ＋ √2) ＝ <strong>${opt30.ab} cm</strong>。<br>
                     このように、外接円や二重根号を経由するよりも、<strong>15°、75°、90° の3辺比（√6 − √2 ： √6 + √2 ： 4）を覚えた方が圧倒的に簡単で速く解ける</strong>。
                 </div>
+            `
+        };
+    }
+},
+// カテゴリ：平面図形
+"外角の利用": {
+    category: "平面図形",
+    level: "公立",
+    formula: `
+        <div><strong>外角の利用</strong>：<strong>120°、135°、150°</strong> が条件にあるとき、隣り合う<strong>外角（60°、45°、30°）</strong>を作って直角三角形（三角定規の形）を利用できる。</div>
+        <div style="margin-top: 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 8px;">
+            <!-- ① 120°の場合（外角 60°・右下頂点 H2(108,86.64) が 90°） -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; text-align: center;">
+                <div style="font-size: 11px; font-weight: bold; color: #0f172a; margin-bottom: 2px;">120° の場合（外角 60°）</div>
+                <svg viewBox="0 0 210 126" style="width: 100%; max-width: 210px; height: auto; display: block; margin: 0 auto;">
+                    <polygon points="88,52 168,52 108,86.64" fill="rgba(37, 99, 235, 0.14)" stroke="#2563eb" stroke-width="1.3" stroke-dasharray="3,2"/>
+                    <polygon points="88,52 60,3.5 60,52" fill="rgba(220, 38, 38, 0.16)" stroke="#dc2626" stroke-width="1.3" stroke-dasharray="3,2"/>
+                    <polygon points="88,52 60,3.5 168,52" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+                    <polyline points="60,45 67,45 67,52" fill="none" stroke="#dc2626" stroke-width="1.1"/>
+                    <polyline points="104.75,80.14 110.38,76.89 113.63,82.52" fill="none" stroke="#2563eb" stroke-width="1.2"/>
+                    <path d="M 81.5 40.74 A 13 13 0 0 1 101 52" fill="none" stroke="#0f172a" stroke-width="1.3"/>
+                    <text x="103" y="32" font-size="9" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">120°</text>
+                    <path d="M 75 52 A 13 13 0 0 1 81.5 40.74" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                    <text x="68" y="42" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">60°</text>
+                    <path d="M 101 52 A 13 13 0 0 1 94.5 63.26" fill="none" stroke="#2563eb" stroke-width="1.4"/>
+                    <text x="110" y="65" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">60°</text>
+                </svg>
+            </div>
+
+            <!-- ② 135°の場合（外角 45°・右下頂点 H2(132,92) が 90°） -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; text-align: center;">
+                <div style="font-size: 11px; font-weight: bold; color: #0f172a; margin-bottom: 2px;">135° の場合（外角 45°）</div>
+                <svg viewBox="0 0 210 126" style="width: 100%; max-width: 210px; height: auto; display: block; margin: 0 auto;">
+                    <polygon points="92,52 172,52 132,92" fill="rgba(37, 99, 235, 0.14)" stroke="#2563eb" stroke-width="1.3" stroke-dasharray="3,2"/>
+                    <polygon points="92,52 54,14 54,52" fill="rgba(220, 38, 38, 0.16)" stroke="#dc2626" stroke-width="1.3" stroke-dasharray="3,2"/>
+                    <polygon points="92,52 54,14 172,52" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+                    <polyline points="54,45 61,45 61,52" fill="none" stroke="#dc2626" stroke-width="1.1"/>
+                    <polyline points="127.4,87.4 132,82.8 136.6,87.4" fill="none" stroke="#2563eb" stroke-width="1.2"/>
+                    <path d="M 82.81 42.81 A 13 13 0 0 1 105 52" fill="none" stroke="#0f172a" stroke-width="1.3"/>
+                    <text x="104" y="32" font-size="9" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">135°</text>
+                    <path d="M 79 52 A 13 13 0 0 1 82.81 42.81" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                    <text x="68" y="43" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">45°</text>
+                    <path d="M 105 52 A 13 13 0 0 1 101.19 61.19" fill="none" stroke="#2563eb" stroke-width="1.4"/>
+                    <text x="115" y="63" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">45°</text>
+                </svg>
+            </div>
+
+            <!-- ③ 150°の場合（外角 30°・右下頂点 H2(156,86.64) が 90°） -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; text-align: center;">
+                <div style="font-size: 11px; font-weight: bold; color: #0f172a; margin-bottom: 2px;">150° の場合（外角 30°）</div>
+                <svg viewBox="0 0 210 126" style="width: 100%; max-width: 210px; height: auto; display: block; margin: 0 auto;">
+                    <polygon points="96,52 176,52 156,86.64" fill="rgba(37, 99, 235, 0.14)" stroke="#2563eb" stroke-width="1.3" stroke-dasharray="3,2"/>
+                    <polygon points="96,52 46,23.13 46,52" fill="rgba(220, 38, 38, 0.16)" stroke="#dc2626" stroke-width="1.3" stroke-dasharray="3,2"/>
+                    <polygon points="96,52 46,23.13 176,52" fill="#f8fafc" stroke="#0f172a" stroke-width="1.8" stroke-linejoin="round"/>
+                    <polyline points="46,45 53,45 53,52" fill="none" stroke="#dc2626" stroke-width="1.1"/>
+                    <polyline points="150.37,83.39 153.62,77.76 159.25,81.01" fill="none" stroke="#2563eb" stroke-width="1.2"/>
+                    <path d="M 84.74 45.5 A 13 13 0 0 1 109 52" fill="none" stroke="#0f172a" stroke-width="1.3"/>
+                    <text x="106" y="32" font-size="9" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">150°</text>
+                    <path d="M 83 52 A 13 13 0 0 1 84.74 45.5" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                    <text x="69" y="45" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">30°</text>
+                    <path d="M 109 52 A 13 13 0 0 1 107.26 58.5" fill="none" stroke="#2563eb" stroke-width="1.4"/>
+                    <text x="120" y="61" font-size="8.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">30°</text>
+                </svg>
+            </div>
+        </div>
+    `,
+    selfCheck: [
+        '120°・135°・150° の隣にある外角（60°・45°・30°）を正しく求め、三角定規の辺の比（1：2：√3 や 1：1：√2）を当てはめたか？',
+        '垂線を下ろすとき、2辺のうち「斜辺が2の倍数（または√2の倍数）になる側」に外角の直角三角形を作ると計算がラクになることに気づけたか？',
+        'BCの長さを求めるときは外側の大きな直角三角形で三平方の定理を使い、面積を求めるときは「底辺 × 垂線の高さ ÷ 2」で計算したか？'
+    ],
+    generateRandom: function () {
+        // 更新のたびに 0〜359° の 1° 単位の整数でランダム回転
+        const rotDeg = Math.floor(Math.random() * 360);
+        const cx = 132;
+        const cy = 92;
+
+        const rotPt = (x, y) => {
+            const rad = (rotDeg * Math.PI) / 180;
+            const dx = x - cx;
+            const dy = y - cy;
+            return {
+                x: +(cx + dx * Math.cos(rad) - dy * Math.sin(rad)).toFixed(2),
+                y: +(cy + dx * Math.sin(rad) + dy * Math.cos(rad)).toFixed(2)
+            };
+        };
+
+        const calcViewBox = (pts, pad = 22) => {
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            for (const pt of pts) {
+                if (!pt) continue;
+                if (pt.x < minX) minX = pt.x;
+                if (pt.x > maxX) maxX = pt.x;
+                if (pt.y < minY) minY = pt.y;
+                if (pt.y > maxY) maxY = pt.y;
+            }
+            const x0 = Math.floor(minX - pad);
+            const y0 = Math.floor(minY - pad);
+            const w = Math.max(120, Math.ceil(maxX - minX + pad * 2));
+            const h = Math.max(100, Math.ceil(maxY - minY + pad * 2));
+            return `${x0} ${y0} ${w} ${h}`;
+        };
+
+        const fracHtml = (num, den) =>
+            `<span style="display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin: 0 2px; font-size: 0.9em;"><span style="padding: 0 2px;">${num}</span><span style="border-top: 1px solid currentColor; width: 100%; text-align: center; padding: 1px 2px 0;">${den}</span></span>`;
+
+        // 内角が 15° と 120° の鈍角三角形の面積を求めるパターン（確率 1/3 で出題）
+        if (Math.random() < 1 / 3) {
+            const obt15_120 = [
+                { ab: "2",   abNum: 2,     ah: "1",   bh: "√3",  ch: "√3",  ac: "√3 − 1",  area: `${fracHtml("3 − √3", "2")}` },
+                { ab: "4",   abNum: 4,     ah: "2",   bh: "2√3", ch: "2√3", ac: "2√3 − 2", area: `6 − 2√3` },
+                { ab: "2√2", abNum: 2.828, ah: "√2",  bh: "√6",  ch: "√6",  ac: "√6 − √2", area: `3 − √3` }
+            ];
+            const item = obt15_120[Math.floor(Math.random() * obt15_120.length)];
+
+            const rawLenAB = item.abNum * 24;
+            const rawLenAC = rawLenAB * (Math.sin((15 * Math.PI) / 180) / Math.sin((45 * Math.PI) / 180));
+            const minTargetLen = 58;
+            const scaleBoost = Math.max(1, minTargetLen / Math.min(rawLenAB, rawLenAC), 155 / Math.max(rawLenAB + rawLenAC * 0.5, 1));
+            const lenAB = rawLenAB * scaleBoost;
+            const lenAC = rawLenAC * scaleBoost;
+
+            const ax = 126, ay = 122;
+            const bx = ax + lenAB * Math.cos((-120 * Math.PI) / 180);
+            const by = ay + lenAB * Math.sin((-120 * Math.PI) / 180);
+            const cxPt = ax + lenAC;
+            const cyPt = ay;
+
+            const pA = rotPt(ax, ay);
+            const pB = rotPt(bx, by);
+            const pC = rotPt(cxPt, cyPt);
+
+            // 120° の角度弧とラベル（弧の半径外側に余裕を持たせて配置）
+            const arcR = Math.min(18, Math.max(13, Math.min(lenAB, lenAC) * 0.24));
+            const arcP1 = rotPt(ax + arcR * Math.cos((-120 * Math.PI) / 180), ay + arcR * Math.sin((-120 * Math.PI) / 180));
+            const arcP2 = rotPt(ax + arcR, ay);
+            const degALabel = rotPt(ax + (arcR + 14) * Math.cos((-60 * Math.PI) / 180), ay + (arcR + 14) * Math.sin((-60 * Math.PI) / 180));
+
+            // 15° の角度弧とラベル（狭い角度なので弧の外側へ十分にオフセット）
+            const bArcR = Math.min(15, Math.max(11, lenAB * 0.16));
+            const bArcP1 = rotPt(bx + bArcR * Math.cos((60 * Math.PI) / 180), by + bArcR * Math.sin((60 * Math.PI) / 180));
+            const bAngC = Math.atan2(cyPt - by, cxPt - bx);
+            const bArcP2 = rotPt(bx + bArcR * Math.cos(bAngC), by + bArcR * Math.sin(bAngC));
+            const degBLabel = rotPt(bx + (bArcR + 16) * Math.cos((60 + 7.5) * Math.PI / 180), by + (bArcR + 16) * Math.sin((60 + 7.5) * Math.PI / 180));
+
+            const lA = rotPt(ax, ay + 15);
+            const lB = rotPt(bx - 15, by - 8);
+            const lC = rotPt(cxPt + 15, cyPt + 4);
+            const lAB = rotPt((ax + bx) / 2 - 17, (ay + by) / 2);
+
+            const probVb = calcViewBox([pA, pB, pC, arcP1, arcP2, degALabel, bArcP1, bArcP2, degBLabel, lA, lB, lC, lAB], 24);
+
+            // 解説図：CA延長線上にBから垂線H（x = bx, y = ay）
+            const hx = bx, hy = ay;
+            const eA = rotPt(ax, ay);
+            const eB = rotPt(bx, by);
+            const eC = rotPt(cxPt, cyPt);
+            const eH = rotPt(hx, hy);
+            const eExtEnd = rotPt(hx - 14, hy);
+
+            const hSq1 = rotPt(hx + 7, hy);
+            const hSq2 = rotPt(hx + 7, hy - 7);
+            const hSq3 = rotPt(hx, hy - 7);
+
+            // 頂点 C における 45° の角度弧と、重ならない位置へ配置した 45° ラベル
+            const cArcR = Math.min(16, Math.max(12, lenAC * 0.2));
+            const cAngH = Math.atan2(hy - cyPt, hx - cxPt);
+            const cAngB = Math.atan2(by - cyPt, bx - cxPt);
+            const cArcP1 = rotPt(cxPt + cArcR * Math.cos(cAngH), cyPt + cArcR * Math.sin(cAngH));
+            const cArcP2 = rotPt(cxPt + cArcR * Math.cos(cAngB), cyPt + cArcR * Math.sin(cAngB));
+            const cMidAng = (-157.5 * Math.PI) / 180;
+            const c45LabelPt = rotPt(cxPt + (cArcR + 16) * Math.cos(cMidAng), cyPt + (cArcR + 16) * Math.sin(cMidAng));
+            const c45TextAngle = ((180 + rotDeg + 540) % 360) - 180;
+            const fitted45Angle = Math.abs(c45TextAngle) > 90
+                ? (((c45TextAngle + 180 + 540) % 360) - 180)
+                : c45TextAngle;
+
+            // 点ラベル
+            const elA = rotPt(ax, ay + 13);
+            const elB = rotPt(bx - 12, by - 8);
+            const elC = rotPt(cxPt + 13, cyPt + 3);
+            const elH = rotPt(hx, hy + 13);
+            const elExt60 = rotPt(ax - 17, ay - 9);
+
+            // 長さラベル：
+            // 1. 元から分かっている長さ AB（黒字）
+            const lenABPt = rotPt((ax + bx) / 2 + 13, (ay + by) / 2 - 4);
+            // 2. 60°定規でわかる長さ（赤字）：BH・AH
+            const lenBHPt = rotPt(hx - 15, (by + hy) / 2);
+            const lenAHPt = rotPt((hx + ax) / 2, hy + 14);
+            // 3. 45°定規でわかる長さ（青字）：CH
+            const chDimY = hy + 26;
+            const chDimL1 = rotPt(hx, hy + 19);
+            const chDimL2 = rotPt(hx, chDimY + 3);
+            const chDimR1 = rotPt(cxPt, cyPt + 10);
+            const chDimR2 = rotPt(cxPt, chDimY + 3);
+            const chDimBarL = rotPt(hx, chDimY);
+            const chDimBarR = rotPt(cxPt, chDimY);
+            const lenCHPt = rotPt((hx + cxPt) / 2, chDimY + 11);
+
+            const expVb = calcViewBox([
+                eA, eB, eC, eH, eExtEnd,
+                hSq1, hSq2, hSq3,
+                cArcP1, cArcP2, c45LabelPt,
+                elA, elB, elC, elH, elExt60,
+                lenABPt, lenBHPt, lenAHPt,
+                chDimL2, chDimR2, lenCHPt
+            ], 24);
+
+            const svgObtHtml = `
+                <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${probVb}" style="width: 100%; max-width: 295px; height: auto; display: block; margin: 0 auto;">
+                        <polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                        <path d="M ${arcP1.x} ${arcP1.y} A ${arcR} ${arcR} 0 0 1 ${arcP2.x} ${arcP2.y}" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+                        <text x="${degALabel.x}" y="${degALabel.y}" font-size="10" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">120°</text>
+                        <path d="M ${bArcP1.x} ${bArcP1.y} A ${bArcR} ${bArcR} 0 0 0 ${bArcP2.x} ${bArcP2.y}" fill="none" stroke="#dc2626" stroke-width="1.4"/>
+                        <text x="${degBLabel.x}" y="${degBLabel.y}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">15°</text>
+                        <text x="${lA.x}" y="${lA.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                        <text x="${lB.x}" y="${lB.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                        <text x="${lC.x}" y="${lC.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                        <text x="${lAB.x}" y="${lAB.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">${item.ab}</text>
+                    </svg>
+                </div>
+            `;
+
+            const expSvgHtml = `
+                <div style="margin: 8px 0 6px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                    <svg viewBox="${expVb}" style="width: 100%; max-width: 295px; height: auto; display: block; margin: 0 auto;">
+                        <!-- 60°定規（△ABH）を赤く薄く塗る -->
+                        <polygon points="${eA.x},${eA.y} ${eB.x},${eB.y} ${eH.x},${eH.y}" fill="rgba(220, 38, 38, 0.15)" stroke="#dc2626" stroke-width="1.3" stroke-dasharray="3,2"/>
+                        <!-- 45°定規（△BCH）を赤く薄く塗り、青枠で囲む -->
+                        <polygon points="${eB.x},${eB.y} ${eC.x},${eC.y} ${eH.x},${eH.y}" fill="rgba(220, 38, 38, 0.15)" stroke="#2563eb" stroke-width="1.8" stroke-linejoin="round"/>
+                        <!-- 元の三角形 ABC -->
+                        <polygon points="${eA.x},${eA.y} ${eB.x},${eB.y} ${eC.x},${eC.y}" fill="rgba(248, 250, 252, 0.45)" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                        <!-- CA 延長線と垂線 BH -->
+                        <line x1="${eExtEnd.x}" y1="${eExtEnd.y}" x2="${eA.x}" y2="${eA.y}" stroke="#64748b" stroke-width="1.3" stroke-dasharray="3,2"/>
+                        <line x1="${eB.x}" y1="${eB.y}" x2="${eH.x}" y2="${eH.y}" stroke="#dc2626" stroke-width="1.4" stroke-dasharray="3,2"/>
+                        <!-- 直角記号 H -->
+                        <polyline points="${hSq1.x},${hSq1.y} ${hSq2.x},${hSq2.y} ${hSq3.x},${hSq3.y}" fill="none" stroke="#dc2626" stroke-width="1.2"/>
+                        <!-- 45° 弧とフィット角度ラベル -->
+                        <path d="M ${cArcP1.x} ${cArcP1.y} A ${cArcR} ${cArcR} 0 0 1 ${cArcP2.x} ${cArcP2.y}" fill="none" stroke="#2563eb" stroke-width="1.4"/>
+                        <text x="${c45LabelPt.x}" y="${c45LabelPt.y}" transform="rotate(${fitted45Angle.toFixed(1)}, ${c45LabelPt.x}, ${c45LabelPt.y})" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">45°</text>
+                        <!-- 45°定規でわかる長さ CH の補助線（青） -->
+                        <line x1="${chDimL1.x}" y1="${chDimL1.y}" x2="${chDimL2.x}" y2="${chDimL2.y}" stroke="#2563eb" stroke-width="0.9" stroke-dasharray="2,2"/>
+                        <line x1="${chDimR1.x}" y1="${chDimR1.y}" x2="${chDimR2.x}" y2="${chDimR2.y}" stroke="#2563eb" stroke-width="0.9" stroke-dasharray="2,2"/>
+                        <line x1="${chDimBarL.x}" y1="${chDimBarL.y}" x2="${chDimBarR.x}" y2="${chDimBarR.y}" stroke="#2563eb" stroke-width="1.1"/>
+                        <!-- 点ラベル -->
+                        <text x="${elA.x}" y="${elA.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                        <text x="${elB.x}" y="${elB.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                        <text x="${elC.x}" y="${elC.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                        <text x="${elH.x}" y="${elH.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">H</text>
+                        <text x="${elExt60.x}" y="${elExt60.y}" font-size="9.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">60°</text>
+                        <!-- 長さラベル：黒（既知 AB）、赤（60°定規 BH・AH）、青（45°定規 CH） -->
+                        <text x="${lenABPt.x}" y="${lenABPt.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">${item.ab}</text>
+                        <text x="${lenBHPt.x}" y="${lenBHPt.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">${item.bh}</text>
+                        <text x="${lenAHPt.x}" y="${lenAHPt.y}" font-size="10.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">${item.ah}</text>
+                        <text x="${lenCHPt.x}" y="${lenCHPt.y}" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">${item.ch}</text>
+                    </svg>
+                </div>
+            `;
+
+            return {
+                problem: `
+                    <div>
+                        ∠BAC = 120°、∠ABC = 15°、AB = ${item.ab} の △ABC において、△ABC の面積を求めなさい。
+                    </div>
+                    ${svgObtHtml}
+                `,
+                answer: `<strong>${item.area}</strong>`,
+                explanation: `
+                    三角形の内角の和は 180° なので、∠ACB ＝ 180° − (120° ＋ 15°) ＝ <strong>45°</strong> である。<br>
+                    辺 CA を A の方向に延長した直線上に、頂点 B から垂線 BH を下ろす。<br>
+                    ${expSvgHtml}
+                    <strong>① 外角を利用して60°定規（△ABH）の辺を求める</strong><br>
+                    ∠BAC ＝ 120° より、外角 ∠BAH ＝ 180° − 120° ＝ <strong>60°</strong>、∠ABH ＝ 30° である。<br>
+                    30°、60°、90° の辺の比（AH ： BH ： AB ＝ 1 ： √3 ： 2）より、<br>
+                    <strong>AH ＝ ${item.ah}</strong>、<strong>BH ＝ ${item.bh}</strong> となる。<br><br>
+
+                    <strong>② 45°定規（△BCH）から底辺 AC を求める</strong><br>
+                    ∠BCH ＝ 45°、∠BHC ＝ 90° より △BCH は直角二等辺三角形なので、<strong>CH ＝ BH ＝ ${item.ch}</strong>。<br>
+                    よって、底辺 <strong>AC ＝ CH − AH ＝ ${item.ch} − ${item.ah} ＝ ${item.ac}</strong> である。<br><br>
+
+                    <strong>③ 底辺 AC × 高さ BH ÷ 2 で面積を求める</strong><br>
+                    △ABC の面積 ＝ ${fracHtml("1", "2")} × (${item.ac}) × (${item.bh}) ＝ <strong>${item.area}</strong>
+                `
+            };
+        }
+
+        const scenarios = [
+            // --- 120°（外角 60° → 1 : 2 : √3）---
+            { deg: 120, extDeg: 60, ab: "2", abNum: 2, ac: "4", acNum: 4, ah: "1", bh: "√3", ch: "5", bc: "2√7", bcSq: "28", area: "2√3", ratioDesc: "1 ： 2 ： √3（AH ： AB ： BH ＝ 1 ： 2 ： √3）" },
+            { deg: 120, extDeg: 60, ab: "4", abNum: 4, ac: "6", acNum: 6, ah: "2", bh: "2√3", ch: "8", bc: "2√19", bcSq: "76", area: "6√3", ratioDesc: "1 ： 2 ： √3（AH ： AB ： BH ＝ 1 ： 2 ： √3）" },
+            { deg: 120, extDeg: 60, ab: "6", abNum: 6, ac: "8", acNum: 8, ah: "3", bh: "3√3", ch: "11", bc: "2√37", bcSq: "148", area: "12√3", ratioDesc: "1 ： 2 ： √3（AH ： AB ： BH ＝ 1 ： 2 ： √3）" },
+
+            // --- 135°（外角 45° → 1 : 1 : √2）---
+            { deg: 135, extDeg: 45, ab: "2√2", abNum: 2.828, ac: "4", acNum: 4, ah: "2", bh: "2", ch: "6", bc: "2√10", bcSq: "40", area: "4", ratioDesc: "1 ： 1 ： √2（AH ： BH ： AB ＝ 1 ： 1 ： √2）" },
+            { deg: 135, extDeg: 45, ab: "3√2", abNum: 4.243, ac: "5", acNum: 5, ah: "3", bh: "3", ch: "8", bc: "√73", bcSq: "73", area: `${fracHtml("15", "2")}`, ratioDesc: "1 ： 1 ： √2（AH ： BH ： AB ＝ 1 ： 1 ： √2）" },
+
+            // --- 150°（外角 30° → 1 : 2 : √3）---
+            { deg: 150, extDeg: 30, ab: "4", abNum: 4, ac: "6", acNum: 6, ah: "2√3", bh: "2", ch: "6 ＋ 2√3", bc: "2√(13 ＋ 6√3)", bcSq: "52 ＋ 24√3", area: "6", ratioDesc: "1 ： 2 ： √3（BH ： AB ： AH ＝ 1 ： 2 ： √3）" },
+            { deg: 150, extDeg: 30, ab: "6", abNum: 6, ac: "8", acNum: 8, ah: "3√3", bh: "3", ch: "8 ＋ 3√3", bc: "√(100 ＋ 48√3)", bcSq: "100 ＋ 48√3", area: "12", ratioDesc: "1 ： 2 ： √3（BH ： AB ： AH ＝ 1 ： 2 ： √3）" }
+        ];
+
+        const sc = scenarios[Math.floor(Math.random() * scenarios.length)];
+        const askType = sc.deg === 150 ? "area" : (Math.random() < 0.65 ? "length" : "area");
+
+        const radDeg = (-sc.deg * Math.PI) / 180;
+        const unitAB = sc.abNum;
+        const unitAC = sc.acNum;
+        const spanX = Math.max(unitAC, Math.abs(unitAB * Math.cos(radDeg)));
+        const spanY = Math.max(2.2, Math.abs(unitAB * Math.sin(radDeg)));
+        const dynScale = Math.min(28, Math.max(16, Math.min(130 / Math.max(spanX, 1), 72 / Math.max(spanY, 1))));
+
+        const lenAB = unitAB * dynScale;
+        const lenAC = unitAC * dynScale;
+        const ax = 104, ay = 116;
+        const bx = ax + lenAB * Math.cos(radDeg);
+        const by = ay + lenAB * Math.sin(radDeg);
+        const cxPt = ax + lenAC;
+        const cyPt = ay;
+
+        const pA = rotPt(ax, ay);
+        const pB = rotPt(bx, by);
+        const pC = rotPt(cxPt, cyPt);
+
+        // 角度弧と角度ラベルの距離を広げて重なりを回避
+        const arcR = Math.min(18, Math.max(13, Math.min(lenAB, lenAC) * 0.22));
+        const arcP1 = rotPt(ax + arcR * Math.cos(radDeg), ay + arcR * Math.sin(radDeg));
+        const arcP2 = rotPt(ax + arcR, ay);
+        const midRad = ((-sc.deg / 2) * Math.PI) / 180;
+        const degLabelPt = rotPt(ax + (arcR + 14) * Math.cos(midRad), ay + (arcR + 14) * Math.sin(midRad));
+
+        const lA = rotPt(ax, ay + 15);
+        const lB = rotPt(bx - 14, by - 7);
+        const lC = rotPt(cxPt + 14, cyPt + 4);
+        const lAB = rotPt((ax + bx) / 2 - 16, (ay + by) / 2 - 2);
+        const lAC = rotPt((ax + cxPt) / 2, ay + 16);
+
+        const dynVb = calcViewBox([pA, pB, pC, arcP1, arcP2, degLabelPt, lA, lB, lC, lAB, lAC], 24);
+
+        const svgHtml = `
+            <div style="margin: 10px 0 8px 0; text-align: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px;">
+                <svg viewBox="${dynVb}" style="width: 100%; max-width: 295px; height: auto; display: block; margin: 0 auto;">
+                    <polygon points="${pA.x},${pA.y} ${pB.x},${pB.y} ${pC.x},${pC.y}" fill="#f8fafc" stroke="#0f172a" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M ${arcP1.x} ${arcP1.y} A ${arcR} ${arcR} 0 0 1 ${arcP2.x} ${arcP2.y}" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+                    <text x="${degLabelPt.x}" y="${degLabelPt.y}" font-size="10" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#dc2626">${sc.deg}°</text>
+                    <text x="${lA.x}" y="${lA.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">A</text>
+                    <text x="${lB.x}" y="${lB.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">B</text>
+                    <text x="${lC.x}" y="${lC.y}" font-size="12" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#0f172a">C</text>
+                    <text x="${lAB.x}" y="${lAB.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">${sc.ab}</text>
+                    <text x="${lAC.x}" y="${lAC.y}" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#2563eb">${sc.ac}</text>
+                </svg>
+            </div>
+        `;
+
+        if (askType === "length") {
+            return {
+                problem: `
+                    <div>
+                        AB = ${sc.ab}、AC = ${sc.ac}、∠BAC = ${sc.deg}° の △ABC において、辺 BC の長さを求めなさい。
+                    </div>
+                    ${svgHtml}
+                `,
+                answer: `BC ＝ <strong>${sc.bc}</strong>`,
+                explanation: `
+                    辺 CA を A の方向に延長した直線上に、頂点 B から垂線 BH を下ろす。<br>
+                    <strong>① 外角を利用して直角三角形 ABH の辺の長さを求める</strong><br>
+                    ∠BAC ＝ ${sc.deg}° より、その外角は ∠BAH ＝ 180° − ${sc.deg}° ＝ <strong>${sc.extDeg}°</strong> である。<br>
+                    直角三角形 ABH（∠AHB ＝ 90°）で辺の比 <strong>${sc.ratioDesc}</strong> を用いると、<br>
+                    <strong>AH ＝ ${sc.ah}</strong>、<strong>BH ＝ ${sc.bh}</strong> となる。<br><br>
+
+                    <strong>② 直角三角形 BCH で三平方の定理を使う</strong><br>
+                    CH ＝ CA ＋ AH ＝ ${sc.ac} ＋ ${sc.ah} ＝ <strong>${sc.ch}</strong> である。<br>
+                    直角三角形 BCH において三平方の定理より、<br>
+                    BC<sup>2</sup> ＝ CH<sup>2</sup> ＋ BH<sup>2</sup> ＝ ${sc.ch}<sup>2</sup> ＋ (${sc.bh})<sup>2</sup> ＝ ${sc.bcSq}<br>
+                    BC ＞ 0 より、<strong>BC ＝ ${sc.bc}</strong>
+                `
+            };
+        }
+
+        return {
+            problem: `
+                <div>
+                    AB = ${sc.ab}、AC = ${sc.ac}、∠BAC = ${sc.deg}° の △ABC において、△ABC の面積を求めなさい。
+                </div>
+                ${svgHtml}
+            `,
+            answer: `<strong>${sc.area}</strong>`,
+            explanation: `
+                辺 CA を A の方向に延長した直線上に、頂点 B から垂線 BH を下ろす。<br>
+                <strong>① 外角を利用して高さ BH を求める</strong><br>
+                ∠BAC ＝ ${sc.deg}° より、その外角は ∠BAH ＝ 180° − ${sc.deg}° ＝ <strong>${sc.extDeg}°</strong> である。<br>
+                直角三角形 ABH（∠AHB ＝ 90°）で辺の比 <strong>${sc.ratioDesc}</strong> を用いると、<br>
+                高さ <strong>BH ＝ ${sc.bh}</strong> となる。<br><br>
+
+                <strong>② 底辺 AC × 高さ BH ÷ 2 で面積を求める</strong><br>
+                △ABC の面積は、底辺を AC ＝ ${sc.ac}、高さを BH ＝ ${sc.bh} とみると、<br>
+                ${fracHtml("1", "2")} × ${sc.ac} × ${sc.bh} ＝ <strong>${sc.area}</strong>
             `
         };
     }
